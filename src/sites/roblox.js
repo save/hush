@@ -123,6 +123,7 @@ Hush.register({
     // header links: tag the robux upsell so it can go
     function syncHeader() {
       for (const a of document.querySelectorAll('#navigation-container a[href*="/upgrades/robux"]:not([data-hush-hide]), #navigation-container a[href*="/plus"]:not([data-hush-hide])')) {
+        if (a.closest('#navigation-robux-container')) continue; // the plain "Robux" link in the header stays
         a.setAttribute('data-hush-hide', '');
       }
       // "Buy Robux" buttons that don't link anywhere useful (href="#"), matched by their words
@@ -132,7 +133,7 @@ Hush.register({
       }
       // catalog / elsewhere: "Buy Robux" buttons
       for (const el of document.querySelectorAll('a[href*="/upgrades/robux"]:not([data-hush-hide]), a[href*="/upgrades/paymentmethods"]:not([data-hush-hide])')) {
-        if (el.closest('#navigation-container .popover, [role="menu"]')) continue; // the balance popover keeps its own link
+        if (el.closest('#navigation-container .popover, [role="menu"], #navigation-robux-container')) continue; // the balance popover keeps its own link
         el.setAttribute('data-hush-hide', '');
       }
     }

@@ -1297,3 +1297,112 @@ html[data-hush-site="rbx"] .profile-content :is(h2, h3, [class*="text-heading"])
 html[data-hush-site="rbx"] .user-profile-header > .flex-nowrap > a { width: auto !important; flex: none !important; max-width: none !important; }
 html[data-hush-site="rbx"] .user-profile-header > .flex-nowrap > a span { overflow: visible !important; text-overflow: clip !important; }
 html[data-hush-site="rbx"] #user-profile-header-bg { padding-top: 0 !important; margin-top: 0 !important; }
+
+/* ==========================================================================
+   0.6 layout: calmer by being plainer. Normal-case words, one size step up,
+   soft pills for "you are here", Home with a quiet greeting under it,
+   section titles that read like titles. Overrides the rules above.
+   ========================================================================== */
+
+/* header: words as words, a wide pill search, no balance or app upsell */
+html[data-hush-site="rbx"] #navigation-container .nav-menu-title {
+  text-transform: none !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  color: var(--h-fg) !important;
+  opacity: 0.78;
+  transition: opacity 0.16s ease !important;
+}
+html[data-hush-site="rbx"] #navigation-container .nav-menu-title:hover { opacity: 1; }
+html[data-hush-site="rbx"] #navigation-robux-container a { color: var(--h-fg) !important; }
+html[data-hush-site="rbx"] #navigation-container :is(#navbar-robux, .download-app-nav-item) { display: none !important; }
+html[data-hush-site="rbx"] [data-testid="navigation-search-input"],
+html[data-hush-site="rbx"] [data-testid="navigation-search-input"] :is(.input-group, .form-control) {
+  border-radius: 999px !important;
+}
+html[data-hush-site="rbx"] [data-testid="navigation-search-input"] {
+  min-width: min(520px, 40vw) !important;
+  border: 1px solid var(--h-line) !important;
+}
+html[data-hush-site="rbx"] [data-testid="navigation-search-input-field"] { font-size: 14px !important; }
+html[data-hush-site="rbx"] #navigation-container .age-bracket-label a { font-size: 14px !important; font-weight: 500 !important; color: var(--h-fg) !important; }
+
+/* left menu: normal case, bigger, a soft pill instead of the dot */
+html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav] {
+  padding: 10px 14px !important;
+  margin-bottom: 4px !important;
+  border-radius: 12px !important;
+  background: transparent !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  color: var(--h-fg) !important;
+  opacity: 0.74;
+  transition: opacity 0.16s ease, background-color 0.2s ease !important;
+}
+html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav]:is(:hover, :focus-visible) { opacity: 1; background: var(--h-hover) !important; }
+html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav][data-hush-active] {
+  opacity: 1;
+  background: color-mix(in srgb, var(--h-fg) 8%, transparent) !important;
+}
+html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav] .text-truncate-end { text-transform: none !important; }
+html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav] :is(svg, [class*="icon"]):not(.hush-keys *) { opacity: 0.9; }
+
+/* Home stays Home; the greeting sits under it */
+html[data-hush-site="rbx"] h1[data-hush-greet] {
+  font-size: 32px !important;
+  font-weight: 700 !important;
+  line-height: 1.15 !important;
+  letter-spacing: -0.02em;
+  margin-bottom: 30px !important;
+  color: var(--h-fg) !important;
+}
+html[data-hush-site="rbx"] h1[data-hush-greet]::before { content: none !important; }
+html[data-hush-site="rbx"] h1[data-hush-greet]::after {
+  content: attr(data-hush-greet);
+  display: block;
+  margin-top: 4px;
+  font: 400 19px/1.4 var(--h-font);
+  letter-spacing: -0.01em;
+  color: var(--h-dim);
+  animation: hushRbxGreet 0.7s var(--hush-ease) both !important;
+}
+
+/* section titles read like titles again, in sentence case */
+html[data-hush-site="rbx"] [data-testid="section-header"] :is(h2, h3, [data-testid="text-icon-row-text"]) {
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  color: var(--h-fg) !important;
+  text-transform: lowercase;
+  letter-spacing: -0.01em;
+}
+html[data-hush-site="rbx"] [data-testid="section-header"] :is(h2, h3, [data-testid="text-icon-row-text"])::first-letter { text-transform: uppercase; }
+html[data-hush-site="rbx"] [data-testid="section-header"] [data-testid="icon-component"] { opacity: 0.75; }
+html[data-hush-site="rbx"] [data-testid="section-header"] { margin-bottom: 16px !important; }
+
+/* tiles: rounder, one size up, quiet rating */
+html[data-hush-site="rbx"] :is(.thumbnail-2d-container, .game-card-thumb-container, .featured-game-icon-container) { border-radius: 14px !important; }
+html[data-hush-site="rbx"] [data-testid="game-grid"] { gap: 34px 22px !important; }
+html[data-hush-site="rbx"] :is([data-testid="game-tile-game-title"], .game-card-name) {
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  margin-top: 4px !important;
+}
+html[data-hush-site="rbx"] :is([data-testid="game-tile-stats"], [data-testid="game-tile-stats-rating"], .game-card-info, .wide-game-tile-metadata) :is(span, div, a) {
+  font-size: 13px !important;
+}
+
+/* friends: a row of round faces with a soft ring, and room to breathe */
+html[data-hush-site="rbx"] .friend-carousel-container { margin-bottom: 36px !important; }
+html[data-hush-site="rbx"] .friend-carousel-container :is(h2, h3, [class*="header"] [class*="title"]) {
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  color: var(--h-fg) !important;
+}
+html[data-hush-site="rbx"] .friend-carousel-container :is(.thumbnail-2d-container, .avatar-card-image, [class*="avatar"] img) {
+  border-radius: 50% !important;
+  box-shadow: 0 0 0 1px var(--h-line), 0 0 0 4px color-mix(in srgb, var(--h-fg) 4%, transparent) !important;
+}
+html[data-hush-site="rbx"] .friend-carousel-container :is([class*="friend-name"], [class*="username"], .text-overflow) {
+  font-size: 12.5px !important;
+  color: var(--h-dim) !important;
+}

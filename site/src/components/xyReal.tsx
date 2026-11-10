@@ -354,60 +354,57 @@ export function YtLoud() {
 }
 
 export function YtCalm() {
-  // youtube.css: guide rows 34px, 19px icons at .8, 13.5px lowercase in --h-dim,
-  // the active row gets a 6px dot; grid 4-up, 22px gaps, 34px between rows
-  const guide: [React.ElementType, string][] = [[Home, 'home'], [Library, 'subscriptions'], [User, 'you'], [History, 'history'], [ListVideo, 'playlists'], [Clock, 'watch later'], [ThumbsUp, 'liked videos']];
+  // youtube.css, 0.6 layout: a 76px rail (icon + small word), one pill search,
+  // pill chips, three big videos to a row, title and channel only
+  const rail: [React.ElementType, string][] = [[Home, 'Home'], [Library, 'Subscriptions'], [History, 'History']];
   return (
     <Real>
       <div className="flex h-full flex-col bg-[#0a0a0a]" style={{ color: XH.fg, fontFamily: HUSH_FONT }}>
-        <div className="flex h-14 shrink-0 items-center px-4">
-          <div className="flex w-[220px] items-center gap-5">
-            <div className="flex flex-col gap-[4px] px-2 opacity-70"><div className="h-[2px] w-[18px] bg-white" /><div className="h-[2px] w-[18px] bg-white" /><div className="h-[2px] w-[18px] bg-white" /></div>
-            <YtLogo calm />
+        <div className="flex h-16 shrink-0 items-center px-5">
+          <div className="flex w-[240px] items-center gap-6">
+            <div className="flex flex-col gap-[5px] px-1.5"><div className="h-[2px] w-[19px] bg-white/90" /><div className="h-[2px] w-[19px] bg-white/90" /><div className="h-[2px] w-[19px] bg-white/90" /></div>
+            <YtLogo />
           </div>
-          <div className="mx-auto flex w-[640px]">
-            <span className="flex-1 rounded-l-[10px] bg-white/[0.045] px-4 py-[9px] text-[14px]" style={{ color: XH.dim }}>Search</span>
-            <span className="rounded-r-[10px] bg-white/[0.045] px-5 py-[9px] opacity-70"><Search className="size-5" /></span>
+          <div className="mx-auto flex h-11 w-[650px] items-center rounded-full border border-white/[0.07] bg-white/[0.03] pr-5 pl-6 text-[15.5px]" style={{ color: XH.dim }}>
+            <span className="flex-1">Search</span>
+            <Search className="size-5 opacity-80" />
           </div>
-          <div className="flex items-center gap-5 opacity-70">
-            <span className="relative"><Bell className="size-6" /><span className="absolute -top-1 -right-1.5 grid h-[14px] min-w-[14px] place-items-center rounded-full bg-[#ff4b4b] px-0.5 text-[10px] text-white">9+</span></span>
-            <Img id={1011} w={64} h={64} className="size-8 rounded-full" style={SOFT_DARK} />
+          <div className="flex w-[240px] justify-end">
+            <Img id={1011} w={64} h={64} className="size-9 rounded-full" style={SOFT_DARK} />
           </div>
         </div>
         <div className="flex min-h-0 flex-1">
-          <aside className="w-[240px] shrink-0 px-3 pt-1">
-            {guide.map(([I, l], i) => (
-              <div key={l} className="relative flex h-[34px] items-center pl-3 text-[13.5px]" style={{ color: i === 0 ? XH.fg : XH.dim }}>
-                {i === 0 && <span className="absolute left-0 size-[6px] rounded-full bg-[#ff4b4b]" />}
-                <I className="mr-[14px] size-[19px] opacity-80" strokeWidth={1.7} />{l}
-                {i === 1 && <span className="sr-only">,</span>}
-              </div>
-            ))}
-            <div className="mx-3 my-3 h-px" style={{ background: XH.line }} />
-            <div className="px-3 pb-1 text-[11px]" style={{ color: XH.faint }}>subscriptions</div>
-            {VIDEOS.slice(0, 5).map((v, i) => (
-              <div key={v.channel + i} className="flex h-[34px] items-center pl-3 text-[13.5px] lowercase" style={{ color: XH.dim }}>
-                <Img id={v.av} w={40} h={40} className="mr-[14px] size-[19px] rounded-full" style={{ filter: 'grayscale(.6)' }} />{v.channel}
+          <aside className="flex w-[76px] shrink-0 flex-col items-center gap-1.5 pt-3">
+            {rail.map(([I, l], i) => (
+              <div key={l} className={cx('flex size-14 flex-col items-center justify-center gap-1 rounded-[14px]', i === 0 && 'bg-white/[0.09]')} style={{ color: i === 0 ? XH.fg : XH.dim }}>
+                <I className="size-[22px]" strokeWidth={1.8} />
+                <span className="max-w-[64px] truncate text-[10.5px]">{l}</span>
               </div>
             ))}
           </aside>
-          <main className="min-w-0 flex-1 overflow-hidden pr-8 pl-2">
-            <div className="px-2 pt-7 pb-1.5 text-[22px] leading-[1.3] font-semibold tracking-[-0.02em]">good evening</div>
-            <div className="flex gap-2 px-2 pt-3 pb-6 text-[13px]">
-              {['all', 'music', 'cooking', 'camping', 'podcasts', 'new to you'].map((c, i) => (
-                <span key={c} className="rounded-lg px-3 py-[5px]" style={i === 0 ? { background: XH.fg, color: '#0a0a0a' } : { background: 'rgba(255,255,255,.045)', color: XH.dim }}>{c}</span>
+          <main className="min-w-0 flex-1 overflow-hidden pr-10 pl-6">
+            <div className="flex gap-2.5 pt-3 pb-7 text-[14.5px] font-medium">
+              {['All', 'Gaming', 'Cooking', 'Camping', 'Podcasts'].map((c, i) => (
+                <span key={c} className="flex h-[38px] items-center rounded-full px-[18px]" style={i === 0 ? { background: XH.fg, color: '#0a0a0a' } : { background: 'rgba(255,255,255,.07)', color: XH.fg }}>{c}</span>
               ))}
             </div>
-            <div className="grid grid-cols-4 gap-x-[22px] gap-y-[34px] px-2">
-              {VIDEOS.map((v) => (
+            <div className="grid grid-cols-3 gap-x-[34px] gap-y-10">
+              {VIDEOS.slice(0, 6).map((v) => (
                 <div key={v.id}>
-                  <Thumb v={v} calm />
-                  <div className="mt-3 flex gap-3">
+                  <div className="relative overflow-hidden rounded-2xl">
+                    <Img id={v.id} w={640} h={360} className="aspect-video w-full" style={SOFT_DARK} />
+                    {v.sticker && (
+                      <span className="absolute bottom-3.5 left-3.5 rotate-[-3deg] text-[30px] leading-none font-black text-[#ffe500] opacity-90 [paint-order:stroke] [-webkit-text-stroke:7px_#000]">{v.sticker}</span>
+                    )}
+                    <span className="absolute right-2.5 bottom-2.5 flex items-center gap-1 rounded-full bg-[#0a0a0a]/70 px-[9px] py-[3px] text-[12.5px] font-medium text-white">
+                      {v.live && <span className="size-[5px] rounded-full bg-[#ff4b4b]" />}{v.live ? 'live' : v.dur}
+                    </span>
+                  </div>
+                  <div className="mt-3.5 flex gap-3">
                     <Img id={v.av} w={72} h={72} className="size-9 shrink-0 rounded-full" style={SOFT_DARK} />
                     <div className="min-w-0">
-                      <div className="line-clamp-2 text-[14px] leading-[1.4] font-medium">{v.title}</div>
-                      <div className="mt-1 text-[12.5px]" style={{ color: XH.dim }}>{v.channel}</div>
-                      <div className="text-[12.5px]" style={{ color: XH.dim }}>{v.views}{v.age && ` · ${v.age}`}</div>
+                      <div className="truncate text-[16px] leading-[1.35] font-medium">{v.title}</div>
+                      <div className="mt-1 text-[14px]" style={{ color: XH.dim }}>{v.channel}</div>
                     </div>
                   </div>
                 </div>

@@ -152,60 +152,55 @@ export function RbxLoud() {
 /* ------------------------------ with hush -------------------------------- */
 
 export function RbxCalm() {
+  // roblox.css, 0.6 layout: normal-case words, pill for "you are here", Home + greeting, big titles
   const nav: [React.ElementType, string, string?][] = [
-    [Home, 'home'], [User, 'profile'], [MessageSquare, 'messages', '1'], [Users, 'friends'], [Shirt, 'avatar'], [Package, 'inventory'], [ArrowLeftRight, 'trade'], [Users, 'communities'],
+    [Home, 'Home'], [User, 'Profile'], [MessageSquare, 'Messages', '1'], [Users, 'Friends'], [Shirt, 'Avatar'], [Package, 'Inventory'], [ArrowLeftRight, 'Trade'], [Users, 'Communities'],
   ];
   const soft = { filter: 'saturate(.9) contrast(.98) brightness(1.01)' };
   return (
     <Real>
       <div className="flex h-full flex-col bg-white text-[#1b1b1b]" style={{ fontFamily: FONT_HUSH }}>
-        {/* header, 48px, lowercase, no Robux link */}
+        {/* header: words as words, one wide pill search, no balance or app upsell */}
         <div className="flex h-12 shrink-0 items-center bg-white px-5 shadow-[0_1px_0_rgb(0_0_0/0.06)]">
           <Wordmark size={21} color="#1b1b1b" />
-          <div className="ml-[60px] flex gap-[100px] text-[13.5px] text-[#7c7c7c]"><span>charts</span><span>marketplace</span><span>create</span></div>
-          <div className="mx-auto flex h-8 w-[214px] items-center gap-2 rounded-lg border border-black/10 px-2.5 text-[13px] text-[#7c7c7c]"><Search className="size-3.5" />search</div>
-          <div className="flex items-center gap-5 text-[#7c7c7c]">
-            <span className="flex items-center gap-2 text-[12px] font-medium text-[#1b1b1b]"><img src={ME} alt="" className="size-7 rounded-full bg-[#ececec]" style={soft} />{USER}</span>
-            <Bell className="size-[18px]" strokeWidth={1.7} />
-            <span className="flex items-center gap-1 text-[13px]"><Robux className="size-[18px]" />0</span>
-            <Settings className="size-[18px]" strokeWidth={1.7} />
-            <span className="rounded-md bg-[#1b1b1b] px-3 py-1.5 text-[12px] font-semibold text-white">Download</span>
+          <div className="ml-[60px] flex gap-[56px] text-[15px] font-medium text-[#1b1b1b]/80"><span>Charts</span><span>Marketplace</span><span>Create</span><span>Robux</span></div>
+          <div className="mx-auto flex h-9 w-[520px] items-center gap-2.5 rounded-full border border-black/[0.08] bg-black/[0.03] px-4 text-[14px] text-[#7c7c7c]"><Search className="size-4" />Search</div>
+          <div className="flex items-center gap-5">
+            <span className="flex items-center gap-2 text-[14px] font-medium"><img src={ME} alt="" className="size-7 rounded-full bg-[#ececec]" style={soft} />{USER}</span>
+            <Bell className="size-5 text-[#1b1b1b]/70" strokeWidth={1.7} />
+            <Settings className="size-5 text-[#1b1b1b]/70" strokeWidth={1.7} />
           </div>
         </div>
 
         <div className="flex min-h-0 flex-1">
-          {/* left nav, 224px, words + icons */}
-          <aside className="w-[224px] shrink-0 bg-white px-4 pt-[18px]">
-            <div className="mb-3 flex items-center gap-2.5 px-3 py-1">
-              <img src={ME} alt="" className="size-7 rounded-full bg-[#ececec]" style={soft} />
-              <span className="text-[13px] font-medium">{USER}</span>
+          <aside className="w-[244px] shrink-0 border-r border-black/[0.06] bg-white px-4 pt-[18px]">
+            <div className="mb-3 flex items-center gap-3 px-3 py-1.5">
+              <img src={ME} alt="" className="size-8 rounded-full bg-[#ececec]" style={soft} />
+              <span className="text-[15px] font-medium">{USER}</span>
             </div>
             {nav.map(([I, l, b], i) => (
-              <div key={l} className="relative mb-0.5 flex h-[34px] items-center gap-3.5 rounded-lg px-[23px] text-[13.5px]">
-                {i === 0 && <span className="absolute left-2 size-[5px] rounded-full" style={{ background: HUSH_RED }} />}
-                <I className="size-[18px]" strokeWidth={1.7} style={{ color: i === 0 ? '#1b1b1b' : '#7c7c7c' }} />
-                <span style={{ color: i === 0 ? '#1b1b1b' : '#7c7c7c' }}>{l}</span>
-                {b && <span className="ml-auto text-[12px] text-[#1b1b1b]">{b}</span>}
+              <div key={l} className={'mb-1 flex h-[44px] items-center gap-3.5 rounded-xl px-3.5 text-[15px] font-medium ' + (i === 0 ? 'bg-black/[0.06] text-[#1b1b1b]' : 'text-[#1b1b1b]/75')}>
+                <I className="size-5" strokeWidth={1.7} />{l}
+                {b && <span className="ml-auto text-[12.5px] font-medium">{b}</span>}
               </div>
             ))}
           </aside>
 
-          {/* the centred column */}
           <main className="min-w-0 flex-1 px-10 pt-9">
-            <div className="text-[22px] leading-[1.3] font-semibold tracking-[-0.02em]">good evening</div>
-            <div className="mt-6 rounded-xl border border-black/[0.07] bg-[#fafafa] px-4 py-3.5">
+            <div className="text-[32px] leading-[1.15] font-bold tracking-[-0.02em]">Home</div>
+            <div className="mt-1 text-[19px] text-[#7c7c7c]">good evening</div>
+            <div className="mt-7 rounded-xl border border-black/[0.07] bg-[#fafafa] px-4 py-3.5">
               <div className="flex items-center gap-2.5 text-[14px] font-medium"><Lock className="size-4 text-[#7c7c7c]" />Set up your account</div>
               <div className="mt-2 text-[13.5px] text-[#7c7c7c]">Unlock chat and more games with an age check.</div>
             </div>
-
-            <div className="mt-7 text-[13px] font-medium text-[#7c7c7c]">recommended for you</div>
+            <div className="mt-8 text-[20px] font-semibold tracking-[-0.01em]">Recommended for you</div>
             {[ROW1, ROW2].map((row, r) => (
-              <div key={r} className="mt-3.5 mb-7 grid grid-cols-4 gap-[20px]">
+              <div key={r} className="mt-4 mb-8 grid grid-cols-4 gap-x-[22px]">
                 {row.map((g) => (
                   <div key={g.name}>
-                    <img src={thumb(g.img)} alt="" className="aspect-video w-full rounded-xl bg-[rgb(27_37_75/0.08)] object-cover" style={soft} />
-                    <div className="mt-2.5 truncate text-[13.5px] font-medium">{g.name}</div>
-                    <div className="mt-1 flex items-center gap-1 text-[12px] font-medium text-[#7c7c7c]"><ThumbsUp className="size-3" />{g.rate}% Rating</div>
+                    <img src={thumb(g.img)} alt="" className="aspect-video w-full rounded-[14px] bg-[rgb(27_37_75/0.08)] object-cover" style={soft} />
+                    <div className="mt-3 truncate text-[15px] font-medium">{g.name}</div>
+                    <div className="mt-1 flex items-center gap-1.5 text-[13px] text-[#7c7c7c]"><ThumbsUp className="size-3.5" />{g.rate}% Rating</div>
                   </div>
                 ))}
               </div>

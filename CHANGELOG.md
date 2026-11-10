@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- **Roblox:** a plainer layout. Normal-case menu and header with a soft pill for the current page, a wide pill search, Home with a quiet greeting under it, sentence-case section titles, bigger tiles. The Robux balance and app download button go; the plain Robux link stays.
+- **YouTube:** three big videos to a row, a 76px rail (home, subscriptions, history), one pill search, pill chips and duration badges, the colour logo back. Each video shows its title and channel only. Create, notifications and voice search go.
+
 ## 0.5.0
 
 - **Hush this:** right-click any element and hide it for good, with undo and a list in the popup to bring things back.

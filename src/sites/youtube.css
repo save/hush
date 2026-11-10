@@ -1079,3 +1079,148 @@ html[data-hush-site="yt"][data-hush-navstyle="icons"] ytd-guide-entry-renderer[a
   opacity: 1 !important;
   color: var(--h-fg) !important;
 }
+
+/* ==========================================================================
+   0.6 layout: three big videos to a row, a slim rail, one pill search.
+   Our background stays. Overrides the rules above.
+   ========================================================================== */
+
+/* masthead: the real logo back, one wide pill search, nothing else shouting */
+html[data-hush-site="yt"] ytd-topbar-logo-renderer :is(#logo-icon, yt-icon),
+html[data-hush-site="yt"]:not([dark]) ytd-topbar-logo-renderer :is(#logo-icon, yt-icon) {
+  filter: none !important;
+  opacity: 1 !important;
+}
+html[data-hush-site="yt"] ytd-masthead :is(#voice-search-button, ytd-notification-topbar-button-renderer),
+html[data-hush-site="yt"] ytd-masthead #end :is(ytd-button-renderer, yt-button-view-model, button-view-model):has([aria-label="Create"], [aria-label*="Create" i]) {
+  display: none !important;
+}
+html[data-hush-site="yt"] ytd-masthead #center { max-width: 650px !important; flex: 1 1 650px !important; }
+html[data-hush-site="yt"] yt-searchbox .ytSearchboxComponentInputBox,
+html[data-hush-site="yt"] #search-form #container {
+  height: 44px !important;
+  border-radius: 999px 0 0 999px !important;
+  border: 1px solid var(--h-line) !important;
+  border-right: 0 !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  padding-left: 22px !important;
+}
+html[data-hush-site="yt"] yt-searchbox .ytSearchboxComponentSearchButton,
+html[data-hush-site="yt"] #search-icon-legacy {
+  height: 44px !important;
+  border-radius: 0 999px 999px 0 !important;
+  border: 1px solid var(--h-line) !important;
+  border-left: 0 !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  width: 60px !important;
+}
+html[data-hush-site="yt"] yt-searchbox input { font-size: 15.5px !important; }
+
+/* the rail: home, subscriptions, history. "both" keeps a small word under each icon */
+html[data-hush-site="yt"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) ytd-app {
+  --app-drawer-width: 76px !important;
+  --ytd-persistent-guide-width: 76px !important;
+}
+html[data-hush-site="yt"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) :is(#guide-content, ytd-guide-renderer, #guide-inner-content, ytd-guide-section-renderer, ytd-guide-section-renderer #items) {
+  width: 76px !important;
+  min-width: 0 !important;
+  border: 0 !important;
+}
+html[data-hush-site="yt"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) ytd-guide-renderer { overflow-x: hidden !important; padding-top: 8px !important; }
+html[data-hush-site="yt"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) :is(
+  ytd-guide-entry-renderer:not(:has(a[href="/"], a[href="/feed/subscriptions"], a[href="/feed/history"])),
+  ytd-guide-collapsible-entry-renderer, ytd-guide-collapsible-section-entry-renderer,
+  ytd-guide-section-renderer #guide-section-title, #footer, ytd-guide-signin-promo-renderer
+) {
+  display: none !important;
+}
+html[data-hush-site="yt"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) ytd-guide-section-renderer { padding: 0 !important; margin: 0 !important; }
+html[data-hush-site="yt"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) ytd-guide-entry-renderer a#endpoint {
+  width: 56px !important;
+  height: 56px !important;
+  margin: 0 auto 6px !important;
+  padding: 0 !important;
+  border-radius: 14px !important;
+  background: none !important;
+  justify-content: center !important;
+  transition: background-color 0.2s ease !important;
+}
+html[data-hush-site="yt"][data-hush-navstyle="icons"] ytd-guide-entry-renderer a#endpoint { height: 48px !important; width: 48px !important; }
+html[data-hush-site="yt"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) ytd-guide-entry-renderer:hover a#endpoint { background: rgba(255, 255, 255, 0.05) !important; }
+html[data-hush-site="yt"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) ytd-guide-entry-renderer[active] a#endpoint { background: rgba(255, 255, 255, 0.09) !important; }
+html[data-hush-site="yt"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) ytd-guide-entry-renderer tp-yt-paper-item {
+  width: 100% !important;
+  padding: 0 !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 4px !important;
+}
+html[data-hush-site="yt"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) ytd-guide-entry-renderer :is(yt-icon.guide-icon, .guide-icon) {
+  margin: 0 !important;
+  width: 22px !important;
+  height: 22px !important;
+  opacity: 0.9;
+}
+html[data-hush-site="yt"][data-hush-navstyle="both"] ytd-guide-entry-renderer :is(.title, yt-formatted-string) {
+  display: block !important;
+  opacity: 1 !important;
+  transform: none !important;
+  font-size: 10.5px !important;
+  text-transform: none !important;
+  max-width: 64px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+html[data-hush-site="yt"][data-hush-navstyle="icons"] ytd-guide-entry-renderer :is(.title, yt-formatted-string) { display: none !important; }
+
+/* chips: pills */
+html[data-hush-site="yt"] yt-chip-cloud-chip-renderer :is(.ytChipShapeChip, button) {
+  height: 38px !important;
+  padding: 0 18px !important;
+  border-radius: 999px !important;
+  font-size: 14.5px !important;
+  font-weight: 500 !important;
+}
+html[data-hush-site="yt"] yt-chip-cloud-chip-renderer { margin-right: 10px !important; }
+html[data-hush-site="yt"] .hush-chip-pill { border-radius: 999px !important; }
+
+/* home: no greeting, the chips lead */
+html[data-hush-site="yt"] .hush-greet { display: none !important; }
+
+/* the grid: three big videos to a row, lots of air */
+html[data-hush-site="yt"] ytd-browse ytd-rich-grid-renderer {
+  --ytd-rich-grid-items-per-row: 3 !important;
+  --ytd-rich-grid-item-margin: 34px !important;
+  max-width: 1500px !important;
+}
+@media (max-width: 860px) {
+  html[data-hush-site="yt"] ytd-browse ytd-rich-grid-renderer { --ytd-rich-grid-items-per-row: 2 !important; }
+}
+html[data-hush-site="yt"] ytd-browse ytd-rich-item-renderer { margin-bottom: 40px !important; }
+html[data-hush-site="yt"] :is(ytd-thumbnail, yt-thumbnail-view-model, .ytThumbnailViewModelImage, ytd-thumbnail #thumbnail, .yt-lockup-view-model-wiz__content-image) {
+  border-radius: 16px !important;
+}
+html[data-hush-site="yt"] :is(ytd-thumbnail-overlay-time-status-renderer, yt-thumbnail-badge-view-model) :is(.badge-shape, badge-shape, .yt-badge-shape, .ytBadgeShapeBadge, .yt-thumbnail-overlay-badge-view-model) {
+  border-radius: 999px !important;
+  padding: 3px 9px !important;
+  font-size: 12.5px !important;
+  background: rgba(10, 10, 10, 0.72) !important;
+  color: #fff !important;
+}
+html[data-hush-site="yt"] :is(ytd-thumbnail-overlay-time-status-renderer, yt-thumbnail-badge-view-model) { margin: 10px !important; }
+/* title on one line, the channel under it; views and dates go */
+html[data-hush-site="yt"] ytd-browse :is(ytd-rich-grid-media #video-title, yt-lockup-view-model :is(.yt-lockup-metadata-view-model__title, .yt-lockup-metadata-view-model-wiz__title, .ytLockupMetadataViewModelTitle)) {
+  font-size: 16px !important;
+  line-height: 1.35 !important;
+  font-weight: 500 !important;
+  -webkit-line-clamp: 1 !important;
+  line-clamp: 1;
+}
+html[data-hush-site="yt"] ytd-browse yt-lockup-view-model :is(.yt-content-metadata-view-model__metadata-row, .ytContentMetadataViewModelMetadataRow):nth-child(n + 2),
+html[data-hush-site="yt"] ytd-browse ytd-rich-grid-media #metadata-line {
+  display: none !important;
+}
+html[data-hush-site="yt"] ytd-browse :is(yt-lockup-view-model .yt-content-metadata-view-model, ytd-rich-grid-media ytd-channel-name) :is(span, a, yt-formatted-string) {
+  font-size: 14px !important;
+}
