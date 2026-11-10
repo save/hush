@@ -103,7 +103,8 @@
     if (href && href.length < 200 && !href.startsWith('javascript:') && href !== '#') {
       const a = `a[href="${href.replace(/["\\]/g, '\\$&')}"]`;
       const sel = link === el ? a : `${piece(el)}:has(${a})`;
-      try { if (document.querySelectorAll(sel).length === 1) return sel; } catch { /* fall through */ }
+      // the same game or post can show up in two rows: hush it everywhere it appears
+      try { if (document.querySelectorAll(sel).length >= 1) return sel; } catch { /* fall through */ }
     }
     const parts = [];
     let e = el;

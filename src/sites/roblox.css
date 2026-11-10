@@ -1315,7 +1315,7 @@ html[data-hush-site="rbx"] #navigation-container .nav-menu-title {
 }
 html[data-hush-site="rbx"] #navigation-container .nav-menu-title:hover { opacity: 1; }
 html[data-hush-site="rbx"] #navigation-robux-container a { color: var(--h-fg) !important; }
-html[data-hush-site="rbx"] #navigation-container :is(#navbar-robux, .download-app-nav-item) { display: none !important; }
+html[data-hush-site="rbx"] #navigation-container .download-app-nav-item { display: none !important; }
 html[data-hush-site="rbx"] [data-testid="navigation-search-input"],
 html[data-hush-site="rbx"] [data-testid="navigation-search-input"] :is(.input-group, .form-control) {
   border-radius: 999px !important;

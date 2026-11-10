@@ -1224,3 +1224,113 @@ html[data-hush-site="yt"] ytd-browse ytd-rich-grid-media #metadata-line {
 html[data-hush-site="yt"] ytd-browse :is(yt-lockup-view-model .yt-content-metadata-view-model, ytd-rich-grid-media ytd-channel-name) :is(span, a, yt-formatted-string) {
   font-size: 14px !important;
 }
+
+/* ---- chips, properly: every chip is a pill; the selected one is filled ---- */
+html[data-hush-site="yt"] .hush-chip-pill { display: none !important; }
+html[data-hush-site="yt"] yt-chip-cloud-chip-renderer {
+  margin: 0 8px 0 0 !important;
+  height: auto !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+html[data-hush-site="yt"] yt-chip-cloud-chip-renderer chip-shape button,
+html[data-hush-site="yt"] yt-chip-cloud-chip-renderer button.ytChipShapeButtonReset {
+  height: auto !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+html[data-hush-site="yt"] yt-chip-cloud-chip-renderer :is(.ytChipShapeChip, #chip-container) {
+  display: flex !important;
+  align-items: center !important;
+  height: 36px !important;
+  padding: 0 16px !important;
+  border-radius: 999px !important;
+  background: color-mix(in srgb, var(--h-fg) 8%, transparent) !important;
+  color: var(--h-fg) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  transition: background-color 0.2s ease, color 0.2s ease !important;
+}
+html[data-hush-site="yt"] yt-chip-cloud-chip-renderer :is(.ytChipShapeChip, #chip-container) * {
+  color: inherit !important;
+  background: transparent !important;
+  font: inherit !important;
+  text-transform: none !important;
+}
+html[data-hush-site="yt"] yt-chip-cloud-chip-renderer:hover :is(.ytChipShapeChip, #chip-container) {
+  background: color-mix(in srgb, var(--h-fg) 13%, transparent) !important;
+}
+html[data-hush-site="yt"] yt-chip-cloud-chip-renderer:is([selected], :has([aria-selected="true"])) :is(.ytChipShapeChip, #chip-container) {
+  background: var(--h-fg) !important;
+  color: var(--yt-sys-color-baseline--base-background, #0a0a0a) !important;
+}
+html[data-hush-site="yt"] #chips-wrapper { padding-top: 6px !important; padding-bottom: 6px !important; }
+
+/* ---- the compact sidebar YouTube shows in narrower windows: same rail ---- */
+html[data-hush-site="yt"] ytd-mini-guide-renderer { width: 76px !important; padding-top: 8px !important; }
+html[data-hush-site="yt"] ytd-mini-guide-entry-renderer {
+  width: 60px !important;
+  height: auto !important;
+  margin: 0 auto 6px !important;
+  padding: 0 !important;
+  border-radius: 14px !important;
+  background: transparent !important;
+  transition: background-color 0.2s ease !important;
+}
+html[data-hush-site="yt"] ytd-mini-guide-entry-renderer a#endpoint {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  height: 60px !important;
+  padding: 0 !important;
+  border-radius: 14px !important;
+}
+html[data-hush-site="yt"] ytd-mini-guide-entry-renderer :is(yt-icon, .guide-icon) {
+  display: inline-flex !important;
+  width: 22px !important;
+  height: 22px !important;
+  margin: 0 !important;
+  opacity: 0.9;
+  color: var(--h-fg) !important;
+}
+html[data-hush-site="yt"] ytd-mini-guide-entry-renderer .title {
+  max-width: 60px !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  font-size: 10.5px !important;
+  line-height: 1.2 !important;
+  text-transform: none !important;
+  color: var(--h-dim) !important;
+}
+html[data-hush-site="yt"] ytd-mini-guide-entry-renderer:hover { background: color-mix(in srgb, var(--h-fg) 5%, transparent) !important; }
+html[data-hush-site="yt"] ytd-mini-guide-entry-renderer:is([aria-selected="true"], [active]) { background: color-mix(in srgb, var(--h-fg) 9%, transparent) !important; }
+html[data-hush-site="yt"] ytd-mini-guide-entry-renderer:is([aria-selected="true"], [active], :hover) .title { color: var(--h-fg) !important; }
+html[data-hush-site="yt"][data-hush-navstyle="icons"] ytd-mini-guide-entry-renderer .title { display: none !important; }
+html[data-hush-site="yt"][data-hush-navstyle="icons"] ytd-mini-guide-entry-renderer a#endpoint { height: 48px !important; }
+html[data-hush-site="yt"][data-hush-navstyle="words"] ytd-mini-guide-entry-renderer :is(yt-icon, .guide-icon) { display: none !important; }
+html[data-hush-site="yt"][data-hush-navstyle="words"] ytd-mini-guide-entry-renderer a#endpoint { height: 40px !important; }
+
+/* YouTube's newer chip bar (chip-bar-view-model > chip-view-model) gets the same pills */
+html[data-hush-site="yt"] chip-view-model { margin-right: 8px !important; }
+html[data-hush-site="yt"] chip-view-model .ytChipShapeChip {
+  height: 36px !important;
+  padding: 0 16px !important;
+  border-radius: 999px !important;
+  background: color-mix(in srgb, var(--h-fg) 8%, transparent) !important;
+  color: var(--h-fg) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  transition: background-color 0.2s ease, color 0.2s ease !important;
+}
+html[data-hush-site="yt"] chip-view-model .ytChipShapeChip * { color: inherit !important; font: inherit !important; text-transform: none !important; }
+html[data-hush-site="yt"] chip-view-model:hover .ytChipShapeChip { background: color-mix(in srgb, var(--h-fg) 13%, transparent) !important; }
+html[data-hush-site="yt"] :is(chip-view-model, yt-chip-cloud-chip-renderer) .ytChipShapeChip.ytChipShapeActive {
+  background: var(--h-fg) !important;
+  color: var(--yt-sys-color-baseline--base-background, #0a0a0a) !important;
+}

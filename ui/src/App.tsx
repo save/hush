@@ -25,7 +25,9 @@ type Tab = { id?: number; url?: string; host: string; hostname: string };
 function useActiveTab(): Tab | null {
   const [tab, setTab] = React.useState<Tab | null>(null);
   React.useEffect(() => {
-    chrome.tabs.query({ active: true, currentWindow: true }).then(([t]) => {
+    const wanted = Number(new URLSearchParams(location.search).get('tab'));
+    const find = wanted ? chrome.tabs.get(wanted).then((t) => [t]) : chrome.tabs.query({ active: true, currentWindow: true });
+    find.then(([t]) => {
       try {
         const url = new URL(t?.url ?? '');
         const ok = url.protocol.startsWith('http');
@@ -282,7 +284,7 @@ export function App() {
         </div>
 
         {/* settings */}
-        <Tabs defaultValue={adapter ? 'site' : 'everywhere'} className="mt-3 px-4">
+        <Tabs defaultValue={new URLSearchParams(location.search).get('view') === 'week' ? 'week' : adapter ? 'site' : 'everywhere'} className="mt-3 px-4">
           <TabsList className="w-full">
             <TabsTrigger value="site" disabled={!adapter}>
               <Globe />

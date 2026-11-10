@@ -9,6 +9,7 @@ const NAMES = [
   'rotate-cw', 'keyboard', 'heart', 'history', 'clock', 'thumbs-up', 'list-video', 'circle-user', 'power',
   'wind', 'droplet', 'sliders-horizontal', 'eye-off', 'panel-left', 'focus', 'shopping-bag', 'chart-column',
   'users', 'shirt', 'package', 'repeat', 'globe', 'image', 'message-square-off', 'arrow-right', 'sparkles',
+  'eye', 'undo-2', 'mouse-pointer-click', 'palette',
 ];
 const dir = path.resolve('node_modules/lucide-react/dist/esm/icons');
 const out = {};

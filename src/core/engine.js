@@ -71,6 +71,13 @@
     H.picker.start(t, pickDone);
   }
 
+  const VIBRANCE = [50, 70, 90, 100];
+  const nearestVibrance = () => {
+    const v = Number.isFinite(+settings.vibrance) ? +settings.vibrance : 90;
+    return VIBRANCE.reduce((a, b) => (Math.abs(b - v) < Math.abs(a - v) ? b : a));
+  };
+  const send = (type, view) => { try { chrome.runtime.sendMessage({ type, view }); } catch { /* extension reloaded */ } };
+
   let applied = false;
   let lastSig = '';
 
@@ -212,7 +219,18 @@
         },
         { group: 'hush', label: 'still motion', icon: 'wind', keywords: 'animation autoplay video', active: !!settings.motion, run: () => H.save({ motion: !settings.motion }) },
         { group: 'hush', label: 'mute color', icon: 'droplet', keywords: 'grayscale saturation images', active: !!settings.color, run: () => H.save({ color: !settings.color }) },
-        { group: 'hush', label: 'hush something on this page', icon: 'eye-off', keywords: 'hide element remove picker block this', toast: false, run: () => setTimeout(() => pick(false), 180) }
+        { group: 'hush', label: 'hush something on this page', icon: 'mouse-pointer-click', keywords: 'hide element remove picker block this', toast: false, run: () => setTimeout(() => pick(false), 180) },
+        {
+          group: 'hush', label: 'image colour', icon: 'palette', keywords: 'saturation vibrance color slider soft thumbnails',
+          choices: VIBRANCE.map((v) => v + '%'), value: nearestVibrance() + '%', toast: false,
+          run: () => {
+            const next = VIBRANCE[(VIBRANCE.indexOf(nearestVibrance()) + 1) % VIBRANCE.length];
+            settings = { ...settings, vibrance: next };
+            setVibrance(next);
+            H.save({ vibrance: next });
+          }
+        },
+        { group: 'hush', label: 'hush everywhere', icon: 'globe', keywords: 'master all sites global off', active: !!settings.enabled, run: () => H.save({ enabled: !settings.enabled }) }
       ];
       if (adapter) {
         const opts = H.siteOptions(settings, adapter);
@@ -235,6 +253,44 @@
           }
         }
       }
+      return cmds;
+    });
+    // what you've hushed here, each one a click from coming back
+    H.palette.addProvider(() => {
+      const list = rulesHere();
+      const cmds = list.map((r) => ({
+        group: 'hidden on this site', label: `show “${r.l}” again`, icon: 'eye', toast: false,
+        keywords: 'unhide restore bring back hidden undo', run: () => { removeRule(r); H.toast('back on the page', true); }
+      }));
+      if (list.length > 1) {
+        cmds.push({
+          group: 'hidden on this site', label: `show everything I hid here (${list.length})`, icon: 'undo-2', toast: false,
+          keywords: 'unhide restore all reset', run: () => { for (const r of [...list]) removeRule(r); H.toast('all back on the page', true); }
+        });
+      }
+      return cmds;
+    });
+    // the quiet report, and the way out to full settings
+    H.palette.addProvider(async () => {
+      const cmds = [];
+      try {
+        const { quiet = {} } = await chrome.storage.local.get('quiet');
+        const days = Array.from({ length: 7 }, (_, i) => {
+          const k = new Date(Date.now() - (6 - i) * 864e5).toLocaleDateString('en-CA');
+          return Object.values(quiet[k] || {}).reduce((a, b) => a + b, 0);
+        });
+        const total = days.reduce((a, b) => a + b, 0);
+        const max = Math.max(1, ...days);
+        const spark = days.map((n) => '▁▂▃▄▅▆▇█'[Math.min(7, Math.round((n / max) * 7))]).join('');
+        cmds.push({
+          group: 'this week', label: `${total.toLocaleString()} kept off your screen  ${spark}`, icon: 'chart-column', toast: false,
+          keywords: 'week report quiet stats hidden count', run: () => send('hush:options', 'week')
+        });
+      } catch { /* no storage: skip the report */ }
+      cmds.push(
+        { group: 'this week', label: 'all settings', icon: 'settings', toast: false, keywords: 'options preferences popup more', run: () => send('hush:options') },
+        { group: 'this week', label: 'support hush', icon: 'heart', toast: false, keywords: 'donate tip sponsor', run: () => send('hush:support') }
+      );
       return cmds;
     });
     // adapters may define commands up front or attach them during setup()
@@ -276,6 +332,7 @@
   if (chrome.runtime && chrome.runtime.onMessage) {
     chrome.runtime.onMessage.addListener((msg, _sender, reply) => {
       if (msg && msg.type === 'hush:pick') { pick(true); return; }
+      if (msg && msg.type === 'hush:palette') { if (H.palette) H.palette.toggle(); return; }
       if (!msg || msg.type !== 'hush:stats') return;
       reply({
         on,

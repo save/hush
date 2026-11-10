@@ -31,11 +31,11 @@ A free, open-source browser extension that strips the promos, badges and noise f
 ## Features
 
 - **Tailored for X, YouTube and Roblox.** Each site has its own adapter that removes upsells, ads, Shorts, trends and promoted posts, and rebuilds the page as one calm column.
-- **Hush anything.** Right-click any element on any site and choose **hush this**. It stays hidden, and you can bring it back from the popup.
+- **Hush anything.** Right-click any element on any site and choose **hush this**. It stays hidden until you bring it back from `Ctrl K` or settings.
 - **A weekly quiet report.** See how much hush kept off your screen this week, by day and by site. Counted on your device only.
 - **Still motion.** Nothing autoplays. Video plays when you press play.
 - **Soft colour.** Thumbnails stop shouting until you point at them. One slider sets how much.
-- **`Ctrl K` everywhere.** A command palette for every switch, plus keyboard shortcuts the sites forgot.
+- **`Ctrl K` everywhere.** Every switch, your weekly report and everything you've hidden, one keystroke away. The toolbar button opens it too.
 - **Your menu, your way.** Sidebars as words, icons, or both.
 - **Fast.** Throttled observers, no frameworks injected into pages. X scrolls at 160+ fps with hush on.
 
