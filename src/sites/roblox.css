@@ -1,0 +1,1299 @@
+/* ==========================================================================
+   hush — Roblox adapter
+   Scoped to html[data-hush-site="rbx"]. Roblox's foundation UI is themed with
+   --color-* tokens on <body>, so remapping those calms most pages; legacy
+   pages (messages, friends, game details) get a few direct rules.
+   Page flags (roblox.js): data-hush-path = home | game | charts | catalog |
+   messages | avatar | friends | profile | communities | settings | other
+   ========================================================================== */
+
+html[data-hush-site="rbx"] {
+  --h-fg: #1b1b1b;
+  --h-dim: #7c7c7c;
+  --h-faint: #b3b3b3;
+  --h-line: rgba(0, 0, 0, 0.07);
+  --h-hover: rgba(0, 0, 0, 0.035);
+  --h-field: rgba(0, 0, 0, 0.04);
+  --h-bg: #ffffff;
+  --h-accent: #ff4b4b;
+  --h-font: "Inter", "Geist", "SF Pro Text", -apple-system, "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+}
+html[data-hush-site="rbx"][data-hush-theme="dark"] {
+  --h-fg: #e4e4e4;
+  --h-dim: #8b8b8b;
+  --h-faint: #555;
+  --h-line: rgba(255, 255, 255, 0.07);
+  --h-hover: rgba(255, 255, 255, 0.04);
+  --h-field: rgba(255, 255, 255, 0.045);
+  --h-bg: #0a0a0a;
+}
+
+/* ---------- tokens ------------------------------------------------------------ */
+
+html[data-hush-site="rbx"] body.light-theme,
+html[data-hush-site="rbx"] body:not(.dark-theme) {
+  --color-surface-0: #ffffff !important;
+  --color-surface-100: #fafafa !important;
+  --color-surface-200: #ffffff !important;
+  --color-surface-300: #f5f5f5 !important;
+  --color-content-emphasis: #1b1b1b !important;
+  --color-content-default: #4d4d4d !important;
+  --color-content-muted: #8a8a8a !important;
+  --color-content-link: #1b1b1b !important;
+  --color-stroke-default: rgba(0, 0, 0, 0.08) !important;
+  --color-stroke-muted: rgba(0, 0, 0, 0.05) !important;
+  --color-stroke-emphasis: rgba(0, 0, 0, 0.12) !important;
+  --color-shift-100: rgba(0, 0, 0, 0.025) !important;
+  --color-shift-200: rgba(0, 0, 0, 0.04) !important;
+  --color-shift-300: rgba(0, 0, 0, 0.06) !important;
+  --color-shift-400: rgba(0, 0, 0, 0.08) !important;
+  --color-state-hover: rgba(0, 0, 0, 0.035) !important;
+  --color-state-press: rgba(0, 0, 0, 0.06) !important;
+  --color-action-emphasis-background: #1b1b1b !important;
+  --color-action-emphasis-foreground: #fafafa !important;
+  --color-action-soft-emphasis-background: rgba(0, 0, 0, 0.05) !important;
+  --color-action-soft-emphasis-foreground: #1b1b1b !important;
+  --color-action-standard-background: rgba(0, 0, 0, 0.05) !important;
+  --color-action-standard-foreground: #1b1b1b !important;
+  --color-action-sub-emphasis-background: rgba(0, 0, 0, 0.05) !important;
+  --color-action-sub-emphasis-foreground: #1b1b1b !important;
+  --color-system-emphasis: #1b1b1b !important;
+  --color-navigation-background: rgba(0, 0, 0, 0.04) !important;
+  --color-common-backdrop: rgba(250, 250, 250, 0.55) !important;
+  --color-common-scrim: rgba(250, 250, 250, 0.55) !important;
+}
+html[data-hush-site="rbx"] body.dark-theme {
+  --color-surface-0: #0a0a0a !important;
+  --color-surface-100: #101010 !important;
+  --color-surface-200: #131313 !important;
+  --color-surface-300: #171717 !important;
+  --color-content-emphasis: #e4e4e4 !important;
+  --color-content-default: #b8b8b8 !important;
+  --color-content-muted: #7d7d7d !important;
+  --color-content-link: #e4e4e4 !important;
+  --color-stroke-default: rgba(255, 255, 255, 0.08) !important;
+  --color-stroke-muted: rgba(255, 255, 255, 0.05) !important;
+  --color-stroke-emphasis: rgba(255, 255, 255, 0.12) !important;
+  --color-shift-100: rgba(255, 255, 255, 0.025) !important;
+  --color-shift-200: rgba(255, 255, 255, 0.04) !important;
+  --color-shift-300: rgba(255, 255, 255, 0.06) !important;
+  --color-shift-400: rgba(255, 255, 255, 0.08) !important;
+  --color-state-hover: rgba(255, 255, 255, 0.04) !important;
+  --color-state-press: rgba(255, 255, 255, 0.07) !important;
+  --color-action-emphasis-background: #e4e4e4 !important;
+  --color-action-emphasis-foreground: #0a0a0a !important;
+  --color-action-soft-emphasis-background: rgba(255, 255, 255, 0.07) !important;
+  --color-action-soft-emphasis-foreground: #e4e4e4 !important;
+  --color-action-standard-background: rgba(255, 255, 255, 0.07) !important;
+  --color-action-standard-foreground: #e4e4e4 !important;
+  --color-action-sub-emphasis-background: rgba(255, 255, 255, 0.07) !important;
+  --color-action-sub-emphasis-foreground: #e4e4e4 !important;
+  --color-system-emphasis: #e4e4e4 !important;
+  --color-navigation-background: rgba(255, 255, 255, 0.05) !important;
+  --color-common-backdrop: rgba(0, 0, 0, 0.6) !important;
+  --color-common-scrim: rgba(0, 0, 0, 0.6) !important;
+}
+
+/* ---------- type --------------------------------------------------------------- */
+
+html[data-hush-site="rbx"] body,
+html[data-hush-site="rbx"] body :is(.builder-font, h1, h2, h3, h4, p, a, button, input, textarea, span, div, li) {
+  font-family: var(--h-font) !important;
+  letter-spacing: -0.003em;
+}
+html[data-hush-site="rbx"] body {
+  background: var(--h-bg) !important;
+}
+
+/* ---------- noise we never want ------------------------------------------------- */
+
+html[data-hush-site="rbx"] :is(
+  [data-hush-hide],
+  #footer-container,
+  #game-details-edp-upsell-container,
+  #access-management-upsell-container > *,
+  .abp,
+  .ad-slot,
+  [id*="Skyscraper"],
+  iframe.ads-iframe,
+  .game-card-native-ad,
+  #left-navigation-container .text-label-small:is([class*="badge"]):not(:has(> *)):empty
+) {
+  display: none !important;
+}
+/* feed tiles beyond the calm limit (and the sentinel that would load more) */
+html[data-hush-site="rbx"] [data-hush-cap],
+html[data-hush-site="rbx"] [data-hush-capped] [data-testid="sentinel-tile"] {
+  display: none !important;
+}
+/* chat bar (option) */
+html[data-hush-site="rbx"][data-hush-nochat] #chat-container {
+  display: none !important;
+}
+/* game page recommendations (option) */
+html[data-hush-site="rbx"][data-hush-norecs] .container-list.games-detail,
+html[data-hush-site="rbx"][data-hush-norecs][data-hush-path="game"] [data-testid="game-carousel"] {
+  display: none !important;
+}
+
+/* ---------- header ---------------------------------------------------------------- */
+
+html[data-hush-site="rbx"] #navigation-container,
+html[data-hush-site="rbx"] #navigation-container .rbx-header,
+html[data-hush-site="rbx"] #header {
+  background: var(--h-bg) !important;
+  box-shadow: none !important;
+  border-bottom: 1px solid var(--h-line) !important;
+}
+html[data-hush-site="rbx"] #nav-logo-link {
+  opacity: 0.85;
+  transition: opacity 0.2s ease !important;
+}
+html[data-hush-site="rbx"] #nav-logo-link:hover { opacity: 1; }
+html[data-hush-site="rbx"] #navigation-container .nav-menu-title {
+  font-size: 13.5px !important;
+  font-weight: 400 !important;
+  color: var(--h-dim) !important;
+  text-transform: lowercase;
+  transition: color 0.16s ease !important;
+}
+html[data-hush-site="rbx"] #navigation-container .nav-menu-title:hover {
+  color: var(--h-fg) !important;
+}
+html[data-hush-site="rbx"][data-hush-path="charts"] #navigation-container :is(#nav-charts-md-link, #nav-charts-sm-link),
+html[data-hush-site="rbx"][data-hush-path="catalog"] #navigation-container :is(#nav-marketplace-md-link, #nav-marketplace-sm-link) {
+  color: var(--h-fg) !important;
+}
+/* search: one flat field */
+html[data-hush-site="rbx"] [data-testid="navigation-search-input"] :is(.input-group, .form-control, input),
+html[data-hush-site="rbx"] [data-testid="navigation-search-input"] {
+  background: var(--h-field) !important;
+  border-color: transparent !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+html[data-hush-site="rbx"] [data-testid="navigation-search-input-field"] {
+  font-size: 13.5px !important;
+  background: transparent !important;
+}
+html[data-hush-site="rbx"] [data-testid="navigation-search-input"]:focus-within {
+  box-shadow: inset 0 0 0 1px rgba(127, 127, 127, 0.3) !important;
+}
+/* right side: quiet icons, small red count */
+html[data-hush-site="rbx"] #navigation-container :is(.btn-uiblox-common-common-notification-bell-md, .btn-navigation-nav-robux-md, .btn-navigation-nav-settings-md) {
+  opacity: 0.7;
+  transition: opacity 0.16s ease !important;
+}
+html[data-hush-site="rbx"] #navigation-container :is(.btn-uiblox-common-common-notification-bell-md, .btn-navigation-nav-robux-md, .btn-navigation-nav-settings-md):hover {
+  opacity: 1;
+}
+html[data-hush-site="rbx"] #navigation-container :is(.notification-red, .nav-robux-amount + .notification-red, [class*="notification-count"]) {
+  background: var(--h-accent) !important;
+  font-size: 10px !important;
+}
+
+/* ---------- left nav --------------------------------------------------------------- */
+
+html[data-hush-site="rbx"] #left-navigation-container .left-nav {
+  background: var(--h-bg) !important;
+  border-right: 1px solid var(--h-line) !important;
+  box-shadow: none !important;
+}
+html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav] {
+  position: relative;
+  min-height: 0 !important;
+  padding: 7px 12px 7px 22px !important;
+  border-radius: 8px !important;
+  background: radial-gradient(circle, var(--h-accent) 0 2px, transparent 2.6px) no-repeat 9px 50% / 0 0 !important;
+  font-size: 13.5px !important;
+  font-weight: 400 !important;
+  color: var(--h-dim) !important;
+  transition: color 0.16s ease, background-size 0.35s var(--hush-ease-pop) !important;
+}
+html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav]:is(:hover, :focus-visible),
+html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav][data-hush-active] {
+  color: var(--h-fg) !important;
+  outline: none;
+}
+html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav][data-hush-active] {
+  background-size: 6px 6px !important;
+}
+/* Roblox's own hover/selected fill goes; the dot carries "you are here" */
+html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav] > [data-testid="foundation-web-state-layer"] {
+  display: none !important;
+}
+html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav] > span:not(.hush-keys) {
+  transition: transform 0.28s var(--hush-ease) !important;
+}
+html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav]:is(:hover, :focus-visible) > .text-truncate-end {
+  transform: translateX(3px);
+}
+html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav] .text-truncate-end {
+  text-transform: lowercase;
+  display: inline-block;
+}
+/* unread badge: a plain number */
+html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav] .foundation-web-badge,
+html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav] .foundation-web-badge * {
+  background: transparent !important;
+  color: var(--h-fg) !important;
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  font-variant-numeric: tabular-nums;
+  transition: opacity 0.16s ease !important;
+}
+/* key caps on hover (count gives way) */
+html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav] .hush-keys {
+  position: absolute;
+  right: 12px;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.18s ease, transform 0.3s var(--hush-ease) !important;
+}
+html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav]:is(:hover, :focus-visible) .hush-keys {
+  opacity: 1;
+  transform: none;
+}
+html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav]:has(.hush-keys):is(:hover, :focus-visible) .foundation-web-badge {
+  opacity: 0;
+}
+/* the account row: avatar + name, no age-check label */
+html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav="me"] :is(.foundation-web-badge, [class*="badge"]) {
+  display: none !important;
+}
+html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav="me"] {
+  color: var(--h-fg) !important;
+  font-weight: 500 !important;
+}
+
+/* menu style: words (default) hides the icon column */
+html[data-hush-site="rbx"]:not([data-hush-navstyle="icons"]):not([data-hush-navstyle="both"]) #left-navigation-container a[data-hush-nav]:not([data-hush-nav="me"]) > span.size-1000 {
+  display: none !important;
+}
+html[data-hush-site="rbx"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) #left-navigation-container a[data-hush-nav]:not([data-hush-nav="me"]) > span.size-1000 {
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 0 !important;
+  opacity: 0.7;
+  transition: opacity 0.16s ease !important;
+}
+html[data-hush-site="rbx"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) #left-navigation-container a[data-hush-nav]:not([data-hush-nav="me"]) > span.size-1000 .icon {
+  width: 18px !important;
+  height: 18px !important;
+}
+html[data-hush-site="rbx"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) #left-navigation-container a[data-hush-nav]:not([data-hush-nav="me"]) {
+  gap: 12px !important;
+}
+html[data-hush-site="rbx"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) #left-navigation-container a[data-hush-nav]:is(:hover, [data-hush-active]) > span.size-1000 {
+  opacity: 1;
+}
+/* icons: the word slides out on hover */
+html[data-hush-site="rbx"][data-hush-navstyle="icons"] #left-navigation-container a[data-hush-nav]:not([data-hush-nav="me"]) > .text-truncate-end {
+  opacity: 0;
+  transform: translateX(-6px) !important;
+  transition: opacity 0.18s ease, transform 0.3s var(--hush-ease) !important;
+}
+html[data-hush-site="rbx"][data-hush-navstyle="icons"] #left-navigation-container a[data-hush-nav]:is(:hover, :focus-visible, [data-hush-active]) > .text-truncate-end {
+  opacity: 1;
+  transform: none !important;
+}
+
+/* focus mode (z): no left nav, content centred */
+html[data-hush-site="rbx"][data-hush-zen] #left-navigation-container {
+  display: none !important;
+}
+html[data-hush-site="rbx"][data-hush-zen] #wrap,
+html[data-hush-site="rbx"][data-hush-zen] .content {
+  margin-left: auto !important;
+  padding-left: 0 !important;
+}
+html[data-hush-site="rbx"][data-hush-zen] #wrap.left-nav-new-width {
+  margin-left: 0 !important;
+}
+
+/* ---------- sections & tiles ---------------------------------------------------------- */
+
+/* page titles */
+html[data-hush-site="rbx"] :is(.content, #wrap) > :is(.section, div) > h1,
+html[data-hush-site="rbx"] .container-header h1,
+html[data-hush-site="rbx"] .section h1 {
+  font-size: 22px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.015em;
+}
+/* section headers ("recommended for you"): small, lowercase, quiet */
+html[data-hush-site="rbx"] [data-testid="section-header"] :is(h2, h3, [data-testid="text-icon-row-text"]) {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--h-dim) !important;
+  text-transform: lowercase;
+  letter-spacing: 0.01em;
+}
+html[data-hush-site="rbx"] [data-testid="section-header"] :is(p, .text-secondary, [class*="subtitle"]) {
+  font-size: 12px !important;
+  color: var(--h-faint) !important;
+}
+html[data-hush-site="rbx"] [data-testid="section-header"] [data-testid="icon-component"] {
+  opacity: 0.4;
+}
+/* tiles: soft corners, quiet metadata, a little lift on hover */
+html[data-hush-site="rbx"] :is(.thumbnail-2d-container, .game-card-thumb-container, .featured-game-icon-container, .item-card-thumb-container) {
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+html[data-hush-site="rbx"] :is(.thumbnail-2d-container, .item-card-thumb-container) img {
+  transition: transform 0.5s var(--hush-ease) !important;
+}
+html[data-hush-site="rbx"] :is([data-testid="game-tile"], [data-testid="wide-game-tile"], .item-card-container):hover :is(.thumbnail-2d-container, .item-card-thumb-container) img {
+  transform: scale(1.02);
+}
+html[data-hush-site="rbx"] :is([data-testid="game-tile-game-title"], .game-card-name, .item-card-name, .item-card-name-link) {
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  color: var(--h-fg) !important;
+}
+html[data-hush-site="rbx"] :is([data-testid="game-tile-stats"], [data-testid="game-tile-stats-rating"], .game-card-info, .wide-game-tile-metadata, .item-card-secondary-info, .item-card-creator) :is(span, div, a) {
+  font-size: 12px !important;
+  color: var(--h-dim) !important;
+}
+html[data-hush-site="rbx"] :is([data-testid="game-tile-stats"], .game-card-info) :is(.icon-votes-gray, .icon-playing-counts-gray, [class*="icon-"]) {
+  opacity: 0.55;
+}
+html[data-hush-site="rbx"] .item-card-price {
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  color: var(--h-fg) !important;
+}
+/* "New!" / "Updated" / promo ribbons on thumbnails */
+html[data-hush-site="rbx"] :is(.thumbnail-2d-container, .game-card-thumb-container, .featured-game-icon-container, .item-card-thumb-container) :is([class*="badge"], [class*="ribbon"], [class*="Pill"], [class*="pill"], .game-card-overlay-pill, [data-testid*="badge"]) {
+  display: none !important;
+}
+/* carousel arrows: faint until the row is hovered */
+html[data-hush-site="rbx"] [data-testid="game-carousel"] :is(.scroller, [class*="scroll-arrow"], button[class*="arrow"]) {
+  opacity: 0;
+  transition: opacity 0.2s ease !important;
+}
+html[data-hush-site="rbx"] :is(.game-sort-carousel-wrapper, [data-testid="game-carousel"]):hover :is(.scroller, [class*="scroll-arrow"], button[class*="arrow"]) {
+  opacity: 0.8;
+}
+html[data-hush-site="rbx"] [data-testid="game-carousel-scroll-bar"] {
+  opacity: 0.3;
+}
+
+
+/* ---------- game page ------------------------------------------------------------------ */
+
+html[data-hush-site="rbx"] .game-calls-to-action .game-name,
+html[data-hush-site="rbx"] .game-calls-to-action h1 {
+  font-size: 24px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em;
+}
+html[data-hush-site="rbx"] [data-testid="play-button"] {
+  border-radius: 12px !important;
+  transition: transform 0.2s var(--hush-ease), opacity 0.2s ease !important;
+}
+html[data-hush-site="rbx"] [data-testid="play-button"]:hover {
+  transform: translateY(-1px);
+}
+html[data-hush-site="rbx"] [data-testid="play-button"]:active {
+  transform: scale(0.985);
+}
+html[data-hush-site="rbx"] .game-calls-to-action :is(#toggle-game-favorite, #toggle-game-follow, .voting-panel, .favorite-follow-vote-share) {
+  opacity: 0.8;
+}
+html[data-hush-site="rbx"] #game-details-carousel-container :is(.carousel-item, img, .carousel-container, [class*="carousel"]) {
+  border-radius: 14px !important;
+}
+/* tabs (about / store / servers, messages inbox…): words, thin underline */
+html[data-hush-site="rbx"] .rbx-tabs-horizontal .nav-tabs,
+html[data-hush-site="rbx"] .rbx-tabs-horizontal .rbx-tab {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+html[data-hush-site="rbx"] .rbx-tabs-horizontal .nav-tabs {
+  border-bottom: 1px solid var(--h-line) !important;
+}
+html[data-hush-site="rbx"] .rbx-tabs-horizontal .rbx-tab :is(.rbx-tab-heading, a, span) {
+  background: transparent !important;
+  font-size: 13.5px !important;
+  font-weight: 400 !important;
+  color: var(--h-dim) !important;
+  text-transform: lowercase;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+html[data-hush-site="rbx"] .rbx-tabs-horizontal .rbx-tab.active :is(.rbx-tab-heading, a, span) {
+  color: var(--h-fg) !important;
+  box-shadow: inset 0 -1px 0 var(--h-fg) !important;
+}
+/* events: smaller, calmer cards */
+html[data-hush-site="rbx"] .virtual-event-game-details-container :is(img, [class*="thumbnail"]) {
+  border-radius: 12px !important;
+}
+html[data-hush-site="rbx"] :is(.container-header h2, .container-header h3, .game-about-tab-container h2, .game-about-tab-container h3) {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--h-dim) !important;
+  text-transform: lowercase;
+  letter-spacing: 0.01em;
+}
+html[data-hush-site="rbx"] .game-description-container :is(p, .text) {
+  font-size: 13.5px !important;
+  line-height: 1.6 !important;
+}
+
+/* ---------- legacy buttons & links ----------------------------------------------------------- */
+
+html[data-hush-site="rbx"] :is(.btn-primary-md, .btn-primary-lg, .btn-primary-xs, .btn-growth-md, .btn-growth-lg, .btn-secondary-md, .btn-cta-md, .btn-cta-lg) {
+  background: var(--h-fg) !important;
+  border-color: var(--h-fg) !important;
+  color: var(--h-bg) !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  transition: opacity 0.16s ease !important;
+}
+html[data-hush-site="rbx"] :is(.btn-primary-md, .btn-primary-lg, .btn-growth-md, .btn-growth-lg, .btn-cta-md, .btn-cta-lg):hover {
+  opacity: 0.85;
+}
+html[data-hush-site="rbx"] :is(.btn-control-md, .btn-control-sm, .btn-control-xs, .btn-alert-md) {
+  background: transparent !important;
+  border: 1px solid var(--h-line) !important;
+  border-radius: 10px !important;
+  color: var(--h-fg) !important;
+  box-shadow: none !important;
+}
+html[data-hush-site="rbx"] :is(.text-link, a.text-link):not(#left-navigation-container *) {
+  color: var(--h-fg) !important;
+  text-decoration-color: var(--h-faint) !important;
+}
+
+/* ---------- marketplace ---------------------------------------------------------------------- */
+
+/* topic pills: words */
+html[data-hush-site="rbx"][data-hush-path="catalog"] :is(.topic-container button, .topic-carousel button, [class*="topic"] button, button[class*="topic"]) {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: var(--h-dim) !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  text-transform: lowercase;
+}
+html[data-hush-site="rbx"][data-hush-path="catalog"] :is(.topic-container button, [class*="topic"] button, button[class*="topic"]):hover {
+  color: var(--h-fg) !important;
+}
+html[data-hush-site="rbx"] .item-card-container {
+  border-radius: 12px !important;
+}
+
+/* ---------- menus, popovers, dialogs ease in -------------------------------------------------- */
+
+html[data-hush-site="rbx"] :is(.popover, .dropdown-menu, [role="menu"], [role="listbox"]) {
+  border-radius: 12px !important;
+  border: 0 !important;
+  box-shadow: 0 0 0 1px var(--h-line), 0 18px 50px -12px rgba(0, 0, 0, 0.35) !important;
+  animation: hushRbxIn 0.24s var(--hush-ease) both !important;
+}
+html[data-hush-site="rbx"] :is(.modal-dialog .modal-content, [role="dialog"] > div) {
+  border-radius: 16px !important;
+  animation: hushRbxIn 0.3s var(--hush-ease) both !important;
+}
+@keyframes hushRbxIn {
+  from { opacity: 0; transform: translateY(-4px) scale(0.985); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-hush-site="rbx"] * { animation: none !important; }
+}
+
+/* avatar editor: the "explore the marketplace / get more" upsell in the header */
+html[data-hush-site="rbx"] .avatar-editor-header > div:has(> span):has(a, button):not(:first-child) {
+  display: none !important;
+}
+html[data-hush-site="rbx"] .avatar-editor-header h1 {
+  font-size: 22px !important;
+  font-weight: 600 !important;
+}
+
+/* ==========================================================================
+   layout pass — less in your face, more room to breathe
+   ========================================================================== */
+
+/* ---------- shell: slimmer menu, one calm content column ------------------- */
+
+@media (min-width: 1141px) {
+  html[data-hush-site="rbx"]:not([data-hush-zen]) #left-navigation-container .left-nav,
+  html[data-hush-site="rbx"]:not([data-hush-zen]) #left-navigation-container .left-nav > div {
+    width: 224px !important;
+    min-width: 224px !important;
+  }
+  html[data-hush-site="rbx"]:not([data-hush-zen]) #wrap.left-nav-new-width #container-main {
+    margin-left: 224px !important;
+  }
+}
+html[data-hush-site="rbx"] #left-navigation-container .left-nav > div {
+  padding-top: 18px !important;
+}
+html[data-hush-site="rbx"] #left-navigation-container ul {
+  gap: 2px !important;
+}
+/* the column: centred, capped, with air around it */
+html[data-hush-site="rbx"] #container-main > .content,
+html[data-hush-site="rbx"] #container-main > #content {
+  max-width: 1180px !important;
+  margin: 0 auto !important;
+  padding: 36px 40px 64px !important;
+  box-sizing: border-box !important;
+}
+html[data-hush-site="rbx"] #HomeContainer.expand-max-width {
+  max-width: none !important;
+}
+/* header: a touch taller */
+html[data-hush-site="rbx"] #navigation-container .rbx-header {
+  height: 48px !important;
+  min-height: 48px !important;
+}
+
+/* ---------- home ------------------------------------------------------------ */
+
+/* greeting instead of "Home" */
+html[data-hush-site="rbx"] h1[data-hush-greet] {
+  font-size: 0 !important;
+  margin-bottom: 28px !important;
+}
+html[data-hush-site="rbx"] h1[data-hush-greet]::before {
+  content: attr(data-hush-greet);
+  font: 600 22px/1.3 var(--h-font);
+  letter-spacing: -0.02em;
+  color: var(--h-fg);
+  animation: hushRbxGreet 0.7s var(--hush-ease) both !important;
+}
+@keyframes hushRbxGreet {
+  from { opacity: 0; transform: translateY(4px); filter: blur(3px); }
+}
+/* repeated section titles: only the first one shows */
+html[data-hush-site="rbx"] [data-testid="section-header"][data-hush-dupe] {
+  display: none !important;
+}
+/* sections breathe */
+html[data-hush-site="rbx"] :is([data-testid="home-page-game-grid"], .game-sort-carousel-wrapper) {
+  margin-bottom: 40px !important;
+}
+html[data-hush-site="rbx"] [data-testid="section-header"] {
+  margin-bottom: 12px !important;
+}
+html[data-hush-site="rbx"] [data-testid="game-grid"] {
+  gap: 30px 18px !important;
+}
+/* tiles: no hover card, the menu only when you need it */
+html[data-hush-site="rbx"] :is([data-testid="wide-game-tile"], [data-testid="game-tile"]) .game-card-container,
+html[data-hush-site="rbx"] :is([data-testid="wide-game-tile"], [data-testid="game-tile"]):hover .game-card-container {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+html[data-hush-site="rbx"] :is([data-testid="wide-game-tile"], [data-testid="game-tile"]) :is([class*="game-card-menu"], button[aria-haspopup]) {
+  opacity: 0 !important;
+  transition: opacity 0.2s ease !important;
+}
+html[data-hush-site="rbx"] :is([data-testid="wide-game-tile"], [data-testid="game-tile"]):is(:hover, :focus-within) :is([class*="game-card-menu"], button[aria-haspopup]) {
+  opacity: 0.7 !important;
+}
+html[data-hush-site="rbx"] :is([data-testid="wide-game-tile"], [data-testid="game-tile"]) .info-container {
+  padding: 10px 2px 0 !important;
+}
+
+/* soft thumbnails (option): colour comes back when you point at something */
+html[data-hush-site="rbx"][data-hush-softthumbs] :is(.thumbnail-2d-container, .item-card-thumb-container, #game-details-carousel-container .carousel-item) img {
+  filter: saturate(var(--hush-sat, 0.9)) contrast(0.98) brightness(1.01);
+  transition: filter 0.45s ease, transform 0.5s var(--hush-ease) !important;
+}
+html[data-hush-site="rbx"][data-hush-softthumbs][data-hush-theme="dark"] :is(.thumbnail-2d-container, .item-card-thumb-container, #game-details-carousel-container .carousel-item) img {
+  filter: saturate(var(--hush-sat, 0.9)) contrast(0.98) brightness(0.96);
+}
+html[data-hush-site="rbx"][data-hush-softthumbs] :is([data-testid="wide-game-tile"], [data-testid="game-tile"], .item-card-container, .badge-row, #game-details-carousel-container):hover img,
+html[data-hush-site="rbx"][data-hush-softthumbs] :is([data-testid="wide-game-tile"], [data-testid="game-tile"], .item-card-container):focus-within img {
+  filter: none;
+}
+
+/* ---------- game page ----------------------------------------------------------- */
+
+html[data-hush-site="rbx"] .game-main-content {
+  margin-bottom: 8px !important;
+}
+html[data-hush-site="rbx"] #game-details-carousel-container {
+  border-radius: 16px !important;
+  overflow: hidden !important;
+}
+html[data-hush-site="rbx"] .game-calls-to-action .game-creator,
+html[data-hush-site="rbx"] .game-calls-to-action :is(.text-label, .age-rating-age-bracket) {
+  font-size: 13px !important;
+  color: var(--h-dim) !important;
+}
+html[data-hush-site="rbx"] .game-calls-to-action [data-testid="play-button"] {
+  height: 52px !important;
+  margin-top: 18px !important;
+}
+html[data-hush-site="rbx"] .game-calls-to-action :is(#toggle-game-favorite, #toggle-game-follow, .voting-panel) :is(span, div, a) {
+  font-size: 11.5px !important;
+  color: var(--h-dim) !important;
+}
+html[data-hush-site="rbx"] .game-calls-to-action :is(#toggle-game-favorite, #toggle-game-follow, .voting-panel) [class*="icon"] {
+  opacity: 0.6;
+}
+
+/* sections under the tabs: a generous rhythm */
+html[data-hush-site="rbx"] .game-about-tab-container > * {
+  margin-top: 36px !important;
+}
+html[data-hush-site="rbx"] .game-about-tab-container > *:first-child {
+  margin-top: 24px !important;
+}
+
+/* events: big posters become a compact list */
+html[data-hush-site="rbx"] .game-details-page-events-grid {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  grid-template-columns: none !important;
+}
+html[data-hush-site="rbx"] .game-details-page-events-grid > li {
+  width: 100% !important;
+  max-width: none !important;
+}
+html[data-hush-site="rbx"] .game-details-page-events-grid .game-card-container {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  padding: 8px !important;
+  border-radius: 12px !important;
+  transition: background-color 0.2s ease !important;
+}
+html[data-hush-site="rbx"] .game-details-page-events-grid .game-card-container:hover {
+  background: var(--h-hover) !important;
+}
+html[data-hush-site="rbx"] .game-details-page-events-grid .game-card-link {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 14px !important;
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+html[data-hush-site="rbx"] .game-details-page-events-grid .featured-game-icon-container {
+  width: 112px !important;
+  min-width: 112px !important;
+  height: 63px !important;
+  border-radius: 9px !important;
+  overflow: hidden !important;
+}
+html[data-hush-site="rbx"] .game-details-page-events-grid .featured-game-icon-container :is(span, img) {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+html[data-hush-site="rbx"] .game-details-page-events-grid .info-container {
+  padding: 0 !important;
+}
+html[data-hush-site="rbx"] .game-details-page-events-grid :is(.base-metadata, .wide-game-tile-metadata) :is(span, div) {
+  font-size: 12px !important;
+  color: var(--h-dim) !important;
+}
+/* "notify me" / "join event": a quiet pill at the end */
+html[data-hush-site="rbx"] .game-details-page-events-grid :is(button, [class*="btn-"]) {
+  width: auto !important;
+  min-width: 0 !important;
+  flex: none !important;
+  padding: 5px 12px !important;
+  background: transparent !important;
+  border: 1px solid var(--h-line) !important;
+  border-radius: 999px !important;
+  color: var(--h-dim) !important;
+  font-size: 12px !important;
+  text-transform: lowercase;
+}
+html[data-hush-site="rbx"] .game-details-page-events-grid :is(button, [class*="btn-"]):hover {
+  color: var(--h-fg) !important;
+  border-color: rgba(127, 127, 127, 0.35) !important;
+}
+
+/* description: folds to a few lines and fades out */
+html[data-hush-site="rbx"] pre.game-description {
+  white-space: pre-wrap !important;
+  font: 400 13.5px/1.65 var(--h-font) !important;
+  color: var(--h-fg) !important;
+}
+html[data-hush-site="rbx"] pre.game-description[data-hush-fold="closed"] {
+  max-height: 7.2em !important;
+  overflow: hidden !important;
+  -webkit-mask-image: linear-gradient(#000 55%, transparent);
+  mask-image: linear-gradient(#000 55%, transparent);
+}
+
+/* stats: a quiet two-line grid */
+html[data-hush-site="rbx"] ul.game-stat-container {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
+  gap: 16px 18px !important;
+  padding: 18px 0 !important;
+  border-color: var(--h-line) !important;
+}
+html[data-hush-site="rbx"] ul.game-stat-container li.game-stat {
+  width: auto !important;
+  padding: 0 !important;
+  text-align: left !important;
+}
+html[data-hush-site="rbx"] ul.game-stat-container .text-label {
+  font-size: 11px !important;
+  font-weight: 400 !important;
+  color: var(--h-dim) !important;
+  text-transform: lowercase;
+  letter-spacing: 0.01em;
+}
+html[data-hush-site="rbx"] ul.game-stat-container .text-lead {
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  color: var(--h-fg) !important;
+}
+
+/* badges: compact rows, three until you ask for all */
+html[data-hush-site="rbx"] .game-badges-list ul.stack-list[data-hush-fold="closed"] > li:nth-child(n + 4) {
+  display: none !important;
+}
+html[data-hush-site="rbx"] .game-badges-list li.badge-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  padding: 10px 0 !important;
+  border-color: var(--h-line) !important;
+  background: transparent !important;
+}
+html[data-hush-site="rbx"] .game-badges-list .badge-image,
+html[data-hush-site="rbx"] .game-badges-list .badge-image img {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  border-radius: 10px !important;
+}
+html[data-hush-site="rbx"] .game-badges-list .badge-content :is(.badge-name, .font-header-2) {
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+}
+html[data-hush-site="rbx"] .game-badges-list :is(.badge-description, .para-overflow) {
+  font-size: 12.5px !important;
+  color: var(--h-dim) !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 1 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+html[data-hush-site="rbx"] .game-badges-list ul.badge-stats-container :is(li, div, span) {
+  font-size: 11.5px !important;
+  color: var(--h-dim) !important;
+}
+html[data-hush-site="rbx"] .game-badges-list ul.badge-stats-container {
+  border: 0 !important;
+  margin-top: 4px !important;
+}
+
+/* ---------- charts & marketplace -------------------------------------------------- */
+
+html[data-hush-site="rbx"][data-hush-path="charts"] .game-sort-carousel-wrapper {
+  margin-bottom: 36px !important;
+}
+html[data-hush-site="rbx"][data-hush-path="catalog"] .catalog-item-container {
+  margin-bottom: 18px !important;
+}
+
+/* the narrower menu must not scroll sideways */
+html[data-hush-site="rbx"] #left-navigation-container .left-nav > div,
+html[data-hush-site="rbx"] #left-navigation-container nav,
+html[data-hush-site="rbx"] #left-navigation-container ul {
+  overflow-x: hidden !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+html[data-hush-site="rbx"] #left-navigation-container :is(li, a[data-hush-nav]) {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* description: the maturity block floats (bootstrap col); keep it below the toggle */
+html[data-hush-site="rbx"] .game-age-recommendation-details-container {
+  clear: both !important;
+  display: flow-root !important;
+  margin-top: 6px !important;
+}
+html[data-hush-site="rbx"] .game-age-recommendation-details-container .col-xs-12 {
+  float: none !important;
+  padding: 0 !important;
+}
+html[data-hush-site="rbx"] .hush-desc-toggle {
+  display: block !important;
+  width: max-content;
+}
+/* stats: every line left-aligned */
+html[data-hush-site="rbx"] ul.game-stat-container li.game-stat * {
+  text-align: left !important;
+}
+/* badges: the thumbnail fits its 44px slot; stats sit in one short line */
+html[data-hush-site="rbx"] .game-badges-list .badge-image :is(a, .badge-image-container) {
+  display: block !important;
+  width: 44px !important;
+  height: 44px !important;
+}
+html[data-hush-site="rbx"] .game-badges-list .badge-content {
+  flex: 1 !important;
+  min-width: 0 !important;
+  width: auto !important;
+  float: none !important;
+}
+html[data-hush-site="rbx"] .game-badges-list ul.badge-stats-container {
+  display: flex !important;
+  gap: 18px !important;
+  padding: 0 !important;
+}
+html[data-hush-site="rbx"] .game-badges-list ul.badge-stats-container > li {
+  width: auto !important;
+  float: none !important;
+  display: flex !important;
+  gap: 5px !important;
+  padding: 0 !important;
+  text-align: left !important;
+}
+/* events: no grey panel behind the text */
+html[data-hush-site="rbx"] .game-details-page-events-grid :is(.info-container, .info-metadata-container, .featured-game-container) {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+html[data-hush-site="rbx"] .game-details-page-events-grid .info-container {
+  flex: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+}
+html[data-hush-site="rbx"] ul.game-stat-container li.game-stat {
+  align-items: flex-start !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+}
+html[data-hush-site="rbx"] .game-age-recommendation-details-container :is(.age-rating-details, [class*="age-rating"]) {
+  background: transparent !important;
+  padding-left: 0 !important;
+}
+html[data-hush-site="rbx"] .game-badges-list ul.badge-stats-container > li {
+  align-items: baseline !important;
+}
+
+/* filter selects (charts device / country, catalog): quiet outlines, not black slabs */
+html[data-hush-site="rbx"] :is(.filter-select, .filter-select.btn-primary-md, .dropdown-toggle.btn-primary-md) {
+  background: transparent !important;
+  border: 1px solid var(--h-line) !important;
+  color: var(--h-fg) !important;
+  font-weight: 500 !important;
+  font-size: 13px !important;
+  border-radius: 999px !important;
+}
+html[data-hush-site="rbx"] :is(.filter-select, .dropdown-toggle.btn-primary-md):hover {
+  background: var(--h-hover) !important;
+  opacity: 1 !important;
+}
+html[data-hush-site="rbx"] .filter-select :is(.icon-down-16x16, [class*="icon-down"], [class*="icon-expand"]) {
+  filter: invert(var(--h-invert, 0));
+  opacity: 0.55;
+}
+html[data-hush-site="rbx"][data-hush-theme="light"] { --h-invert: 1; }
+
+/* focus mode: Roblox's own rule still pushes the column 289px right; centre it */
+html[data-hush-site="rbx"][data-hush-zen] #wrap #container-main {
+  margin-left: 0 !important;
+}
+html[data-hush-site="rbx"][data-hush-zen] #container-main > .content {
+  max-width: 1100px !important;
+}
+
+/* ==========================================================================
+   motion + performance pass
+   ========================================================================== */
+
+/* tabs: one underline slides to the active tab (replaces the per-tab underline) */
+html[data-hush-site="rbx"] ul.nav-tabs[data-hush-tabs] {
+  position: relative !important;
+}
+html[data-hush-site="rbx"] ul.nav-tabs[data-hush-tabs] .rbx-tab.active :is(.rbx-tab-heading, a, span) {
+  box-shadow: none !important;
+}
+html[data-hush-site="rbx"] .hush-tab-ind {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--h-fg);
+  pointer-events: none;
+  opacity: 0;
+  transition: transform 0.34s var(--hush-ease), width 0.34s var(--hush-ease), opacity 0.2s ease !important;
+  will-change: transform;
+}
+
+/* tiles and cards settle in, staggered across the first few */
+html[data-hush-site="rbx"] [data-hush-i] {
+  animation: hushRbxTileIn 0.42s var(--hush-ease) both !important;
+}
+html[data-hush-site="rbx"] [data-hush-i="1"] { animation-delay: 30ms !important; }
+html[data-hush-site="rbx"] [data-hush-i="2"] { animation-delay: 60ms !important; }
+html[data-hush-site="rbx"] [data-hush-i="3"] { animation-delay: 90ms !important; }
+html[data-hush-site="rbx"] [data-hush-i="4"] { animation-delay: 120ms !important; }
+html[data-hush-site="rbx"] [data-hush-i="5"] { animation-delay: 150ms !important; }
+html[data-hush-site="rbx"] [data-hush-i="6"] { animation-delay: 180ms !important; }
+html[data-hush-site="rbx"] [data-hush-i="7"] { animation-delay: 210ms !important; }
+html[data-hush-site="rbx"] [data-hush-i="8"] { animation-delay: 240ms !important; }
+html[data-hush-site="rbx"] [data-hush-i="9"] { animation-delay: 270ms !important; }
+html[data-hush-site="rbx"] [data-hush-i="10"] { animation-delay: 300ms !important; }
+@keyframes hushRbxTileIn {
+  from { opacity: 0; transform: translateY(8px); }
+}
+/* the page column fades up on load */
+html[data-hush-site="rbx"] #container-main > .content {
+  animation: hushRbxPage 0.36s var(--hush-ease) both !important;
+}
+@keyframes hushRbxPage {
+  from { opacity: 0; transform: translateY(4px); }
+}
+
+/* long pages: skip rendering offscreen sections and cards */
+html[data-hush-site="rbx"][data-hush-path="charts"] .game-sort-carousel-wrapper {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 300px;
+}
+html[data-hush-site="rbx"][data-hush-path="catalog"] .catalog-item-container {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 260px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-hush-site="rbx"] :is([data-hush-i], #container-main > .content) { animation: none !important; }
+}
+
+/* home grid: column count from the space available (Roblox only recomputes on load) */
+html[data-hush-site="rbx"] [data-testid="game-grid"].home-game-grid {
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)) !important;
+}
+
+/* ==========================================================================
+   communities: a calm two-pane, with your list on the left and the community
+   on the right. Roblox pins the list as a fixed panel sized for its own 289px
+   nav, which lands on top of the page once hush slims the nav. Put it back
+   in the flow.
+   ========================================================================== */
+
+@media (min-width: 900px) {
+  html[data-hush-site="rbx"] #group-container .group-details-container-desktop-and-tablet {
+    display: grid !important;
+    grid-template-columns: 248px minmax(0, 1fr);
+    column-gap: 40px;
+    row-gap: 0;
+    align-items: start;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+  html[data-hush-site="rbx"] #group-container .group-details-container-desktop-and-tablet > * {
+    grid-column: 2;
+    min-width: 0;
+  }
+  html[data-hush-site="rbx"] #group-container .groups-list-sidebar {
+    grid-column: 1 !important;
+    grid-row: 1 / span 40;
+    position: sticky !important;
+    top: 72px !important;
+    left: auto !important;
+    width: auto !important;
+    height: auto !important;
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    background: transparent !important;
+    border: 0 !important;
+    padding: 0 !important;
+    z-index: auto !important;
+  }
+  html[data-hush-site="rbx"] #group-container .group-details {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: auto !important;
+    float: none !important;
+  }
+}
+@media (max-width: 899px) {
+  html[data-hush-site="rbx"] #group-container .groups-list-sidebar { display: none !important; }
+  html[data-hush-site="rbx"] #group-container .group-details { margin: 0 !important; width: auto !important; }
+}
+
+/* the list */
+html[data-hush-site="rbx"] .groups-list-new {
+  display: flex !important;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 !important;
+  width: auto !important;
+}
+html[data-hush-site="rbx"] .groups-list-heading {
+  font: 600 15px/1.3 var(--h-font) !important;
+  letter-spacing: -0.01em !important;
+  margin: 0 !important;
+}
+html[data-hush-site="rbx"] .groups-list-new > div:first-child { align-items: center !important; }
+html[data-hush-site="rbx"] .groups-list-new > div:first-child a { color: var(--h-dim) !important; font-size: 12px !important; }
+html[data-hush-site="rbx"] .groups-list-new > div:first-child a:hover { color: var(--h-fg) !important; }
+html[data-hush-site="rbx"] .groups-list-search { width: auto !important; }
+html[data-hush-site="rbx"] .groups-list-search-input {
+  height: 34px !important;
+  width: 100% !important;
+  border-radius: 8px !important;
+  border: 1px solid var(--h-line) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-size: 13px !important;
+  transition: border-color 0.15s, box-shadow 0.15s !important;
+}
+html[data-hush-site="rbx"] .groups-list-search-input:focus {
+  border-color: var(--h-dim) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--h-dim) 20%, transparent) !important;
+  outline: none !important;
+}
+html[data-hush-site="rbx"] .groups-list-items-container { width: auto !important; margin: 0 !important; overflow: visible !important; }
+html[data-hush-site="rbx"] .groups-list-sidebar { overflow-x: hidden !important; }
+html[data-hush-site="rbx"] .group-profile-header-info { gap: 16px !important; }
+html[data-hush-site="rbx"] .group-details { max-width: none !important; }
+html[data-hush-site="rbx"] .groups-list-items-container > div { padding: 0 !important; display: flex; flex-direction: column; gap: 2px; }
+html[data-hush-site="rbx"] a.groups-list-item {
+  width: auto !important;
+  height: auto !important;
+  padding: 8px !important;
+  gap: 10px !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  transition: background-color 0.15s var(--hush-ease) !important;
+}
+html[data-hush-site="rbx"] a.groups-list-item:hover { background: var(--h-hover) !important; }
+html[data-hush-site="rbx"] a.groups-list-item.active {
+  background: var(--h-hover) !important;
+  box-shadow: inset 0 0 0 1px var(--h-line) !important;
+}
+html[data-hush-site="rbx"] .groups-list-item-thumbnail,
+html[data-hush-site="rbx"] .groups-list-item-thumbnail .thumbnail-2d-container {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  border-radius: 8px !important;
+}
+html[data-hush-site="rbx"] a.groups-list-item .text-title-medium { font-size: 13px !important; font-weight: 500 !important; }
+html[data-hush-site="rbx"] a.groups-list-item .text-body-medium { font-size: 12px !important; color: var(--h-dim) !important; }
+html[data-hush-site="rbx"] .groups-list-buttons-bottom { padding: 4px 0 0 !important; width: auto !important; }
+html[data-hush-site="rbx"] .groups-list-create-button {
+  width: 100% !important;
+  height: 32px !important;
+  border-radius: 8px !important;
+  border: 1px dashed var(--h-line) !important;
+  background: transparent !important;
+  color: var(--h-dim) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  box-shadow: none !important;
+  transition: color 0.15s, border-color 0.15s, background-color 0.15s !important;
+}
+html[data-hush-site="rbx"] .groups-list-create-button:hover {
+  color: var(--h-fg) !important;
+  border-color: var(--h-dim) !important;
+  background: var(--h-hover) !important;
+}
+
+/* the community header: smaller avatar, quieter stats, readable bio */
+html[data-hush-site="rbx"] .group-profile-header { gap: 16px !important; }
+html[data-hush-site="rbx"] .group-profile-header .profile-header-details-avatar-container,
+html[data-hush-site="rbx"] .group-profile-header .profile-header-details-avatar {
+  width: 80px !important;
+  height: 80px !important;
+  min-width: 80px !important;
+  border-radius: 18px !important;
+}
+html[data-hush-site="rbx"] .group-profile-header .profile-header-details-avatar img { border-radius: 18px !important; }
+html[data-hush-site="rbx"] .group-profile-header h1 {
+  font: 600 24px/1.2 var(--h-font) !important;
+  letter-spacing: -0.02em !important;
+}
+html[data-hush-site="rbx"] .profile-insights-container > * {
+  height: 24px !important;
+  padding: 0 10px !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  box-shadow: inset 0 0 0 1px var(--h-line) !important;
+  color: var(--h-dim) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+html[data-hush-site="rbx"] .profile-insights-container > button:hover { color: var(--h-fg) !important; background: var(--h-hover) !important; }
+html[data-hush-site="rbx"] .group-profile-header .description-content {
+  max-width: 64ch;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  color: var(--h-dim) !important;
+  white-space: pre-wrap !important;
+}
+html[data-hush-site="rbx"] .group-profile-header .actions-container button {
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+/* tabs: left-aligned and sized to their words, not stretched edge to edge */
+html[data-hush-site="rbx"] .group-foundation-tabs {
+  display: flex !important;
+  justify-content: flex-start !important;
+  gap: 24px !important;
+  margin-top: 8px !important;
+  border-bottom: 1px solid var(--h-line) !important;
+}
+html[data-hush-site="rbx"] .group-foundation-tabs > li.rbx-tab {
+  width: auto !important;
+  flex: none !important;
+}
+html[data-hush-site="rbx"] .group-foundation-tabs .rbx-tab-heading {
+  padding: 12px 0 !important;
+  height: auto !important;
+}
+
+/* sections: empty states as a quiet box instead of centred text */
+html[data-hush-site="rbx"] #group-container .group-announcements { margin-top: 28px !important; }
+html[data-hush-site="rbx"] #group-container .group-section-content-transparent.text-center {
+  text-align: left !important;
+  padding: 16px !important;
+  border: 1px dashed var(--h-line) !important;
+  border-radius: 10px !important;
+  color: var(--h-dim) !important;
+  font-size: 13px !important;
+  background: transparent !important;
+}
+
+/* ==========================================================================
+   profile: a portrait column (full-body avatar, name, actions, stats, bio)
+   beside the content, instead of a 1100px banner shouting over everything.
+   ========================================================================== */
+
+@media (min-width: 1000px) {
+  html[data-hush-site="rbx"] .profile-platform-container > div {
+    display: grid !important;
+    grid-template-columns: 272px minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr;
+    column-gap: 48px;
+    align-items: start;
+  }
+  html[data-hush-site="rbx"] .profile-platform-container .currently-wearing-avatar-with-background {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  html[data-hush-site="rbx"] .profile-platform-container .profile-header-overlay {
+    grid-column: 1;
+    grid-row: 2;
+    margin-top: 20px !important;
+  }
+  html[data-hush-site="rbx"] .profile-platform-container .profile-content {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    padding-top: 0 !important;
+    min-width: 0;
+  }
+  /* identity stacks vertically in the narrow column */
+  html[data-hush-site="rbx"] .user-profile-header-info {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 16px !important;
+  }
+  html[data-hush-site="rbx"] .user-profile-header-info .buttons-show-on-desktop,
+  html[data-hush-site="rbx"] .user-profile-header-info .buttons-show-on-desktop > div,
+  html[data-hush-site="rbx"] .user-profile-header-info .button-container {
+    width: 100% !important;
+  }
+  html[data-hush-site="rbx"] .user-profile-header-info .button-container { flex: 1 !important; }
+  html[data-hush-site="rbx"] .user-profile-header-info .button-container > * { flex: 1 !important; min-width: 0 !important; width: auto !important; }
+  /* the portrait already shows the avatar; the headshot would repeat it */
+  html[data-hush-site="rbx"] .user-profile-header-details-avatar-container { display: none !important; }
+}
+
+/* the portrait */
+html[data-hush-site="rbx"] .currently-wearing-avatar-with-background {
+  height: 340px !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  background: var(--h-hover) !important;
+  box-shadow: inset 0 0 0 1px var(--h-line) !important;
+}
+html[data-hush-site="rbx"] .currently-wearing-avatar-with-background :is(.profile-avatar-left, .thumbnail-holder, .avatar-thumbnail-container) {
+  width: 100% !important;
+  height: 100% !important;
+  background: transparent !important;
+}
+html[data-hush-site="rbx"] .currently-wearing-avatar-with-background img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+}
+html[data-hush-site="rbx"] .currently-wearing-avatar-with-background .avatar-toggle-button button {
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+html[data-hush-site="rbx"] .profile-header-overlay { margin-top: 20px !important; }
+
+/* identity */
+html[data-hush-site="rbx"] .user-profile-header { gap: 14px !important; }
+html[data-hush-site="rbx"] .user-profile-header .text-heading-large {
+  font: 600 22px/1.25 var(--h-font) !important;
+  letter-spacing: -0.02em !important;
+}
+html[data-hush-site="rbx"] .user-profile-header .stylistic-alts-username {
+  font-size: 13px !important;
+  color: var(--h-dim) !important;
+}
+html[data-hush-site="rbx"] .user-profile-header :is(.foundation-web-button, .foundation-web-icon-button) {
+  height: 34px !important;
+  min-height: 34px !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  font-size: 13px !important;
+}
+html[data-hush-site="rbx"] .user-profile-header .foundation-web-icon-button { width: 34px !important; min-width: 34px !important; }
+/* friends / followers / following: quiet pills */
+html[data-hush-site="rbx"] .user-profile-header > .flex-nowrap { flex-wrap: wrap !important; gap: 6px !important; }
+html[data-hush-site="rbx"] .user-profile-header > .flex-nowrap > a {
+  opacity: 1 !important;
+  height: 26px !important;
+  padding: 0 10px !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  box-shadow: inset 0 0 0 1px var(--h-line) !important;
+  color: var(--h-dim) !important;
+  font-size: 12px !important;
+  transition: color 0.15s, background-color 0.15s !important;
+}
+html[data-hush-site="rbx"] .user-profile-header > .flex-nowrap > a:hover { color: var(--h-fg) !important; background: var(--h-hover) !important; }
+html[data-hush-site="rbx"] .user-profile-header > .flex-nowrap > a span { padding: 0 !important; }
+html[data-hush-site="rbx"] .user-profile-header .description-content {
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  color: var(--h-dim) !important;
+}
+html[data-hush-site="rbx"] .user-profile-header .more-btn { color: var(--h-dim) !important; font-size: 12px !important; }
+
+/* the content column: sections breathe, no shouting headers */
+html[data-hush-site="rbx"] .profile-content > * + * { margin-top: 36px !important; }
+html[data-hush-site="rbx"] .profile-content :is(h2, h3, [class*="text-heading"]) {
+  font: 600 15px/1.3 var(--h-font) !important;
+  letter-spacing: -0.01em !important;
+}
+html[data-hush-site="rbx"] .user-profile-header > .flex-nowrap > a { width: auto !important; flex: none !important; max-width: none !important; }
+html[data-hush-site="rbx"] .user-profile-header > .flex-nowrap > a span { overflow: visible !important; text-overflow: clip !important; }
+html[data-hush-site="rbx"] #user-profile-header-bg { padding-top: 0 !important; margin-top: 0 !important; }

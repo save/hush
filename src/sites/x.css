@@ -1,0 +1,1038 @@
+/* ==========================================================================
+   hush — X adapter
+   Everything is scoped to html[data-hush-site="x"] so toggling is instant.
+   X's DOM is selected via data-testid / aria / href, never generated classes.
+   Page flags set by x.js:
+     data-hush-path = home | explore | notifications | chat | settings | history | status | profile | i
+     data-hush-wide = chat + settings (full-width two-pane apps: layout left alone)
+   ========================================================================== */
+
+html[data-hush-site="x"] {
+  --h-fg: #e4e4e4;
+  --h-dim: #8b8b8b;
+  --h-faint: #555;
+  --h-line: rgba(255, 255, 255, 0.07);
+  --h-hover: rgba(255, 255, 255, 0.03);
+  --h-field: rgba(255, 255, 255, 0.04);
+  --h-accent: #ff4b4b;
+  --h-font: "Inter", "Geist", "SF Pro Text", -apple-system, "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+}
+html[data-hush-site="x"][data-hush-theme="light"] {
+  --h-fg: #1b1b1b;
+  --h-dim: #7c7c7c;
+  --h-faint: #b3b3b3;
+  --h-line: rgba(0, 0, 0, 0.07);
+  --h-hover: rgba(0, 0, 0, 0.025);
+  --h-field: rgba(0, 0, 0, 0.035);
+}
+
+/* ---------- type ----------------------------------------------------------- */
+
+html[data-hush-site="x"] body,
+html[data-hush-site="x"] body :is(div, span, a, button, input, textarea, h1, h2, h3, time) {
+  font-family: var(--h-font) !important;
+  letter-spacing: -0.003em;
+}
+/* (separator colors are softened by x.js, which targets X's own line rules) */
+
+/* ---------- noise we never want ------------------------------------------- */
+
+html[data-hush-site="x"] :is(
+  [data-testid="GrokDrawer"],
+  [data-testid="DMDrawer"],
+  [data-testid="chat-drawer-root"],
+  [data-testid="xchatEmbedDrawer"],
+  [data-testid="BottomBar"],
+  button[aria-label="Grok actions"],
+  [aria-label="Grok"],
+  [data-testid$="-subscribe"],
+  [data-testid="super-follow-button"],
+  [data-hush-hide]
+) {
+  display: none !important;
+}
+html[data-hush-site="x"] [data-testid="cellInnerDiv"]:has([data-testid="eventHero"]) {
+  display: none !important;
+}
+
+/* sidebar (trends, who to follow, premium, news, footer) — except two-pane apps */
+html[data-hush-site="x"]:not([data-hush-wide]) [data-testid="sidebarColumn"] {
+  display: none !important;
+}
+
+/* upsell entries in lists and settings */
+html[data-hush-site="x"] :is(
+  a[href^="/i/premium_sign_up"],
+  a[href^="/i/verified-orgs"],
+  a[href^="/i/jf/creators"]
+):not(header *) {
+  display: none !important;
+}
+
+/* views / analytics in the action bar */
+html[data-hush-site="x"] article [role="group"] > div:has(> a[href$="/analytics"]) {
+  display: none !important;
+}
+
+/* ---------- layout: nav + one column, centered as a pair ------------------- */
+
+html[data-hush-site="x"] header[role="banner"] > div,
+html[data-hush-site="x"] header[role="banner"] > div > div,
+html[data-hush-site="x"] header[role="banner"] > div > div > div {
+  width: 220px !important;
+  overflow-x: hidden !important;
+}
+html[data-hush-site="x"] header[role="banner"] {
+  flex-grow: 1 !important;
+}
+html[data-hush-site="x"]:not([data-hush-wide]) main[role="main"] {
+  flex-grow: 1 !important;
+  align-items: flex-start !important;
+}
+html[data-hush-site="x"]:not([data-hush-wide]) main[role="main"] > div {
+  width: 640px !important;
+  max-width: 100% !important;
+}
+html[data-hush-site="x"]:not([data-hush-wide]) main[role="main"] > div > div {
+  justify-content: flex-start !important;
+}
+html[data-hush-site="x"]:not([data-hush-wide]) [data-testid="primaryColumn"] {
+  max-width: 600px !important;
+  width: 100% !important;
+}
+
+/* focus mode: no menu, just the column */
+html[data-hush-site="x"][data-hush-zen]:not([data-hush-wide]) header[role="banner"] {
+  display: none !important;
+}
+html[data-hush-site="x"][data-hush-zen]:not([data-hush-wide]) main[role="main"] {
+  align-items: center !important;
+}
+
+/* ---------- left nav: words, not icons ------------------------------------ */
+
+/* X centers the nav column; we want one clean left edge */
+html[data-hush-site="x"] header[role="banner"] :is(
+  nav[role="navigation"],
+  div:has(> nav[role="navigation"]),
+  div:has(> div > nav[role="navigation"]),
+  div:has(> a[data-testid="SideNav_NewTweet_Button"]),
+  div:has(> div > a[data-testid="SideNav_NewTweet_Button"])
+) {
+  align-items: flex-start !important;
+}
+
+html[data-hush-site="x"] header[role="banner"] h1[role="heading"] a,
+html[data-hush-site="x"] header[role="banner"] h1[role="heading"] a > div {
+  background: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border-color: transparent !important;
+}
+html[data-hush-site="x"] header[role="banner"] h1[role="heading"] a {
+  opacity: 0.9;
+}
+
+/* whitelist: hide every nav link, then bring back the ones that matter */
+html[data-hush-site="x"] header[role="banner"] nav[role="navigation"] > a {
+  display: none !important;
+}
+html[data-hush-site="x"] header[role="banner"] nav[role="navigation"] > :is(
+  a[data-testid="AppTabBar_Home_Link"],
+  a[data-testid="AppTabBar_Explore_Link"],
+  a[data-testid="AppTabBar_Notifications_Link"],
+  a[data-testid="AppTabBar_DirectMessage_Link"],
+  a[href^="/i/chat"],
+  a[href="/messages"],
+  a[href="/i/history"],
+  a[href="/i/bookmarks"],
+  a[data-testid="AppTabBar_Profile_Link"],
+  button[data-testid="AppTabBar_More_Menu"]
+),
+html[data-hush-site="x"] header[role="banner"] a[data-testid="SideNav_NewTweet_Button"],
+html[data-hush-site="x"] .hush-x-row {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  box-sizing: border-box !important;
+  width: 180px !important;
+  min-height: 0 !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 5px 0 5px 12px !important;
+  background: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--h-dim) !important;
+  font: 400 13.5px/1.6 var(--h-font) !important;
+  text-align: left !important;
+  text-decoration: none !important;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.16s ease !important;
+}
+/* labels nudge right on hover */
+html[data-hush-site="x"] header[role="banner"] nav[role="navigation"] > :is(a, button)::before,
+html[data-hush-site="x"] header[role="banner"] a[data-testid="SideNav_NewTweet_Button"]::before,
+html[data-hush-site="x"] .hush-x-row > .hush-x-label {
+  display: inline-block;
+  transition: transform 0.28s var(--hush-ease) !important;
+}
+html[data-hush-site="x"] header[role="banner"] nav[role="navigation"] > :is(a, button):is(:hover, :focus-visible)::before,
+html[data-hush-site="x"] header[role="banner"] a[data-testid="SideNav_NewTweet_Button"]:is(:hover, :focus-visible)::before,
+html[data-hush-site="x"] .hush-x-row:is(:hover, :focus-visible) > .hush-x-label {
+  transform: translateX(3px);
+}
+
+html[data-hush-site="x"] header[role="banner"] nav[role="navigation"] > :is(a, button) > :not(.hush-keys):not(.hush-icon),
+html[data-hush-site="x"] header[role="banner"] a[data-testid="SideNav_NewTweet_Button"] > :not(.hush-keys):not(.hush-icon) {
+  display: none !important;
+}
+html[data-hush-site="x"] header[role="banner"] nav[role="navigation"] > :is(a, button):is(:hover, :focus-visible),
+html[data-hush-site="x"] header[role="banner"] nav[role="navigation"] > a[data-hush-active],
+html[data-hush-site="x"] header[role="banner"] a[data-testid="SideNav_NewTweet_Button"]:is(:hover, :focus-visible),
+html[data-hush-site="x"] .hush-x-row:is(:hover, :focus-visible) {
+  color: var(--h-fg) !important;
+  outline: none !important;
+}
+
+/* active page: a small dot that grows in at the left edge */
+html[data-hush-site="x"] header[role="banner"] nav[role="navigation"] > a[href] {
+  background: radial-gradient(circle, var(--h-accent) 0 2px, transparent 2.6px) no-repeat 2px 50% / 0 0 !important;
+  transition: color 0.16s ease, background-size 0.35s var(--hush-ease-pop) !important;
+}
+html[data-hush-site="x"] header[role="banner"] nav[role="navigation"] > a[href][data-hush-active] {
+  background-size: 6px 6px !important;
+}
+
+/* right side: unread count at rest, the shortcut's key caps on hover */
+html[data-hush-site="x"] header[role="banner"] nav[role="navigation"] > a::after {
+  content: attr(data-hush-tail);
+  position: absolute;
+  right: 0;
+  color: var(--h-fg);
+  font-variant-numeric: tabular-nums;
+  transition: opacity 0.16s ease, transform 0.25s var(--hush-ease) !important;
+}
+html[data-hush-site="x"] header[role="banner"] :is(nav[role="navigation"] > a, a[data-testid="SideNav_NewTweet_Button"], .hush-x-row) .hush-keys {
+  margin-left: auto;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.18s ease, transform 0.3s var(--hush-ease) !important;
+}
+html[data-hush-site="x"] header[role="banner"] :is(nav[role="navigation"] > a, a[data-testid="SideNav_NewTweet_Button"], .hush-x-row):is(:hover, :focus-visible) .hush-keys {
+  opacity: 1;
+  transform: none;
+}
+html[data-hush-site="x"] header[role="banner"] nav[role="navigation"] > a:has(.hush-keys):is(:hover, :focus-visible)::after {
+  opacity: 0;
+  transform: translateX(4px);
+}
+/* write / search / tune always show their keys, quieter until hover */
+html[data-hush-site="x"] header[role="banner"] :is(a[data-testid="SideNav_NewTweet_Button"], .hush-x-row) .hush-keys.hush-keys.hush-keys {
+  opacity: 0.6;
+  transform: none;
+}
+html[data-hush-site="x"] header[role="banner"] :is(a[data-testid="SideNav_NewTweet_Button"], .hush-x-row):is(:hover, :focus-visible) .hush-keys.hush-keys.hush-keys {
+  opacity: 1;
+}
+
+html[data-hush-site="x"] a[data-testid="AppTabBar_Home_Link"]::before          { content: "home"; }
+html[data-hush-site="x"] a[data-testid="AppTabBar_Explore_Link"]::before       { content: "explore"; }
+html[data-hush-site="x"] a[data-testid="AppTabBar_Notifications_Link"]::before { content: "notifications"; }
+html[data-hush-site="x"] nav[role="navigation"] > :is(a[data-testid="AppTabBar_DirectMessage_Link"], a[href^="/i/chat"], a[href="/messages"])::before { content: "chat"; }
+html[data-hush-site="x"] nav[role="navigation"] > :is(a[href="/i/history"], a[href="/i/bookmarks"])::before { content: "bookmarks"; }
+html[data-hush-site="x"] a[data-testid="AppTabBar_Profile_Link"]::before       { content: "profile"; }
+html[data-hush-site="x"] button[data-testid="AppTabBar_More_Menu"]::before     { content: "more"; }
+
+/* write / search / tune */
+html[data-hush-site="x"] header[role="banner"] a[data-testid="SideNav_NewTweet_Button"] {
+  margin-top: 22px !important;
+}
+html[data-hush-site="x"] header[role="banner"] a[data-testid="SideNav_NewTweet_Button"]::before { content: "write"; }
+html[data-hush-site="x"] .hush-x-rows {
+  display: flex;
+  flex-direction: column;
+}
+
+/* account switcher: just the avatar, faded */
+html[data-hush-site="x"] [data-testid="SideNav_AccountSwitcher_Button"] {
+  opacity: 0.55;
+  background: none !important;
+}
+html[data-hush-site="x"] [data-testid="SideNav_AccountSwitcher_Button"]:hover {
+  opacity: 0.9;
+}
+html[data-hush-site="x"] [data-testid="SideNav_AccountSwitcher_Button"] > div:not(:first-child) {
+  display: none !important;
+}
+
+/* ---------- column chrome ---------------------------------------------------- */
+
+/* sticky headers: solid, no glass blur */
+html[data-hush-site="x"] [data-testid="primaryColumn"] div[style*="backdrop-filter"],
+html[data-hush-site="x"] [data-testid="primaryColumn"] [aria-label="Home timeline"] > div:first-child {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* tabs (for you / following, profile, notifications, explore): lowercase, quiet */
+html[data-hush-site="x"]:not([data-hush-path="settings"]) [role="tablist"] [role="tab"] {
+  background: none !important;
+}
+html[data-hush-site="x"]:not([data-hush-path="settings"]) [role="tablist"] [role="tab"] span {
+  text-transform: lowercase;
+  font-size: 13.5px !important;
+  font-weight: 400 !important;
+  color: var(--h-dim) !important;
+}
+html[data-hush-site="x"]:not([data-hush-path="settings"]) [role="tablist"] [role="tab"][aria-selected="true"] span {
+  color: var(--h-fg) !important;
+}
+html[data-hush-site="x"]:not([data-hush-path="settings"]) [role="tablist"] [role="tab"] div:empty {
+  background-color: transparent !important;
+}
+/* premium-only profile tabs */
+html[data-hush-site="x"] [role="tablist"] [role="presentation"]:has(> a[href$="/highlights"], > a[href$="/articles"], > a[href$="/superfollows"]) {
+  display: none !important;
+}
+
+/* inline composer on home (option) — tagged once by x.js */
+html[data-hush-site="x"][data-hush-nocompose][data-hush-path="home"] [data-hush-homecompose] {
+  display: none !important;
+}
+
+/* search fields: flat */
+html[data-hush-site="x"] form[role="search"] div:has(> div > input[data-testid="SearchBox_Search_Input"]),
+html[data-hush-site="x"] form[role="search"] label {
+  background: var(--h-field) !important;
+  border-color: transparent !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+html[data-hush-site="x"] input[data-testid="SearchBox_Search_Input"] {
+  font-size: 13.5px !important;
+}
+
+/* buttons — shadcn/ui variants: follow + post are primary, following + edit are outline */
+html[data-hush-site="x"][data-hush-site="x"] :is([data-testid$="-follow"], [data-testid$="-unfollow"], [data-testid="tweetButtonInline"], [data-testid="tweetButton"], [data-testid="editProfileButton"]) {
+  min-height: 32px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  transition: background-color var(--hush-dur) var(--hush-ease), opacity var(--hush-dur) var(--hush-ease), transform var(--hush-dur) var(--hush-ease) !important;
+}
+html[data-hush-site="x"][data-hush-site="x"] :is([data-testid$="-follow"], [data-testid="tweetButtonInline"], [data-testid="tweetButton"]) {
+  background: var(--hush-primary) !important;
+  border: 0 !important;
+}
+html[data-hush-site="x"][data-hush-site="x"] :is([data-testid$="-follow"], [data-testid="tweetButtonInline"], [data-testid="tweetButton"]) span {
+  color: var(--hush-primary-fg) !important;
+}
+html[data-hush-site="x"][data-hush-site="x"] :is([data-testid$="-unfollow"], [data-testid="editProfileButton"]) {
+  background: transparent !important;
+  border: 1px solid var(--hush-input) !important;
+}
+html[data-hush-site="x"][data-hush-site="x"] :is([data-testid$="-unfollow"], [data-testid="editProfileButton"]):hover {
+  background: var(--hush-accent) !important;
+}
+html[data-hush-site="x"][data-hush-site="x"] :is([data-testid$="-follow"], [data-testid="tweetButtonInline"], [data-testid="tweetButton"]):hover {
+  opacity: 0.9;
+}
+html[data-hush-site="x"][data-hush-site="x"] :is([data-testid$="-follow"], [data-testid$="-unfollow"], [data-testid="tweetButtonInline"], [data-testid="tweetButton"], [data-testid="editProfileButton"]):active {
+  transform: scale(0.97);
+}
+html[data-hush-site="x"][data-hush-site="x"] :is([data-testid$="-follow"], [data-testid$="-unfollow"], [data-testid="tweetButtonInline"], [data-testid="tweetButton"], [data-testid="editProfileButton"]) span {
+  text-transform: lowercase;
+  font-weight: 500 !important;
+  font-size: 13px !important;
+}
+html[data-hush-site="x"][data-hush-site="x"] :is([data-testid$="-unfollow"], [data-testid="editProfileButton"]) span {
+  color: var(--hush-fg) !important;
+}
+html[data-hush-site="x"] :is([data-testid="tweetButtonInline"], [data-testid="tweetButton"])[aria-disabled="true"] {
+  opacity: 0.4 !important;
+}
+
+/* "See new posts" pill: plain */
+html[data-hush-site="x"] [data-testid="pillLabel"] {
+  background: none !important;
+}
+
+/* ---------- posts ------------------------------------------------------------- */
+
+html[data-hush-site="x"] article[data-testid="tweet"] {
+  background: none !important;
+  transition: background-color 0.2s ease, box-shadow 0.25s var(--hush-ease) !important;
+}
+html[data-hush-site="x"] [data-testid="cellInnerDiv"]:hover article[data-testid="tweet"] {
+  background: var(--h-hover) !important;
+}
+/* keyboard focus (j / k): a thin red edge instead of X's blue box */
+html[data-hush-site="x"] article[data-testid="tweet"]:focus,
+html[data-hush-site="x"] article[data-testid="tweet"]:focus-visible {
+  outline: none !important;
+  box-shadow: inset 2px 0 0 var(--h-accent) !important;
+  background: var(--h-hover) !important;
+}
+
+html[data-hush-site="x"] [data-testid="tweetText"],
+html[data-hush-site="x"] [data-testid="tweetText"] span {
+  font-size: 14.5px !important;
+  line-height: 1.55 !important;
+  color: var(--h-fg) !important;
+}
+html[data-hush-site="x"] [data-testid="tweetText"] a,
+html[data-hush-site="x"] [data-testid="tweetText"] a span {
+  color: var(--h-fg) !important;
+  text-decoration: underline !important;
+  text-decoration-color: var(--h-faint) !important;
+  text-underline-offset: 2px;
+}
+html[data-hush-site="x"] [data-testid="tweet-text-show-more-link"] {
+  color: var(--h-dim) !important;
+}
+
+html[data-hush-site="x"] [data-testid="User-Name"] span {
+  font-size: 13.5px !important;
+}
+html[data-hush-site="x"] [data-testid="User-Name"] > div:last-child span,
+html[data-hush-site="x"] [data-testid="User-Name"] time {
+  color: var(--h-dim) !important;
+}
+html[data-hush-site="x"] svg[data-testid="icon-verified"] {
+  opacity: 0.75;
+  filter: saturate(0.6);
+}
+
+/* "…" menu only on hover / focus */
+html[data-hush-site="x"] article [data-testid="caret"] {
+  opacity: 0;
+  transition: opacity 0.2s ease !important;
+}
+html[data-hush-site="x"] article:is(:hover, :focus, :focus-within) [data-testid="caret"] {
+  opacity: 0.6;
+}
+
+/* media: soft corners */
+html[data-hush-site="x"] :is([data-testid="tweetPhoto"], [data-testid="videoPlayer"], [data-testid="card.wrapper"]) {
+  border-radius: 12px !important;
+}
+
+/* ---------- action bar: "reply 3.4K   repost 1.6K   • liked 15K   keep   share" */
+
+html[data-hush-site="x"] article [role="group"] {
+  justify-content: flex-start !important;
+  gap: 18px;
+  max-width: none !important;
+}
+html[data-hush-site="x"] article [role="group"] > div {
+  flex: 0 0 auto !important;
+  justify-content: flex-start !important;
+}
+html[data-hush-site="x"] article [role="group"] :is(button[data-testid], button[aria-label="Share post"]) svg,
+html[data-hush-site="x"] article [role="group"] :is(button[data-testid], button[aria-label="Share post"]) > div > div:first-child:has(svg) {
+  display: none !important;
+}
+html[data-hush-site="x"] article [role="group"] :is(button[data-testid], button[aria-label="Share post"]) {
+  min-height: 0 !important;
+}
+html[data-hush-site="x"] article [role="group"] :is(button[data-testid], button[aria-label="Share post"]) > div {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 5px;
+  color: var(--h-dim) !important;
+  font: 400 13px/1.6 var(--h-font) !important;
+}
+html[data-hush-site="x"] article [role="group"] :is(button[data-testid], button[aria-label="Share post"]) span {
+  color: var(--h-dim) !important;
+  font-size: 13px !important;
+}
+html[data-hush-site="x"] article [role="group"] :is(button[data-testid], button[aria-label="Share post"]):is(:hover, :focus-visible) > div,
+html[data-hush-site="x"] article [role="group"] :is(button[data-testid], button[aria-label="Share post"]):is(:hover, :focus-visible) span {
+  color: var(--h-fg) !important;
+}
+
+html[data-hush-site="x"] article [role="group"] button[data-testid="reply"] > div::before          { content: "reply"; }
+html[data-hush-site="x"] article [role="group"] button[data-testid="retweet"] > div::before        { content: "repost"; }
+html[data-hush-site="x"] article [role="group"] button[data-testid="like"] > div::before           { content: "like"; }
+html[data-hush-site="x"] article [role="group"] button[data-testid="bookmark"] > div::before       { content: "keep"; }
+html[data-hush-site="x"] article [role="group"] button[aria-label="Share post"] > div::before      { content: "share"; }
+html[data-hush-site="x"] article [role="group"] button[data-testid="unretweet"] > div::before      { content: "reposted"; }
+html[data-hush-site="x"] article [role="group"] button[data-testid="unlike"] > div::before         { content: "liked"; }
+html[data-hush-site="x"] article [role="group"] button[data-testid="removeBookmark"] > div::before { content: "kept"; }
+
+/* labels are inline-blocks so they can move */
+html[data-hush-site="x"] article [role="group"] :is(button[data-testid], button[aria-label="Share post"]) > div::before {
+  display: inline-block;
+  transition: color 0.16s ease !important;
+}
+html[data-hush-site="x"] article [role="group"] :is(button[data-testid], button[aria-label="Share post"]) > div,
+html[data-hush-site="x"] article [role="group"] :is(button[data-testid], button[aria-label="Share post"]) span {
+  transition: color 0.16s ease !important;
+}
+
+/* active states: a small dot instead of a colored icon (red for like) */
+html[data-hush-site="x"] article [role="group"] :is(
+  button[data-testid="unretweet"],
+  button[data-testid="unlike"],
+  button[data-testid="removeBookmark"]
+) > div::before {
+  color: var(--h-fg);
+}
+html[data-hush-site="x"] article [role="group"] :is(
+  button[data-testid="unretweet"],
+  button[data-testid="unlike"],
+  button[data-testid="removeBookmark"]
+) > div::after {
+  content: "";
+  order: -2;
+  width: 5px;
+  height: 5px;
+  margin-right: -1px;
+  border-radius: 50%;
+  background: var(--h-fg);
+  flex: none;
+}
+html[data-hush-site="x"] article [role="group"] button[data-testid="unlike"] > div::after {
+  background: var(--h-accent);
+}
+html[data-hush-site="x"] article [role="group"] :is(button[data-testid], button[aria-label="Share post"]) > div::before {
+  order: -1;
+}
+html[data-hush-site="x"] article [role="group"] :is(button[data-testid], button[aria-label="Share post"]) > div > * {
+  order: 0;
+}
+
+/* the moment you like / repost / keep: dot pops with a ring, label settles in */
+html[data-hush-site="x"] article[data-hush-pop="like"] [role="group"] button[data-testid="unlike"] > div::after,
+html[data-hush-site="x"] article[data-hush-pop="repost"] [role="group"] button[data-testid="unretweet"] > div::after,
+html[data-hush-site="x"] article[data-hush-pop="keep"] [role="group"] button[data-testid="removeBookmark"] > div::after {
+  animation: hushDotPop 0.62s var(--hush-ease-pop) both !important;
+}
+html[data-hush-site="x"] article[data-hush-pop="like"] [role="group"] :is(button[data-testid="unlike"], button[data-testid="like"]) > div::before,
+html[data-hush-site="x"] article[data-hush-pop="repost"] [role="group"] :is(button[data-testid="unretweet"], button[data-testid="retweet"]) > div::before,
+html[data-hush-site="x"] article[data-hush-pop="keep"] [role="group"] :is(button[data-testid="removeBookmark"], button[data-testid="bookmark"]) > div::before {
+  animation: hushLabelIn 0.42s var(--hush-ease) both !important;
+}
+html[data-hush-site="x"] article[data-hush-pop="like"] [role="group"] :is(button[data-testid="unlike"], button[data-testid="like"]) [data-testid="app-text-transition-container"],
+html[data-hush-site="x"] article[data-hush-pop="repost"] [role="group"] :is(button[data-testid="unretweet"], button[data-testid="retweet"]) [data-testid="app-text-transition-container"],
+html[data-hush-site="x"] article[data-hush-pop="keep"] [role="group"] :is(button[data-testid="removeBookmark"], button[data-testid="bookmark"]) [data-testid="app-text-transition-container"] {
+  animation: hushCountIn 0.5s var(--hush-ease) both !important;
+}
+
+@keyframes hushDotPop {
+  0%   { transform: scale(0); box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 0%, transparent); }
+  45%  { transform: scale(1.7); }
+  70%  { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+html[data-hush-site="x"] article[data-hush-pop="like"] [role="group"] button[data-testid="unlike"] > div::after {
+  animation-name: hushLikePop !important;
+}
+@keyframes hushLikePop {
+  0%   { transform: scale(0); box-shadow: 0 0 0 0 rgba(255, 75, 75, 0.55); }
+  40%  { transform: scale(1.8); box-shadow: 0 0 0 1px rgba(255, 75, 75, 0.45); }
+  70%  { transform: scale(0.9); box-shadow: 0 0 0 7px rgba(255, 75, 75, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 7px rgba(255, 75, 75, 0); }
+}
+@keyframes hushLabelIn {
+  0%   { opacity: 0; transform: translateY(5px); filter: blur(2px); }
+  100% { opacity: 1; transform: none; filter: none; }
+}
+@keyframes hushCountIn {
+  0%   { opacity: 0.2; transform: translateY(-4px); }
+  100% { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-hush-site="x"] article[data-hush-pop] * ,
+  html[data-hush-site="x"] article[data-hush-pop] *::before,
+  html[data-hush-site="x"] article[data-hush-pop] *::after {
+    animation: none !important;
+  }
+}
+
+/* option: hide numbers */
+html[data-hush-site="x"][data-hush-nocounts] article [role="group"] [data-testid="app-text-transition-container"] {
+  display: none !important;
+}
+
+/* ---------- profile ---------------------------------------------------------- */
+
+/* option: quiet banners — faded until you hover */
+html[data-hush-site="x"][data-hush-banners] a[href$="/header_photo"] {
+  opacity: 0.28;
+  filter: grayscale(1);
+  transition: opacity 0.2s, filter 0.2s;
+}
+html[data-hush-site="x"][data-hush-banners] a[href$="/header_photo"]:hover {
+  opacity: 1;
+  filter: none;
+}
+html[data-hush-site="x"] [data-testid="UserDescription"],
+html[data-hush-site="x"] [data-testid="UserDescription"] span {
+  font-size: 14px !important;
+  line-height: 1.55 !important;
+}
+html[data-hush-site="x"] [data-testid="UserProfileHeader_Items"] span,
+html[data-hush-site="x"] [data-testid="UserProfileHeader_Items"] a {
+  color: var(--h-dim) !important;
+  font-size: 13px !important;
+}
+html[data-hush-site="x"] [data-testid="UserProfileHeader_Items"] svg {
+  display: none !important;
+}
+
+/* ---------- notifications ---------------------------------------------------- */
+
+/* the big colored heart / person / star icons */
+html[data-hush-site="x"] article[data-testid="notification"] svg {
+  filter: grayscale(1);
+  opacity: 0.45;
+}
+html[data-hush-site="x"] article[data-testid="notification"] {
+  background: none !important;
+}
+
+/* ---------- explore ------------------------------------------------------------ */
+
+html[data-hush-site="x"] [data-testid="trend"] span {
+  font-size: 13.5px !important;
+}
+html[data-hush-site="x"] [data-testid="trend"] > div > div:not(:nth-child(2)) span {
+  color: var(--h-dim) !important;
+  font-size: 12px !important;
+}
+
+/* ==========================================================================
+   pass 2 — chrome around the column
+   ========================================================================== */
+
+html[data-hush-site="x"] {
+  --h-ring: rgba(255, 255, 255, 0.22);
+  --h-solid: #2b2b2b;
+  --h-elev: #0e0e0e;
+}
+html[data-hush-site="x"][data-hush-theme="light"] {
+  --h-ring: rgba(0, 0, 0, 0.2);
+  --h-solid: #1b1b1b;
+  --h-elev: #ffffff;
+}
+
+/* our own bookmarks row when X folds History into "more" */
+html[data-hush-site="x"] header[role="banner"] nav[role="navigation"] > a.hush-x-navlink {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  box-sizing: border-box !important;
+  width: 180px !important;
+  padding: 5px 0 5px 12px !important;
+  color: var(--h-dim) !important;
+  font: 400 13.5px/1.6 var(--h-font) !important;
+  text-decoration: none !important;
+  position: relative;
+  background: radial-gradient(circle, var(--h-accent) 0 2px, transparent 2.6px) no-repeat 2px 50% / 0 0 !important;
+  transition: color 0.16s ease, background-size 0.35s var(--hush-ease-pop) !important;
+}
+html[data-hush-site="x"] header[role="banner"] nav[role="navigation"] > a.hush-x-navlink::before {
+  content: "bookmarks";
+  display: inline-block;
+  transition: transform 0.28s var(--hush-ease) !important;
+}
+html[data-hush-site="x"] header[role="banner"] nav[role="navigation"] > a.hush-x-navlink:is(:hover, :focus-visible) {
+  color: var(--h-fg) !important;
+  outline: none;
+}
+html[data-hush-site="x"] header[role="banner"] nav[role="navigation"] > a.hush-x-navlink:is(:hover, :focus-visible)::before {
+  transform: translateX(3px);
+}
+html[data-hush-site="x"] header[role="banner"] nav[role="navigation"] > a.hush-x-navlink[data-hush-active] {
+  color: var(--h-fg) !important;
+  background-size: 6px 6px !important;
+}
+
+/* sticky headers: solid background, no glass */
+html[data-hush-site="x"] [data-hush-sticky] {
+  background-color: var(--h-bg, #000) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+/* page titles ("Post", "Notifications", "Bookmarks"…): smaller and calmer */
+html[data-hush-site="x"] [data-hush-sticky] h2[role="heading"] span,
+html[data-hush-site="x"] [data-hush-sticky] h2[role="heading"] {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em;
+}
+html[data-hush-site="x"]:not([data-hush-path="profile"]) [data-hush-sticky] h2[role="heading"] {
+  text-transform: lowercase;
+}
+
+/* section headings inside timelines ("Posts For You") */
+html[data-hush-site="x"] [data-testid="cellInnerDiv"] h2,
+html[data-hush-site="x"] [data-testid="cellInnerDiv"] h2 span {
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  color: var(--h-dim) !important;
+  text-transform: lowercase;
+  letter-spacing: 0.01em;
+}
+
+/* search field: flat, soft ring on focus (the X pill is two wrappers up) */
+html[data-hush-site="x"] [data-hush-searchwrap] {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+html[data-hush-site="x"] [data-testid="SearchBox_Search_Input_label"] > div {
+  background-color: var(--h-field) !important;
+  border-radius: 10px !important;
+  box-shadow: inset 0 0 0 1px transparent;
+  transition: box-shadow 0.2s ease, background-color 0.2s ease !important;
+}
+html[data-hush-site="x"] [data-testid="SearchBox_Search_Input_label"]:focus-within > div {
+  box-shadow: inset 0 0 0 1px var(--h-ring) !important;
+  background-color: transparent !important;
+}
+html[data-hush-site="x"] [data-testid="SearchBox_Search_Input_label"] svg {
+  color: var(--h-faint) !important;
+}
+
+/* trends: their "…" only on hover */
+html[data-hush-site="x"] [data-testid="trend"] [data-testid="caret"] {
+  opacity: 0;
+  transition: opacity 0.2s ease !important;
+}
+html[data-hush-site="x"] [data-testid="trend"]:is(:hover, :focus-within) [data-testid="caret"] {
+  opacity: 0.6;
+}
+html[data-hush-site="x"] [data-testid="trend"] {
+  transition: background-color 0.2s ease !important;
+}
+
+/* composers: no box, "> post your reply" */
+html[data-hush-site="x"] [data-hush-composer][data-hush-composer] {
+  border-color: transparent !important;
+  background: transparent !important;
+}
+html[data-hush-site="x"] .public-DraftEditorPlaceholder-inner {
+  color: var(--h-faint) !important;
+  text-transform: lowercase;
+}
+html[data-hush-site="x"] .public-DraftEditorPlaceholder-inner::before {
+  content: "> ";
+  color: var(--h-faint);
+}
+html[data-hush-site="x"] [data-testid="tweetTextarea_0"] {
+  font-size: 15px !important;
+}
+html[data-hush-site="x"] [data-testid="toolBar"] svg,
+html[data-hush-site="x"] [data-testid="ScrollSnap-List"] [role="button"] svg {
+  opacity: 0.55;
+  transition: opacity 0.15s ease !important;
+}
+html[data-hush-site="x"] [data-testid="toolBar"] :is(button, [role="button"]):hover svg {
+  opacity: 1;
+}
+
+/* dialogs (compose, menus): ease in */
+html[data-hush-site="x"] [role="dialog"][aria-modal="true"] {
+  animation: hushModalIn 0.34s var(--hush-ease) both !important;
+}
+html[data-hush-site="x"] [role="dialog"][aria-modal="true"] > div:first-child {
+  box-shadow: 0 0 0 1px var(--h-line), 0 30px 80px -20px rgba(0, 0, 0, 0.7) !important;
+}
+@keyframes hushModalIn {
+  from { opacity: 0; transform: translateY(6px) scale(0.985); }
+}
+
+/* dropdown menus ("more", "…"): soft card, items ease */
+html[data-hush-site="x"] [role="menu"] {
+  border-radius: 12px !important;
+  box-shadow: 0 0 0 1px var(--h-line), 0 18px 50px -12px rgba(0, 0, 0, 0.6) !important;
+  animation: hushMenuIn 0.24s var(--hush-ease) both !important;
+  transform-origin: top left;
+}
+html[data-hush-site="x"] [role="menu"] [role="menuitem"] {
+  transition: background-color 0.14s ease !important;
+}
+html[data-hush-site="x"] [role="menu"] [role="menuitem"] span {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+@keyframes hushMenuIn {
+  from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-hush-site="x"] :is([role="dialog"][aria-modal="true"], [role="menu"]) { animation: none !important; }
+}
+
+/* post page: "relevant ⌄" sort and "view quotes" */
+html[data-hush-site="x"][data-hush-path="status"] [data-testid="primaryColumn"] :is(button[aria-haspopup="menu"]:not([data-testid]), a[href$="/quotes"]) span {
+  text-transform: lowercase;
+  font-size: 13px !important;
+}
+html[data-hush-site="x"][data-hush-path="status"] [data-testid="primaryColumn"] :is(button[aria-haspopup="menu"]:not([data-testid]), a[href$="/quotes"]) svg {
+  opacity: 0.6;
+}
+
+/* inline brand blue (marked by x.js) */
+html[data-hush-site="x"] [data-hush-blue="text"],
+html[data-hush-site="x"] [data-hush-blue="text"] * {
+  color: var(--h-fg) !important;
+}
+html[data-hush-site="x"] [data-hush-blue="bg"] {
+  background-color: var(--h-solid) !important;
+}
+html[data-hush-site="x"] [data-hush-blue="line"] {
+  border-color: var(--h-ring) !important;
+}
+
+/* "more" menu: only the useful entries, lowercase like the nav */
+html[data-hush-site="x"] [role="menu"] :is(a[href^="https://ads.x.com"], a[href^="/i/spaces/start"], a[href^="/i/premium"], a[href^="/i/verified-orgs"], a[href^="/i/jf/"], a[href^="/i/monetization"]) {
+  display: none !important;
+}
+html[data-hush-site="x"] [role="menu"]:has(a[href="/settings"]) [role="menuitem"] span {
+  text-transform: lowercase;
+  font-weight: 400 !important;
+  color: var(--h-dim) !important;
+}
+html[data-hush-site="x"] [role="menu"]:has(a[href="/settings"]) [role="menuitem"]:hover span {
+  color: var(--h-fg) !important;
+}
+html[data-hush-site="x"] [role="menu"]:has(a[href="/settings"]) [role="menuitem"] svg {
+  display: none !important;
+}
+
+/* tab bars: words only */
+html[data-hush-site="x"]:not([data-hush-path="settings"]) [role="tablist"] [role="tab"] svg {
+  display: none !important;
+}
+
+/* two-pane apps (settings, chat) keep X's layout but must fit beside our wider menu */
+html[data-hush-site="x"][data-hush-wide] main[role="main"] {
+  min-width: 0 !important;
+  flex-shrink: 1 !important;
+}
+html[data-hush-site="x"][data-hush-wide] main[role="main"] > div {
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
+html[data-hush-site="x"][data-hush-wide] body {
+  overflow-x: hidden;
+}
+
+/* ==========================================================================
+   menu style: words (default) · icons · both
+   ========================================================================== */
+
+/* hush's own icons only appear in icon modes */
+html[data-hush-site="x"] .hush-icon {
+  display: none !important;
+}
+html[data-hush-site="x"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) .hush-icon {
+  display: inline-flex !important;
+  order: -1;
+  flex: none;
+}
+html[data-hush-site="x"] .hush-icon svg {
+  width: 19px;
+  height: 19px;
+}
+
+/* reveal X's own icon wrapper (but not its label or badge) */
+html[data-hush-site="x"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) header[role="banner"] :is(nav[role="navigation"] > :is(a, button), a[data-testid="SideNav_NewTweet_Button"]) > div:not(.hush-keys) {
+  display: flex !important;
+  order: -1;
+  flex: none !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: auto !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: none !important;
+}
+html[data-hush-site="x"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) header[role="banner"] :is(nav[role="navigation"] > :is(a, button), a[data-testid="SideNav_NewTweet_Button"]) > div:not(.hush-keys) > :not(:has(svg)):not(svg),
+html[data-hush-site="x"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) header[role="banner"] nav[role="navigation"] [aria-live] {
+  display: none !important;
+}
+html[data-hush-site="x"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) header[role="banner"] :is(nav[role="navigation"] > :is(a, button), a[data-testid="SideNav_NewTweet_Button"]) svg {
+  width: 19px !important;
+  height: 19px !important;
+  margin: 0 !important;
+  color: currentColor !important;
+  fill: currentColor;
+}
+html[data-hush-site="x"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) header[role="banner"] :is(nav[role="navigation"] > :is(a, button), a[data-testid="SideNav_NewTweet_Button"], .hush-x-row, nav[role="navigation"] > a.hush-x-navlink) {
+  justify-content: flex-start !important;
+  gap: 12px;
+}
+
+/* both: icon + word */
+html[data-hush-site="x"][data-hush-navstyle="both"] header[role="banner"] :is(nav[role="navigation"] > :is(a, button), a[data-testid="SideNav_NewTweet_Button"], .hush-x-row) {
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+}
+
+/* icons: a quiet rail; the word slides out beside the icon on hover */
+html[data-hush-site="x"][data-hush-navstyle="icons"] header[role="banner"] :is(nav[role="navigation"] > :is(a, button), a[data-testid="SideNav_NewTweet_Button"], nav[role="navigation"] > a.hush-x-navlink)::before,
+html[data-hush-site="x"][data-hush-navstyle="icons"] header[role="banner"] .hush-x-row > .hush-x-label {
+  opacity: 0;
+  transform: translateX(-6px) !important;
+  transition: opacity 0.18s ease, transform 0.3s var(--hush-ease) !important;
+}
+html[data-hush-site="x"][data-hush-navstyle="icons"] header[role="banner"] :is(nav[role="navigation"] > :is(a, button), a[data-testid="SideNav_NewTweet_Button"], nav[role="navigation"] > a.hush-x-navlink):is(:hover, :focus-visible)::before,
+html[data-hush-site="x"][data-hush-navstyle="icons"] header[role="banner"] .hush-x-row:is(:hover, :focus-visible) > .hush-x-label {
+  opacity: 1;
+  transform: none !important;
+}
+html[data-hush-site="x"][data-hush-navstyle="icons"] header[role="banner"] :is(nav[role="navigation"] > :is(a, button), a[data-testid="SideNav_NewTweet_Button"], .hush-x-row) {
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
+/* icon modes: the active dot sits a little further out */
+html[data-hush-site="x"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) header[role="banner"] nav[role="navigation"] > a[href] {
+  background-position: 0 50% !important;
+}
+/* write: always hush's pencil (X only has an icon at some widths) */
+html[data-hush-site="x"][data-hush-site="x"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) header[role="banner"] a[data-testid="SideNav_NewTweet_Button"][data-testid] > div:not(.hush-keys) {
+  display: none !important;
+}
+
+/* ==========================================================================
+   layout pass — less in your face
+   ========================================================================== */
+
+/* posts breathe: a little more room above and below each one */
+html[data-hush-site="x"] [data-testid="cellInnerDiv"] article[data-testid="tweet"] {
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+}
+html[data-hush-site="x"] article[data-testid="tweet"] [data-testid="tweetText"] {
+  margin-top: 2px !important;
+}
+html[data-hush-site="x"] article[data-testid="tweet"] [role="group"] {
+  margin-top: 4px !important;
+}
+
+/* soft media (option): photos, video posters and link cards sit back until you point at them */
+html[data-hush-site="x"][data-hush-softmedia] article :is([data-testid="tweetPhoto"] img, [data-testid="card.wrapper"] img, video) {
+  filter: saturate(var(--hush-sat, 0.9)) contrast(0.98) brightness(0.96);
+  transition: filter 0.45s ease !important;
+}
+html[data-hush-site="x"][data-hush-softmedia][data-hush-theme="light"] article :is([data-testid="tweetPhoto"] img, [data-testid="card.wrapper"] img, video) {
+  filter: saturate(var(--hush-sat, 0.9)) contrast(0.98) brightness(1.01);
+}
+html[data-hush-site="x"][data-hush-softmedia] article:is(:hover, :focus-within) :is([data-testid="tweetPhoto"] img, [data-testid="card.wrapper"] img, video) {
+  filter: none;
+}
+/* the media you opened (photo viewer, focused post page) is always full colour */
+html[data-hush-site="x"][data-hush-softmedia] [role="dialog"] :is(img, video),
+html[data-hush-site="x"][data-hush-softmedia][data-hush-path="status"] [data-testid="cellInnerDiv"]:first-child article :is(img, video) {
+  filter: none !important;
+}
+
+/* big link cards: capped, so a link preview can't take a whole screen */
+html[data-hush-site="x"] [data-testid="card.layoutLarge.media"] {
+  max-height: 280px !important;
+  overflow: hidden !important;
+}
+html[data-hush-site="x"] [data-testid="card.wrapper"] {
+  border-radius: 14px !important;
+  overflow: hidden !important;
+}
+
+/* quote posts: a quieter inset */
+html[data-hush-site="x"] article[data-testid="tweet"] div[role="link"]:has([data-testid="User-Name"]) {
+  border-radius: 14px !important;
+  transition: background-color 0.2s ease !important;
+}
+html[data-hush-site="x"] article[data-testid="tweet"] div[role="link"]:has([data-testid="User-Name"]):hover {
+  background: var(--h-hover) !important;
+}
+html[data-hush-site="x"] article[data-testid="tweet"] div[role="link"] :is([data-testid="tweetText"], [data-testid="tweetText"] span) {
+  font-size: 13.5px !important;
+}
+
+/* profile: a short banner and a smaller avatar (with "quiet profile banners") */
+html[data-hush-site="x"][data-hush-banners] a[href$="/header_photo"] {
+  display: block !important;
+  max-height: 120px !important;
+  overflow: hidden !important;
+}
+html[data-hush-site="x"][data-hush-banners][data-hush-path="profile"] a[href$="/photo"] {
+  width: 96px !important;
+  height: 96px !important;
+}
+html[data-hush-site="x"][data-hush-path="profile"] [data-testid="UserName"] :is(span, div)[dir] {
+  letter-spacing: -0.01em;
+}
+html[data-hush-site="x"][data-hush-path="profile"] [data-testid="UserName"] div:first-child span {
+  font-size: 20px !important;
+  font-weight: 600 !important;
+}
+
+/* ==========================================================================
+   motion pass — transform + opacity only, short and quiet
+   ========================================================================== */
+
+/* sliding tab indicator (replaces X's blue bar) */
+html[data-hush-site="x"] [role="tablist"][data-hush-tabs] {
+  position: relative !important;
+}
+html[data-hush-site="x"] .hush-tab-ind {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--h-fg);
+  pointer-events: none;
+  opacity: 0;
+  transition: transform 0.34s var(--hush-ease), width 0.34s var(--hush-ease), opacity 0.2s ease !important;
+  will-change: transform;
+}
+
+/* posts settle in as they mount (the inner box — X positions the cell itself) */
+html[data-hush-site="x"] [data-testid="cellInnerDiv"] > div {
+  animation: hushCellIn 0.38s var(--hush-ease) both !important;
+}
+@keyframes hushCellIn {
+  from { opacity: 0; transform: translateY(6px); }
+}
+
+/* photo viewer: images ease in */
+html[data-hush-site="x"] [role="dialog"][aria-modal="true"] [data-testid="swipe-to-dismiss"] img {
+  animation: hushZoomIn 0.32s var(--hush-ease) both !important;
+}
+@keyframes hushZoomIn {
+  from { opacity: 0; transform: scale(0.97); }
+}
+
+/* "see new posts": a floating chip that drops in */
+html[data-hush-site="x"] [data-testid="pillLabel"] {
+  animation: hushDrop 0.4s var(--hush-ease) both !important;
+}
+html[data-hush-site="x"] [data-testid="pillLabel"] span {
+  color: var(--h-fg) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+html[data-hush-site="x"] [data-testid="pillLabel"] img {
+  display: none !important;
+}
+@keyframes hushDrop {
+  from { opacity: 0; transform: translateY(-8px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-hush-site="x"] [data-testid="cellInnerDiv"] > div,
+  html[data-hush-site="x"] [data-testid="pillLabel"] { animation: none !important; }
+}

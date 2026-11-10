@@ -1,0 +1,23 @@
+name: Site request
+description: Ask hush to calm down a site
+labels: ["site request"]
+body:
+  - type: input
+    id: site
+    attributes:
+      label: Site
+      placeholder: reddit.com
+    validations:
+      required: true
+  - type: textarea
+    id: loud
+    attributes:
+      label: What feels loud?
+      description: Upsells, badges, autoplay, endless feeds… Screenshots help.
+    validations:
+      required: true
+  - type: textarea
+    id: pages
+    attributes:
+      label: Pages you use most
+      placeholder: Home feed, a post, search results
