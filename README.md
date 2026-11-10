@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://i.ibb.co/Q3QTLGwS/image.png" width="96" height="96" alt="hush" />
+<img src="docs/media/logo.png" width="96" height="96" alt="hush" />
 
 # hush
 
@@ -15,7 +15,7 @@ A free, open-source browser extension that strips the promos, badges and noise f
 
 <br />
 
-<img src="docs/media/hero.png" width="860" alt="The hush homepage" />
+<img src="https://i.ibb.co/Q3QTLGwS/image.png" width="860" alt="The hush homepage" />
 
 </div>
 
