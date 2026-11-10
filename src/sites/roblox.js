@@ -6,10 +6,17 @@ Hush.register({
   id: 'rbx',
   name: 'Roblox',
   match: (host) => /(^|\.)roblox\.com$/.test(host) && !/^(create|devforum|en\.help|help|corp|blog|ro)\./.test(host),
+  // mute words: a game is its tile; calm titles: tile names
+  mute: {
+    items: '[data-testid="wide-game-tile"], [data-testid="game-tile"], li.list-item.game-card, .game-card-container',
+    target: (el) => el.closest('li') || el,
+  },
+  titles: '[data-testid="game-tile-game-title"], .game-card-name',
   options: [
     { key: 'navstyle', label: 'menu', group: 'layout', desc: 'How the sidebar shows its links', choices: ['words', 'icons', 'both'], default: 'both', keywords: 'sidebar nav style' },
     { key: 'capfeed', label: 'calm home feed', group: 'feed', desc: 'Three rows, then a quiet “show more”', keywords: 'endless infinite recommended limit', default: true },
     { key: 'softthumbs', label: 'soft thumbnails', group: 'look', desc: 'Thumbnails softened until hover', keywords: 'images color saturation quiet', default: true },
+    { key: 'calmtitles', label: 'calm titles', group: 'look', desc: 'No [🔥UPDATE] tags, ALL CAPS or emoji in game names', keywords: 'caps emoji tags names clickbait', default: true },
     { key: 'norecs', label: 'hide recommendations', group: 'feed', desc: 'No “people also join”', keywords: 'people also join similar', default: false },
     { key: 'nochat', label: 'hide chat bar', group: 'feed', desc: 'No live chat beside streams', keywords: 'friends dock', default: true },
     { key: 'zen', label: 'focus mode', group: 'layout', desc: 'Hide the menu, keep only the content', hint: 'z', keywords: 'zen hide menu nav', default: false }

@@ -9,6 +9,8 @@
     color: false,         // mute color: desaturate images & video
     vibrance: 90,         // % of colour soft images keep (soft thumbnails / soft media)
     hidden: {},           // "hush this" rules: { [host]: [{ s: selector, l: label, t: time }] }
+    muted: [],            // words and phrases: posts, videos and games that mention them are hidden
+    nudge: 0,             // minutes per site per day between quiet time nudges (0 = off)
     sites: {}             // per-adapter options: { [adapterId]: { [optionKey]: boolean } }
   };
 
@@ -91,6 +93,36 @@
     },
 
     isMac: /Mac|iPhone|iPad/.test(globalThis.navigator ? navigator.platform : ''),
+
+    /**
+     * Take the shouting out of a title: leading [TAGS] and (TAGS), emoji,
+     * "!!!" runs, and ALL CAPS. Mostly-caps titles become sentence case;
+     * in normal titles only long all-caps words calm down (NASA, GPU stay).
+     */
+    calmTitle(text) {
+      let s = String(text || '');
+      const before = s;
+      s = s.replace(/^\s*(?:(?:\[[^\]]{0,28}\]|\([^)]{0,16}\)|【[^】]{0,20}】)\s*)+/u, '');
+      s = s.replace(/[\p{Extended_Pictographic}\u{1F1E6}-\u{1F1FF}\uFE0F\u200D\u20E3]+/gu, ' ');
+      s = s.replace(/([!?])[!?]+/g, '$1').replace(/\s{2,}/g, ' ').replace(/\s+([!?,.:])/g, '$1').trim();
+      const letters = s.replace(/[^\p{L}]/gu, '');
+      const caps = letters.replace(/[^\p{Lu}]/gu, '').length;
+      if (letters.length >= 8 && caps / letters.length > 0.6) {
+        s = s.toLowerCase().replace(/(^|[.!?]\s+)(\p{L})/gu, (m, a, b) => a + b.toUpperCase());
+        s = s.replace(/\bi\b/g, 'I');
+      } else {
+        s = s.replace(/\b(\p{Lu})(\p{Lu}{4,})\b/gu, (m, a, b) => a + b.toLowerCase());
+      }
+      return s || before;
+    },
+
+    /** muted words → one case-insensitive, whole-word RegExp (or null) */
+    muteRegex(list) {
+      const words = (list || []).map((w) => String(w).trim()).filter(Boolean);
+      if (!words.length) return null;
+      const alts = words.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, (c) => '\\' + c).replace(/\s+/g, '\\s+')).join('|');
+      return new RegExp(`(?:^|[^\\p{L}\\p{N}])(?:${alts})(?=$|[^\\p{L}\\p{N}])`, 'iu');
+    },
 
     /**
      * Coalesce bursts of DOM changes into one pass: at most once per frame and

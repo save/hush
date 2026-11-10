@@ -71,6 +71,106 @@
     H.picker.start(t, pickDone);
   }
 
+  const NUDGES = [0, 20, 45, 90];
+  const nudgeLabel = (n) => (n ? `${n} min` : 'off');
+
+  // ---- mute words + calm titles: one throttled pass over the page --------
+  let muteRe = null;
+  let muteSig = null;
+  function muteScan(force) {
+    if (!adapter || !adapter.mute) return;
+    const sig = JSON.stringify(settings.muted || []);
+    if (force || sig !== muteSig) {
+      muteSig = sig;
+      muteRe = H.muteRegex(settings.muted);
+      document.querySelectorAll('[data-hush-mchk]').forEach((el) => el.removeAttribute('data-hush-mchk'));
+      document.querySelectorAll('[data-hush-muted]').forEach((el) => el.removeAttribute('data-hush-muted'));
+    }
+    if (!muteRe) return;
+    for (const item of document.querySelectorAll(adapter.mute.items)) {
+      // text node by text node, so "Steal An Egg" + "91% Rating" doesn't read as "Egg91"
+      const parts = [];
+      const walk = document.createTreeWalker(item, NodeFilter.SHOW_TEXT);
+      for (let n = walk.nextNode(); n; n = walk.nextNode()) if (n.nodeValue.trim()) parts.push(n.nodeValue);
+      const text = parts.join(' ');
+      const key = String(text.length);
+      if (item.dataset.hushMchk === key) continue;
+      item.dataset.hushMchk = key;
+      const target = (adapter.mute.target && adapter.mute.target(item)) || item;
+      if (muteRe.test(text)) target.setAttribute('data-hush-muted', '');
+      else if (target === item) target.removeAttribute('data-hush-muted');
+    }
+  }
+  function leafOf(el) {
+    if (!el.childElementCount) return el;
+    for (const d of el.querySelectorAll('*')) if (!d.childElementCount && (d.textContent || '').trim()) return d;
+    return el;
+  }
+  let calmWasOn = false;
+  function calmScan() {
+    if (!adapter || !adapter.titles) return;
+    const want = on && !!H.siteOptions(settings, adapter).calmtitles;
+    if (!want) {
+      if (calmWasOn) {
+        for (const el of document.querySelectorAll('[data-hush-orig]')) { el.textContent = el.dataset.hushOrig; delete el.dataset.hushOrig; delete el.dataset.hushCalm; }
+        calmWasOn = false;
+      }
+      return;
+    }
+    calmWasOn = true;
+    for (const t of document.querySelectorAll(adapter.titles)) {
+      const leaf = leafOf(t);
+      const cur = leaf.textContent || '';
+      if (leaf.dataset.hushCalm === cur) continue;
+      const calm = H.calmTitle(cur);
+      if (calm !== cur) {
+        leaf.dataset.hushOrig = cur;
+        if (!t.getAttribute('title')) t.setAttribute('title', cur.trim());
+        leaf.textContent = calm;
+      }
+      leaf.dataset.hushCalm = calm;
+    }
+  }
+  const pageScan = H.throttle(() => {
+    if (!on) return;
+    try { muteScan(false); } catch (e) { console.warn('[hush] mute', e); }
+    try { calmScan(); } catch (e) { console.warn('[hush] titles', e); }
+  }, 250);
+  new MutationObserver(pageScan).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+
+  // ---- time on site: counted while the tab is visible and focused --------
+  let activeSecs = 0;
+  setInterval(() => { if (on && !document.hidden && document.hasFocus()) activeSecs += 15; }, 15000);
+  const fmtTime = (s) => { const m = Math.round(s / 60); return m < 60 ? `${m} minutes` : `${Math.floor(m / 60)} h ${m % 60 ? (m % 60) + ' min' : ''}`.trim(); };
+  async function flushTime() {
+    if (!activeSecs || !chrome.storage || !chrome.storage.local) return;
+    const add = activeSecs;
+    activeSecs = 0;
+    try {
+      const day = new Date().toLocaleDateString('en-CA');
+      const { time = {} } = await chrome.storage.local.get('time');
+      const d = (time[day] = time[day] || {});
+      d[host] = (d[host] || 0) + add;
+      const cutoff = new Date(Date.now() - 35 * 864e5).toLocaleDateString('en-CA');
+      for (const k of Object.keys(time)) if (k !== '_nudged' && k < cutoff) delete time[k];
+      // a quiet nudge each time you pass another interval on this site today
+      const every = +settings.nudge || 0;
+      if (every > 0 && on) {
+        const step = Math.floor(d[host] / 60 / every);
+        const nk = `${day}|${host}`;
+        const nudged = (time._nudged = time._nudged || {});
+        for (const k of Object.keys(nudged)) if (!k.startsWith(day)) delete nudged[k];
+        if (step > (nudged[nk] || 0)) {
+          nudged[nk] = step;
+          if (H.toast) H.toast(`${fmtTime(d[host])} on ${host} today`, false);
+        }
+      }
+      await chrome.storage.local.set({ time });
+    } catch { activeSecs += add; }
+  }
+  setInterval(flushTime, 30000);
+  window.addEventListener('pagehide', flushTime);
+
   const VIBRANCE = [50, 70, 90, 100];
   const nearestVibrance = () => {
     const v = Number.isFinite(+settings.vibrance) ? +settings.vibrance : 90;
@@ -106,6 +206,7 @@
     setFlag('data-hush-color', on && settings.color);
     setVibrance(settings.vibrance);
     setRules(rulesHere());
+    if (typeof pageScan === 'function') pageScan();
 
     if (!adapter) return;
 
@@ -230,7 +331,17 @@
             H.save({ vibrance: next });
           }
         },
-        { group: 'hush', label: 'hush everywhere', icon: 'globe', keywords: 'master all sites global off', active: !!settings.enabled, run: () => H.save({ enabled: !settings.enabled }) }
+        { group: 'hush', label: 'hush everywhere', icon: 'globe', keywords: 'master all sites global off', active: !!settings.enabled, run: () => H.save({ enabled: !settings.enabled }) },
+        {
+          group: 'hush', label: 'time nudges', icon: 'clock', keywords: 'time limit reminder minutes break screen time',
+          choices: NUDGES.map(nudgeLabel), value: nudgeLabel(+settings.nudge || 0), toast: false,
+          run: () => {
+            const i = NUDGES.indexOf(+settings.nudge || 0);
+            const next = NUDGES[(i + 1) % NUDGES.length];
+            settings = { ...settings, nudge: next };
+            H.save({ nudge: next });
+          }
+        }
       ];
       if (adapter) {
         const opts = H.siteOptions(settings, adapter);
@@ -252,6 +363,31 @@
             });
           }
         }
+      }
+      return cmds;
+    });
+    // mute words: type "mute crypto", or anything, and mute it
+    H.palette.addProvider((query) => {
+      const q = (query || '').trim();
+      if (!q) return [];
+      const list = settings.muted || [];
+      const cmds = list.map((w) => ({
+        group: 'muted words', label: `unmute “${w}”`, icon: 'eye', toast: false, keywords: 'mute muted words filter unmute topic',
+        run: () => { const muted = list.filter((x) => x !== w); settings = { ...settings, muted }; H.save({ muted }); H.toast(`unmuted “${w}”`, true); }
+      }));
+      const word = q.replace(/^mute\s+/i, '').trim();
+      if (word.length >= 2 && !/^(un)?mute\b/i.test(word) && !/^unmute\b/i.test(q) && !list.some((w) => w.toLowerCase() === word.toLowerCase())) {
+        cmds.push({
+          group: 'mute', label: `mute “${word}”`, icon: 'message-square-off', always: true, toast: false,
+          run: () => {
+            const muted = [...list, word];
+            settings = { ...settings, muted };
+            H.save({ muted });
+            muteScan(true);
+            const n = document.querySelectorAll('[data-hush-muted]').length;
+            H.toast(n ? `muted “${word}” · ${n} hidden here` : `muted “${word}”`, true);
+          }
+        });
       }
       return cmds;
     });
@@ -351,7 +487,7 @@
   function tally() {
     if (!on || document.hidden) return;
     const count = (list) => { for (const el of list) if (!seen.has(el)) { seen.add(el); pending++; } };
-    count(document.querySelectorAll('[data-hush-hide]'));
+    count(document.querySelectorAll('[data-hush-hide], [data-hush-muted]'));
     for (const s of userSel) { try { count(document.querySelectorAll(s)); } catch { /* skip */ } }
     if (adapter && adapter.countHidden) {
       const n = adapter.countHidden() || 0;
@@ -377,7 +513,7 @@
   }
   setInterval(tally, 4000);
   setInterval(flush, 30000);
-  document.addEventListener('visibilitychange', () => { if (document.hidden) { tally(); flush(); } });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) { tally(); flush(); flushTime(); } });
   window.addEventListener('pagehide', () => { tally(); flush(); });
 
   // Optimistic: apply defaults right away so pages don't flash loud, then real settings.

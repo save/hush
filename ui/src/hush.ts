@@ -21,6 +21,8 @@ export type Settings = {
   motion: boolean;
   color: boolean;
   vibrance: number;
+  muted?: string[];
+  nudge?: number;
   hidden?: Record<string, { s: string; l: string; t: number }[]>;
   sites: Record<string, Record<string, boolean | string>>;
 };

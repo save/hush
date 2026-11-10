@@ -14,11 +14,18 @@ Hush.register({
     { key: 'nocomments', label: 'hide comments', group: 'feed', desc: 'No comment section at all', default: false },
     { key: 'capfeed', label: 'calm home feed', group: 'feed', desc: 'Three rows, then a quiet “show more”', keywords: 'endless infinite limit up next', default: true },
     { key: 'softthumbs', label: 'soft thumbnails', group: 'look', desc: 'Thumbnails softened until hover', keywords: 'images color saturation quiet', default: true },
+    { key: 'calmtitles', label: 'calm titles', group: 'look', desc: 'No ALL CAPS, tags or emoji spam in titles', keywords: 'clickbait caps capitals emoji title', default: true },
     { key: 'foldcomments', label: 'fold comments', group: 'feed', desc: 'Comments behind a button', keywords: 'collapse', default: true },
     { key: 'zen', label: 'focus mode', group: 'layout', desc: 'Hide the menu, keep only the content', hint: 'z', keywords: 'cinema theater zen', default: false }
   ],
 
   // the video you opened may autoplay even with "still motion" on; previews may not
+  // mute words: a video is its whole card; calm titles: grid, search, up next, the watch page
+  mute: {
+    items: 'ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer, ytd-grid-video-renderer, yt-lockup-view-model',
+    target: (el) => el.closest('ytd-rich-item-renderer') || el,
+  },
+  titles: '#video-title, .yt-lockup-metadata-view-model__title, .ytLockupMetadataViewModelTitle, ytd-watch-metadata h1 yt-formatted-string',
   allowMedia(el) {
     return !!el.closest('#movie_player, ytd-player#ytd-player') && !el.closest('ytd-video-preview, #video-preview, #inline-preview-player');
   },

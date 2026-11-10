@@ -6,6 +6,11 @@ Hush.register({
   id: 'x',
   name: 'X',
   match: (host) => /(^|\.)(x|twitter)\.com$/.test(host),
+  // mute words: a post is its whole timeline cell
+  mute: {
+    items: 'article[data-testid="tweet"]',
+    target: (el) => el.closest('[data-testid="cellInnerDiv"]') || el,
+  },
   options: [
     { key: 'navstyle', label: 'menu', group: 'layout', desc: 'How the sidebar shows its links', choices: ['words', 'icons', 'both'], default: 'both', keywords: 'sidebar nav style' },
     { key: 'nocompose', label: 'hide composer on home', group: 'feed', desc: 'No post box at the top of home', default: true },

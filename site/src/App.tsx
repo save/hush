@@ -248,7 +248,7 @@ function Spotlight({ children, className }: { children: React.ReactNode; classNa
 /* ------------------------------ features ------------------------------- */
 
 function PaletteDemo() {
-  const items = ['Hide Shorts', 'Focus mode', 'Menu: words', 'Soft thumbnails', 'Still motion'];
+  const items = ['Mute “crypto”', 'Show “Arsenal” again', 'Calm titles', 'Image colour: 90%', 'Time nudges: 45 min'];
   const [i, setI] = React.useState(0);
   React.useEffect(() => {
     const t = setInterval(() => setI((v) => (v + 1) % items.length), 1400);
@@ -382,7 +382,7 @@ function Features() {
               <kbd className="rounded border border-white/10 bg-white/[0.04] px-1.5 font-mono text-[11px] text-dim">K</kbd>
             </div>
             <h3 className="mt-3 font-semibold tracking-tight">Ctrl K for everything</h3>
-            <p className="mt-1.5 text-[14px] text-dim">Every switch, on every page.</p>
+            <p className="mt-1.5 text-[14px] text-dim">Mute a word, bring something back, flip any switch.</p>
             <div className="mt-6"><PaletteDemo /></div>
           </Spotlight>
         </Reveal>

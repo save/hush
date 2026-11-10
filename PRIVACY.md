@@ -5,7 +5,8 @@ hush is built to be the quietest thing in your browser, and that includes data.
 ## What hush stores
 
 - **Your settings** (which sites are on, your options, elements you chose to hide) in `chrome.storage.sync`, so they follow you between your own browsers. Google syncs this as part of your Chrome profile; hush has no access to it beyond your browser.
-- **Weekly counts** for the quiet report: a number per site per day, in `chrome.storage.local`, on your device only. Anything older than five weeks is deleted.
+- **Weekly counts** for the quiet report: how many things were hidden, and seconds spent on each site while hush was on, per day, in `chrome.storage.local`, on your device only. Anything older than five weeks is deleted.
+- **Muted words** you add, in `chrome.storage.sync` with your other settings.
 
 ## What hush does not do
 

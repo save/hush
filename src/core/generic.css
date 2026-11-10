@@ -145,3 +145,8 @@ html[data-hush] .hush-btn--center {
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
 }
+
+/* ---------- mute words: items that mention a muted word ------------------ */
+html[data-hush] [data-hush-muted] {
+  display: none !important;
+}

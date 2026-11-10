@@ -32,7 +32,10 @@ A free, open-source browser extension that strips the promos, badges and noise f
 
 - **Tailored for X, YouTube and Roblox.** Each site has its own adapter that removes upsells, ads, Shorts, trends and promoted posts, and rebuilds the page as one calm column.
 - **Hush anything.** Right-click any element on any site and choose **hush this**. It stays hidden until you bring it back from `Ctrl K` or settings.
-- **A weekly quiet report.** See how much hush kept off your screen this week, by day and by site. Counted on your device only.
+- **Mute words.** Hide posts, videos and games that mention anything you choose. Type `mute crypto` in `Ctrl K`.
+- **Calm titles.** ALL CAPS, [🔥UPDATE] tags, emoji and "!!!" taken out of YouTube and Roblox titles. Hover for the original.
+- **Gentle time nudges.** Optional: a quiet note after 20, 45 or 90 minutes on a site each day.
+- **A weekly quiet report.** See how much hush kept off your screen this week, and your time per site. Counted on your device only.
 - **Still motion.** Nothing autoplays. Video plays when you press play.
 - **Soft colour.** Thumbnails stop shouting until you point at them. One slider sets how much.
 - **`Ctrl K` everywhere.** Every switch, your weekly report and everything you've hidden, one keystroke away. The toolbar button opens it too.

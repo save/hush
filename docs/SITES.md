@@ -99,6 +99,8 @@ ui/               the popup: React + shadcn/ui + Tailwind v4 (built to build/pop
        { key: 'navstyle', label: 'menu', choices: ['words', 'icons', 'both'], default: 'both' } // → html[data-hush-navstyle="icons"]
      ],
      allowMedia: (video) => false,          // optional: media allowed to autoplay
+     mute: { items: 'article', target: (el) => el.closest('li') }, // optional: what a muted word hides
+     titles: 'h3.title',                    // optional: titles that "calm titles" rewrites
      setup(ctx) {
        // ctx: root, options, setOption(k, v), toast(text), openPalette(), isTyping(e),
        //      keys({ 'g h': fn, '/': fn }) for sites without their own shortcuts

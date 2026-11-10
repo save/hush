@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- **Mute words:** hide posts (X), videos (YouTube) and games (Roblox) that mention words or phrases you choose. Type `mute …` in `Ctrl K`, or add them in settings.
+- **Calm titles:** YouTube and Roblox titles lose ALL CAPS, leading [TAGS], emoji and "!!!". The original is in the tooltip. On by default, per site.
+- **Time nudges:** optional quiet toasts after 20, 45 or 90 minutes on a site each day; time per site in the weekly report.
 - **Roblox:** a plainer layout. Normal-case menu and header with a soft pill for the current page, a wide pill search, Home with a quiet greeting under it, sentence-case section titles, bigger tiles. The Robux balance and app download button go; the plain Robux link stays.
 - **YouTube:** three big videos to a row, a 76px rail (home, subscriptions, history), one pill search, pill chips and duration badges, the colour logo back. Each video shows its title and channel only. Create, notifications and voice search go.
 

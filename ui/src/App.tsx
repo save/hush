@@ -8,7 +8,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Badge, Kbd, KbdGroup, Separator } from '@/components/ui/misc';
 import { cn } from '@/lib/utils';
 import { Hush, type Adapter, type Option, type Settings } from './hush';
-import { HiddenByYou, WeekReport } from './Quiet';
+import { HiddenByYou, MutedWords, NudgeRow, WeekReport } from './Quiet';
 
 const VERSION = chrome?.runtime?.getManifest?.().version ?? 'dev';
 
@@ -326,7 +326,7 @@ export function App() {
             {adapter && tab.host && <HiddenByYou s={s} host={tab.host} update={update} />}
           </TabsContent>
 
-          <TabsContent value="everywhere" className="-mx-2 pb-1">
+          <TabsContent value="everywhere" className="-mx-2 max-h-[340px] overflow-y-auto pb-2 [scrollbar-width:thin]">
             <SectionTitle>Every site</SectionTitle>
             <Row label="Still motion" desc="No animations or autoplay" index={0} htmlFor="g-motion">
               <Wind className="size-3.5 text-muted-foreground" />
@@ -336,6 +336,8 @@ export function App() {
               <Switch id="g-color" checked={s.color} onCheckedChange={(v) => update({ color: v })} />
             </Row>
             <ColourRow value={s.vibrance ?? 90} onSave={(n) => update({ vibrance: n })} index={2} />
+            <MutedWords s={s} update={update} />
+            <NudgeRow s={s} update={update} />
             {!adapter && tab.host && <HiddenByYou s={s} host={tab.host} update={update} />}
           </TabsContent>
 
