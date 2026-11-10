@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/media/logo.png" width="96" height="96" alt="hush" />
+<img src="https://i.ibb.co/Q3QTLGwS/image.png" width="96" height="96" alt="hush" />
 
 # hush
 
