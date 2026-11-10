@@ -4,7 +4,7 @@ export const SUPPORT = {
   kofi: '', // e.g. 'https://ko-fi.com/yourname'
   githubSponsors: '', // e.g. 'https://github.com/sponsors/yourname'
   buyMeACoffee: '', // e.g. 'https://buymeacoffee.com/yourname'
-  github: '', // the repo, for stars and issues
+  github: 'https://github.com/save/hush', // the repo, for stars and issues
   chromeWebStore: '', // the store listing, for reviews
   website: '', // a landing page, if you make one
 };

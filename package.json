@@ -43,5 +43,13 @@
     "typescript": "^5.7.3",
     "vite": "^6.2.0"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/save/hush.git"
+  },
+  "bugs": {
+    "url": "https://github.com/save/hush/issues"
+  },
+  "homepage": "https://github.com/save/hush#readme"
 }
