@@ -1116,26 +1116,26 @@ html[data-hush-site="yt"] #search-icon-legacy {
 }
 html[data-hush-site="yt"] yt-searchbox input { font-size: 15.5px !important; }
 
-/* the rail: home, subscriptions, history. "both" keeps a small word under each icon */
-html[data-hush-site="yt"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) ytd-app {
+/* icons style: the expanded sidebar is a slim rail of home, subscriptions, history */
+html[data-hush-site="yt"][data-hush-navstyle="icons"] ytd-app {
   --app-drawer-width: 76px !important;
   --ytd-persistent-guide-width: 76px !important;
 }
-html[data-hush-site="yt"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) :is(#guide-content, ytd-guide-renderer, #guide-inner-content, ytd-guide-section-renderer, ytd-guide-section-renderer #items) {
+html[data-hush-site="yt"][data-hush-navstyle="icons"] :is(#guide-content, ytd-guide-renderer, #guide-inner-content, ytd-guide-section-renderer, ytd-guide-section-renderer #items) {
   width: 76px !important;
   min-width: 0 !important;
   border: 0 !important;
 }
-html[data-hush-site="yt"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) ytd-guide-renderer { overflow-x: hidden !important; padding-top: 8px !important; }
-html[data-hush-site="yt"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) :is(
+html[data-hush-site="yt"][data-hush-navstyle="icons"] ytd-guide-renderer { overflow-x: hidden !important; padding-top: 8px !important; }
+html[data-hush-site="yt"][data-hush-navstyle="icons"] :is(
   ytd-guide-entry-renderer:not(:has(a[href="/"], a[href="/feed/subscriptions"], a[href="/feed/history"])),
   ytd-guide-collapsible-entry-renderer, ytd-guide-collapsible-section-entry-renderer,
   ytd-guide-section-renderer #guide-section-title, #footer, ytd-guide-signin-promo-renderer
 ) {
   display: none !important;
 }
-html[data-hush-site="yt"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) ytd-guide-section-renderer { padding: 0 !important; margin: 0 !important; }
-html[data-hush-site="yt"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) ytd-guide-entry-renderer a#endpoint {
+html[data-hush-site="yt"][data-hush-navstyle="icons"] ytd-guide-section-renderer { padding: 0 !important; margin: 0 !important; }
+html[data-hush-site="yt"][data-hush-navstyle="icons"] ytd-guide-entry-renderer a#endpoint {
   width: 56px !important;
   height: 56px !important;
   margin: 0 auto 6px !important;
@@ -1146,31 +1146,20 @@ html[data-hush-site="yt"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="
   transition: background-color 0.2s ease !important;
 }
 html[data-hush-site="yt"][data-hush-navstyle="icons"] ytd-guide-entry-renderer a#endpoint { height: 48px !important; width: 48px !important; }
-html[data-hush-site="yt"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) ytd-guide-entry-renderer:hover a#endpoint { background: rgba(255, 255, 255, 0.05) !important; }
-html[data-hush-site="yt"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) ytd-guide-entry-renderer[active] a#endpoint { background: rgba(255, 255, 255, 0.09) !important; }
-html[data-hush-site="yt"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) ytd-guide-entry-renderer tp-yt-paper-item {
+html[data-hush-site="yt"][data-hush-navstyle="icons"] ytd-guide-entry-renderer:hover a#endpoint { background: rgba(255, 255, 255, 0.05) !important; }
+html[data-hush-site="yt"][data-hush-navstyle="icons"] ytd-guide-entry-renderer[active] a#endpoint { background: rgba(255, 255, 255, 0.09) !important; }
+html[data-hush-site="yt"][data-hush-navstyle="icons"] ytd-guide-entry-renderer tp-yt-paper-item {
   width: 100% !important;
   padding: 0 !important;
   flex-direction: column !important;
   justify-content: center !important;
   gap: 4px !important;
 }
-html[data-hush-site="yt"]:is([data-hush-navstyle="icons"], [data-hush-navstyle="both"]) ytd-guide-entry-renderer :is(yt-icon.guide-icon, .guide-icon) {
+html[data-hush-site="yt"][data-hush-navstyle="icons"] ytd-guide-entry-renderer :is(yt-icon.guide-icon, .guide-icon) {
   margin: 0 !important;
   width: 22px !important;
   height: 22px !important;
   opacity: 0.9;
-}
-html[data-hush-site="yt"][data-hush-navstyle="both"] ytd-guide-entry-renderer :is(.title, yt-formatted-string) {
-  display: block !important;
-  opacity: 1 !important;
-  transform: none !important;
-  font-size: 10.5px !important;
-  text-transform: none !important;
-  max-width: 64px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 html[data-hush-site="yt"][data-hush-navstyle="icons"] ytd-guide-entry-renderer :is(.title, yt-formatted-string) { display: none !important; }
 
@@ -1333,4 +1322,95 @@ html[data-hush-site="yt"] chip-view-model:hover .ytChipShapeChip { background: c
 html[data-hush-site="yt"] :is(chip-view-model, yt-chip-cloud-chip-renderer) .ytChipShapeChip.ytChipShapeActive {
   background: var(--h-fg) !important;
   color: var(--yt-sys-color-baseline--base-background, #0a0a0a) !important;
+}
+
+/* ==========================================================================
+   sidebar, take two
+   expanded + "both": a proper list, icon and word, a soft pill for "here"
+   collapsed (any style but words): a tight rail, labels that fit
+   ========================================================================== */
+html[data-hush-site="yt"][data-hush-navstyle="both"] ytd-guide-renderer { padding: 8px 12px 24px !important; }
+html[data-hush-site="yt"][data-hush-navstyle="both"] ytd-guide-section-renderer {
+  padding: 8px 0 !important;
+  margin: 0 !important;
+  border-bottom: 1px solid var(--h-line) !important;
+}
+html[data-hush-site="yt"][data-hush-navstyle="both"] ytd-guide-section-renderer:last-of-type { border-bottom: 0 !important; }
+html[data-hush-site="yt"][data-hush-navstyle="both"] ytd-guide-section-renderer #guide-section-title {
+  padding: 6px 12px 6px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  color: var(--h-dim) !important;
+}
+html[data-hush-site="yt"][data-hush-navstyle="both"] :is(ytd-guide-entry-renderer, ytd-guide-collapsible-entry-renderer) a#endpoint {
+  height: 40px !important;
+  min-height: 0 !important;
+  margin: 0 0 2px !important;
+  padding: 0 12px !important;
+  border-radius: 10px !important;
+  background: none !important;
+  opacity: 0.8;
+  transition: background-color 0.18s ease, opacity 0.18s ease !important;
+}
+html[data-hush-site="yt"][data-hush-navstyle="both"] :is(ytd-guide-entry-renderer, ytd-guide-collapsible-entry-renderer):hover a#endpoint {
+  opacity: 1;
+  background: color-mix(in srgb, var(--h-fg) 5%, transparent) !important;
+}
+html[data-hush-site="yt"][data-hush-navstyle="both"] ytd-guide-entry-renderer[active] a#endpoint {
+  opacity: 1;
+  background: color-mix(in srgb, var(--h-fg) 9%, transparent) !important;
+}
+html[data-hush-site="yt"][data-hush-navstyle="both"] :is(ytd-guide-entry-renderer, ytd-guide-collapsible-entry-renderer) tp-yt-paper-item {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 0 !important;
+  min-height: 0 !important;
+  height: 40px !important;
+  padding: 0 !important;
+  background: none !important;
+}
+html[data-hush-site="yt"][data-hush-navstyle="both"] :is(ytd-guide-entry-renderer, ytd-guide-collapsible-entry-renderer) :is(yt-icon.guide-icon, .guide-icon, yt-img-shadow):not([hidden]) {
+  display: inline-flex !important;
+  width: 20px !important;
+  height: 20px !important;
+  margin: 0 18px 0 0 !important;
+  opacity: 0.9;
+  color: var(--h-fg) !important;
+}
+html[data-hush-site="yt"][data-hush-navstyle="both"] :is(ytd-guide-entry-renderer, ytd-guide-collapsible-entry-renderer) :is(.title, yt-formatted-string) {
+  display: block !important;
+  opacity: 1 !important;
+  transform: none !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  line-height: 40px !important;
+  text-transform: none !important;
+  color: var(--h-fg) !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+html[data-hush-site="yt"][data-hush-navstyle="both"] ytd-guide-entry-renderer:hover :is(.title, yt-formatted-string) { transform: none !important; }
+html[data-hush-site="yt"][data-hush-navstyle="both"] ytd-guide-entry-renderer #newness-dot { background: var(--h-accent) !important; }
+
+/* collapsed: a tight rail with labels that fit */
+html[data-hush-site="yt"] ytd-mini-guide-renderer { width: 72px !important; padding: 4px 0 0 !important; }
+html[data-hush-site="yt"] ytd-mini-guide-entry-renderer {
+  width: 66px !important;
+  margin: 0 auto 2px !important;
+}
+html[data-hush-site="yt"] ytd-mini-guide-entry-renderer a#endpoint,
+html[data-hush-site="yt"] ytd-mini-guide-entry-renderer > a {
+  height: 50px !important;
+  gap: 3px !important;
+  padding: 0 !important;
+}
+html[data-hush-site="yt"] ytd-mini-guide-entry-renderer .title {
+  max-width: none !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  font-size: 10px !important;
+  letter-spacing: -0.01em;
 }
