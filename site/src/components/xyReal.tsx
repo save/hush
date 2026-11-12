@@ -354,9 +354,9 @@ export function YtLoud() {
 }
 
 export function YtCalm() {
-  // youtube.css, 0.6 layout: a 76px rail (icon + small word), one pill search,
-  // pill chips, three big videos to a row, title and channel only
-  const rail: [React.ElementType, string][] = [[Home, 'Home'], [Library, 'Subscriptions'], [History, 'History']];
+  // youtube.css, 0.7: a list sidebar (icon + word, soft pill for "here"), one pill search,
+  // "Home" with the greeting under it, pill chips, three big videos to a row
+  const rail: [React.ElementType, string][] = [[Home, 'Home'], [Library, 'Subscriptions'], [User, 'You'], [History, 'History']];
   return (
     <Real>
       <div className="flex h-full flex-col bg-[#0a0a0a]" style={{ color: XH.fg, fontFamily: HUSH_FONT }}>
@@ -374,21 +374,31 @@ export function YtCalm() {
           </div>
         </div>
         <div className="flex min-h-0 flex-1">
-          <aside className="flex w-[76px] shrink-0 flex-col items-center gap-1.5 pt-3">
+          <aside className="w-[240px] shrink-0 px-3 pt-2">
             {rail.map(([I, l], i) => (
-              <div key={l} className={cx('flex size-14 flex-col items-center justify-center gap-1 rounded-[14px]', i === 0 && 'bg-white/[0.09]')} style={{ color: i === 0 ? XH.fg : XH.dim }}>
-                <I className="size-[22px]" strokeWidth={1.8} />
-                <span className="max-w-[64px] truncate text-[10.5px]">{l}</span>
+              <div key={l} className={cx('mb-0.5 flex h-10 items-center gap-4 rounded-[10px] px-3 text-[14px] font-medium', i === 0 && 'bg-white/[0.09]')} style={{ color: XH.fg, opacity: i === 0 ? 1 : 0.82 }}>
+                <I className="size-5" strokeWidth={1.8} />{l}
+              </div>
+            ))}
+            <div className="mx-0 my-2 h-px bg-white/[0.07]" />
+            <div className="px-3 py-1.5 text-[12.5px] font-medium" style={{ color: XH.dim }}>Subscriptions</div>
+            {VIDEOS.slice(0, 4).map((v, i) => (
+              <div key={v.channel + i} className="flex h-10 items-center gap-4 px-3 text-[14px] font-medium" style={{ color: XH.fg, opacity: 0.82 }}>
+                <Img id={v.av} w={40} h={40} className="size-5 rounded-full" style={SOFT_DARK} />{v.channel}
               </div>
             ))}
           </aside>
           <main className="min-w-0 flex-1 overflow-hidden pr-10 pl-6">
-            <div className="flex gap-2.5 pt-3 pb-7 text-[14.5px] font-medium">
+            <div className="pt-6 pb-5">
+              <div className="text-[32px] leading-[1.15] font-bold tracking-[-0.025em]">Home</div>
+              <div className="mt-0.5 text-[18px]" style={{ color: XH.dim }}>good evening</div>
+            </div>
+            <div className="flex gap-2 pt-1 pb-6 text-[14px] font-medium">
               {['All', 'Gaming', 'Cooking', 'Camping', 'Podcasts'].map((c, i) => (
                 <span key={c} className="flex h-[38px] items-center rounded-full px-[18px]" style={i === 0 ? { background: XH.fg, color: '#0a0a0a' } : { background: 'rgba(255,255,255,.07)', color: XH.fg }}>{c}</span>
               ))}
             </div>
-            <div className="grid grid-cols-3 gap-x-[34px] gap-y-10">
+            <div className="grid grid-cols-3 gap-x-7 gap-y-9">
               {VIDEOS.slice(0, 6).map((v) => (
                 <div key={v.id}>
                   <div className="relative overflow-hidden rounded-2xl">

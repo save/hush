@@ -148,7 +148,7 @@ Hush.register({
       // the button only makes sense once a full limit's worth is on screen
       const wantBtn = !!ctx.options.capfeed && items.length >= limit;
       if (wantBtn && !btn) {
-        btn = quietButton('hush-yt-more', 'show more', () => {
+        btn = quietButton('hush-yt-more', 'Show more', () => {
           grid.dataset.hushLimit = String(limit + step);
           setTimeout(schedule, 1200); // the loader wakes up if more are needed
         });
@@ -175,7 +175,7 @@ Hush.register({
       host.toggleAttribute('data-hush-capped', on && items.length > limit);
       let btn = host.querySelector(':scope > .hush-yt-upnext');
       if (on && items.length > limit && !btn) {
-        btn = quietButton('hush-yt-upnext', 'more', () => { host.dataset.hushLimit = String(limit + STEP); });
+        btn = quietButton('hush-yt-upnext', 'More', () => { host.dataset.hushLimit = String(limit + STEP); });
         host.append(btn);
       } else if ((!on || items.length <= limit) && btn) {
         btn.remove();
@@ -201,7 +201,7 @@ Hush.register({
         });
         header.after(btn);
       }
-      const label = open ? 'hide comments' : 'show comments';
+      const label = open ? 'Hide comments' : 'Show comments';
       if (btn.textContent !== label) btn.textContent = label;
     }
 
@@ -284,7 +284,7 @@ Hush.register({
     ).length;
 
     // ---- loop ------------------------------------------------------------------------------
-    const STEPS = [syncRoute, detectTheme, syncGuide, markChips, greet, capHome, capUpNext, foldComments, syncChipPill, staggerHome];
+    const STEPS = [syncRoute, detectTheme, syncGuide, markChips, greet, capHome, capUpNext, foldComments, staggerHome];
     let queued = false;
     function tick() {
       queued = false;

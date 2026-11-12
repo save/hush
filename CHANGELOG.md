@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- **YouTube, rebuilt from scratch** to match Roblox and X: a sidebar that works expanded (icon + word rows, a soft pill for the current page) and collapsed (a tight rail), pill chips, Home with a quiet greeting, three videos to a row, search as one calm list, a calmer watch page (small up-next thumbnails, a soft description card, no New badges, no doodle logo), quieter channel pages and soft menus. The old 1,400-line stylesheet of layered overrides is now one 700-line file.
 - **Mute words:** hide posts (X), videos (YouTube) and games (Roblox) that mention words or phrases you choose. Type `mute …` in `Ctrl K`, or add them in settings.
 - **Calm titles:** YouTube and Roblox titles lose ALL CAPS, leading [TAGS], emoji and "!!!". The original is in the tooltip. On by default, per site.
 - **Time nudges:** optional quiet toasts after 20, 45 or 90 minutes on a site each day; time per site in the weekly report.
