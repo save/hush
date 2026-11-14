@@ -360,7 +360,7 @@ html[data-hush-site="yt"] :is(ytd-guide-entry-renderer, ytd-guide-collapsible-en
   background: none !important;
   transition: background-color 0.18s ease !important;
 }
-html[data-hush-site="yt"] :is(ytd-guide-entry-renderer, ytd-guide-collapsible-entry-renderer):hover a#endpoint { background: var(--h-hover) !important; }
+html[data-hush-site="yt"] :is(ytd-guide-entry-renderer, ytd-guide-collapsible-entry-renderer) a#endpoint:hover { background: var(--h-hover) !important; }
 html[data-hush-site="yt"] ytd-guide-entry-renderer[active] a#endpoint { background: var(--h-pill) !important; }
 html[data-hush-site="yt"] :is(ytd-guide-entry-renderer, ytd-guide-collapsible-entry-renderer) tp-yt-paper-item {
   display: flex !important;
@@ -387,13 +387,19 @@ html[data-hush-site="yt"] :is(ytd-guide-entry-renderer, ytd-guide-collapsible-en
   text-transform: none !important;
   transition: color 0.18s ease !important;
 }
-html[data-hush-site="yt"] :is(ytd-guide-entry-renderer[active], ytd-guide-entry-renderer:hover, ytd-guide-collapsible-entry-renderer:hover) :is(.title, yt-formatted-string, yt-icon.guide-icon, .guide-icon) { color: var(--h-fg) !important; }
+html[data-hush-site="yt"] :is(ytd-guide-entry-renderer[active] a#endpoint, :is(ytd-guide-entry-renderer, ytd-guide-collapsible-entry-renderer) a#endpoint:hover) :is(.title, yt-formatted-string, yt-icon.guide-icon, .guide-icon) { color: var(--h-fg) !important; }
 html[data-hush-site="yt"] ytd-guide-entry-renderer[active] :is(.title, yt-formatted-string) { font-weight: 500 !important; }
+/* "new uploads": a small grey dot, not a column of red ones */
 html[data-hush-site="yt"] ytd-guide-entry-renderer #newness-dot {
-  width: 5px !important;
-  height: 5px !important;
-  background: var(--h-accent) !important;
+  width: 4px !important;
+  height: 4px !important;
+  background: color-mix(in srgb, var(--h-fg) 38%, transparent) !important;
 }
+/* the subscriptions list: channel avatars a touch softer than the page */
+html[data-hush-site="yt"] ytd-guide-entry-renderer yt-img-shadow { opacity: 0.85; transition: opacity 0.18s ease !important; }
+html[data-hush-site="yt"] ytd-guide-entry-renderer a#endpoint:hover yt-img-shadow { opacity: 1; }
+/* the section header link ("Subscriptions ›") reads as a title, not a row */
+html[data-hush-site="yt"] ytd-guide-section-renderer #guide-section-title :is(a, yt-formatted-string) { color: var(--h-faint) !important; font-size: 12px !important; font-weight: 500 !important; }
 /* words: just the words */
 html[data-hush-site="yt"][data-hush-navstyle="words"] :is(ytd-guide-entry-renderer, ytd-guide-collapsible-entry-renderer) :is(yt-icon.guide-icon, .guide-icon, yt-img-shadow) { display: none !important; }
 /* icons: a 72px rail even when open */
