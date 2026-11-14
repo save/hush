@@ -6,6 +6,8 @@
 
 **The web is loud. hush turns it down.**
 
+**[save.github.io/hush](https://save.github.io/hush/)**
+
 A free, open-source browser extension that strips the promos, badges and noise from X, YouTube, Roblox, GitHub and Reddit, and gives them calmer layouts you can actually think in.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-18181b?style=flat-square)](LICENSE)
