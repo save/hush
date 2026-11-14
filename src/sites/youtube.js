@@ -244,36 +244,80 @@ Hush.register({
     }
 
     // ---- subscriptions: seven channels, then hush's own Show all / Show fewer ----
+    // YouTube only puts the first few channels on the page; the rest arrive when its own
+    // "Show N more" row is pressed. hush hides that row, so hush presses it for you.
     const SUBS_SHOWN = 7;
     let subsOpen = false;
-    let subsSeen = 0;
+    let subsTotal = 0;
+    const isChannel = (el) => {
+      const a = el.querySelector('a#endpoint');
+      return !!a && /^\/(@|channel\/)/.test(a.getAttribute('href') || '');
+    };
+    // the subscriptions section: the one with YouTube's "Show more" row, else the one with
+    // the most channels (Explore also links to channels like Music and News, but only a few)
+    function subsSection() {
+      let best = null;
+      let bestScore = 0;
+      for (const s of document.querySelectorAll('ytd-guide-renderer ytd-guide-section-renderer')) {
+        const n = [...s.querySelectorAll('ytd-guide-entry-renderer')].filter(isChannel).length;
+        if (!n) continue;
+        const score = n + (s.querySelector('ytd-guide-collapsible-entry-renderer') ? 1000 : 0);
+        if (score > bestScore) { best = s; bestScore = score; }
+      }
+      return best;
+    }
+    // YouTube's own expander inside the subscriptions section, if it hasn't been used yet
+    function subsExpander(section) {
+      const box = section.querySelector('ytd-guide-collapsible-entry-renderer');
+      if (!box || box.hasAttribute('expanded')) return null;
+      return box.querySelector('#expander-item');
+    }
+    let subsAsked = 0;
+    function loadAllSubs(section) {
+      const ex = subsExpander(section);
+      // once every few seconds at most: a second press could fold YouTube's list again
+      if (!ex || performance.now() - subsAsked < 3000) return;
+      subsAsked = performance.now();
+      const target = ex.querySelector('a#endpoint, tp-yt-paper-item') || ex;
+      target.click();
+    }
     function syncSubs() {
-      const entries = [...document.querySelectorAll('ytd-guide-renderer ytd-guide-entry-renderer')].filter((e) => {
-        const a = e.querySelector('a#endpoint');
-        return a && /^\/(@|channel\/)/.test(a.getAttribute('href') || '');
-      });
-      const section = entries[0] && entries[0].closest('ytd-guide-section-renderer');
-      if (!section || entries.length <= SUBS_SHOWN + 1) {
-        if (section) section.removeAttribute('data-hush-subs');
-        subsSeen = entries.length;
+      const section = subsSection();
+      if (!section) return;
+      const entries = [...section.querySelectorAll('ytd-guide-entry-renderer')].filter(isChannel);
+      const ex = subsExpander(section);
+      // "Show 236 more" → the real count, before the rest has loaded
+      if (ex) {
+        const more = parseInt(((ex.textContent || '').match(/\d[\d,.\s]*/) || ['0'])[0].replace(/[^\d]/g, ''), 10) || 0;
+        const visible = entries.filter((el) => !el.closest('#expandable-items')).length;
+        if (more) subsTotal = Math.max(subsTotal, visible + more);
+      }
+      const total = Math.max(subsTotal, entries.length);
+      if (total <= SUBS_SHOWN + 1 && !ex) {
+        section.removeAttribute('data-hush-subs');
+        section.querySelector(':scope .hush-subs-toggle')?.remove();
+        entries.forEach((el) => el.removeAttribute('data-hush-subx'));
         return;
       }
-      // the list just grew because you opened YouTube's own "Show more": keep it open
-      if (!section.hasAttribute('data-hush-subs') && subsSeen && subsSeen <= SUBS_SHOWN + 1) subsOpen = true;
-      subsSeen = entries.length;
+      // open, but YouTube hasn't handed over the rest yet: ask it to
+      if (subsOpen && ex) loadAllSubs(section);
       const state = subsOpen ? 'open' : 'closed';
       if (section.getAttribute('data-hush-subs') !== state) section.setAttribute('data-hush-subs', state);
-      entries.forEach((e, i) => { const over = i >= SUBS_SHOWN; if (over !== e.hasAttribute('data-hush-subx')) e.toggleAttribute('data-hush-subx', over); });
+      entries.forEach((el, i) => { const over = i >= SUBS_SHOWN; if (over !== el.hasAttribute('data-hush-subx')) el.toggleAttribute('data-hush-subx', over); });
       let btn = section.querySelector(':scope .hush-subs-toggle');
       if (!btn) {
         btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'hush-subs-toggle';
-        btn.addEventListener('click', () => { subsOpen = !subsOpen; schedule(); });
+        btn.addEventListener('click', () => {
+          subsOpen = !subsOpen;
+          if (subsOpen) loadAllSubs(section);
+          schedule();
+        });
         const items = section.querySelector('#items');
         (items ? items.parentElement : section).append(btn);
       }
-      const label = subsOpen ? 'Show fewer' : `Show all ${entries.length}`;
+      const label = subsOpen ? 'Show fewer' : total > SUBS_SHOWN ? `Show all ${total.toLocaleString()}` : 'Show all';
       if (btn.textContent !== label) btn.textContent = label;
     }
 
