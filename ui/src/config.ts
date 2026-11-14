@@ -6,5 +6,6 @@ export const SUPPORT = {
   buyMeACoffee: '', // e.g. 'https://buymeacoffee.com/yourname'
   github: 'https://github.com/save/hush', // the repo, for stars and issues
   chromeWebStore: '', // the store listing, for reviews
+  download: 'https://github.com/save/hush/releases/latest/download/hush.zip', // the newest packed release
   website: '', // a landing page, if you make one
 };

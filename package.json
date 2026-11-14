@@ -1,7 +1,7 @@
 {
   "name": "hush",
   "private": true,
-  "version": "0.5.0",
+  "version": "0.6.0",
   "type": "module",
   "description": "The web is loud. hush turns it down. A free, open-source extension that calms X, YouTube and Roblox.",
   "scripts": {
@@ -9,7 +9,8 @@
     "dev": "vite build --config ui/vite.config.ts --watch",
     "site:dev": "vite --config site/vite.config.ts",
     "site:build": "vite build --config site/vite.config.ts",
-    "site:preview": "vite preview --config site/vite.config.ts"
+    "site:preview": "vite preview --config site/vite.config.ts",
+    "pack": "npm run build && node scripts/pack.mjs"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.2.5",

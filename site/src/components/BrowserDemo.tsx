@@ -2,7 +2,7 @@ import * as React from 'react';
 import { animate, AnimatePresence, motion, useInView, useMotionValue, useMotionTemplate, useTransform } from 'motion/react';
 import { ArrowLeft, ArrowRight, Lock, RotateCw } from 'lucide-react';
 import { icons, Logo, Mark } from './brand';
-import { RbxCalm, RbxLoud, XCalm, XLoud, YtCalm, YtLoud } from './mocks';
+import { GhCalm, GhLoud, RbxCalm, RbxLoud, XCalm, XLoud, YtCalm, YtLoud } from './mocks';
 
 const W = 1120; // design size of the page area; the whole browser scales from this
 const H = 620;
@@ -12,14 +12,15 @@ const SITES = [
   { id: 'x', name: 'X', host: 'x.com/home', icon: icons.x, Loud: XLoud, Calm: XCalm, hidden: 14 },
   { id: 'yt', name: 'YouTube', host: 'youtube.com', icon: icons.youtube, Loud: YtLoud, Calm: YtCalm, hidden: 23 },
   { id: 'rbx', name: 'Roblox', host: 'roblox.com/home', icon: icons.roblox, Loud: RbxLoud, Calm: RbxCalm, hidden: 11 },
+  { id: 'gh', name: 'GitHub', host: 'github.com/save/hush', icon: icons.github, Loud: GhLoud, Calm: GhCalm, hidden: 6 },
 ] as const;
 
 const EASE = [0.65, 0, 0.35, 1] as const;
 
-// ?freeze=loud|calm&site=0..2 holds the demo still: handy for screenshots
+// ?freeze=loud|calm&site=0..3 holds the demo still: handy for screenshots
 const Q = typeof location === 'undefined' ? null : new URLSearchParams(location.search);
 const FREEZE = Q?.get('freeze') as 'loud' | 'calm' | null | undefined;
-const START = Math.min(2, Math.max(0, Number(Q?.get('site')) || 0));
+const START = Math.min(3, Math.max(0, Number(Q?.get('site')) || 0));
 
 export function BrowserDemo() {
   const wrap = React.useRef<HTMLDivElement>(null);

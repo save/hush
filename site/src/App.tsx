@@ -4,6 +4,7 @@ import { ArrowRight, ArrowUpRight, Check, Command, Heart, Pause, Play, Star } fr
 import { Shader } from './components/Shader';
 import { BrowserDemo } from './components/BrowserDemo';
 import { SitesStrip } from './components/SitesStrip';
+import { Install } from './components/Install';
 import { photo } from './components/mocks';
 import { icons, LINKS, Logo, Mark } from './components/brand';
 
@@ -493,12 +494,9 @@ function Closing() {
       <Reveal className="relative">
         <img src="./logo.png" alt="" className="mx-auto size-16 rounded-[18px] shadow-[0_20px_60px_-12px_rgb(220_70_55/0.45)]" />
         <h2 className="mt-8 text-[clamp(2rem,5vw,3.6rem)] leading-[0.98] font-semibold tracking-[-0.045em]">Turn it down.</h2>
-        <p className="mx-auto mt-5 max-w-md text-dim">Free, forever. Install in a second, switch it off per site with <kbd className="whitespace-nowrap rounded border border-white/10 bg-white/[0.04] px-1 font-mono text-[12px]">Alt ⇧ H</kbd>.</p>
-        <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-          <ChromeButton size="lg" />
-          <GithubButton size="lg" />
-        </div>
+        <p className="mx-auto mt-5 max-w-md text-dim">Free, forever. Three steps, under a minute. Switch it off per site any time with <kbd className="whitespace-nowrap rounded border border-white/10 bg-white/[0.04] px-1 font-mono text-[12px]">Alt ⇧ H</kbd>.</p>
       </Reveal>
+      <Install />
     </section>
   );
 }

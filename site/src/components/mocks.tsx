@@ -5,3 +5,4 @@
  */
 export { photo, XLoud, XCalm, YtLoud, YtCalm } from './xyReal';
 export { RbxLoud, RbxCalm } from './rbxReal';
+export { GhLoud, GhCalm } from './ghReal';

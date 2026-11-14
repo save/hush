@@ -25,6 +25,7 @@ export function Mark({ className }: { className?: string }) {
 // Fill these in ui/src/config.ts; the homepage and the popup share them.
 export const LINKS = {
   chrome: SUPPORT.chromeWebStore || '#install',
+  download: SUPPORT.download,
   github: SUPPORT.github || '#source',
   support: SUPPORT.kofi || SUPPORT.githubSponsors || SUPPORT.buyMeACoffee || '#source',
 };

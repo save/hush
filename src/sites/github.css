@@ -155,8 +155,13 @@ html[data-hush-site="gh"][data-hush-greygraph] [data-color-mode] {
   --color-calendar-graph-day-L3-bg: var(--h-g3) !important;
   --color-calendar-graph-day-L4-bg: var(--h-g4) !important;
 }
-html[data-hush-site="gh"][data-hush-greygraph] :is(.repo-language-color, [data-hush-section="languages"] .Progress, [data-hush-section="languages"] svg[class*="octicon-dot"]) {
+html[data-hush-site="gh"][data-hush-greygraph] :is(.repo-language-color, [data-hush-section^="languages"], .contribution-activity .Progress, .js-contribution-activity .Progress, [data-hush-path="profile"] .Progress) {
   filter: grayscale(1) !important;
+}
+/* the selected year beside the graph: a soft pill, not a blue slab */
+html[data-hush-site="gh"] :is(a.js-year-link.selected, .js-year-link[aria-current="true"]) {
+  background: var(--h-field) !important;
+  color: var(--h-fg) !important;
 }
 
 /* the page itself */
@@ -176,7 +181,14 @@ html[data-hush-site="gh"][data-hush-nocopilot] :is(
   [data-target*="copilot" i]:is(button, a),
   copilot-dashboard-entrypoint,
   [class*="CopilotChat"],
-  [class*="copilotButton"]
+  [class*="copilotButton"],
+  #copilot-chat-header-button,
+  :is(button, a)[id*="copilot" i],
+  :is(button, a)[aria-labelledby]:has(svg[class*="octicon-copilot"]),
+  :is(button, a):has(> svg.octicon-copilot),
+  react-partial-anchor:has(#copilot-chat-header-button),
+  nav[aria-label="Repository"] li:has(> a[href$="/agents"]),
+  nav[aria-label="Repository"] a[href$="/agents"]
 ) {
   display: none !important;
 }

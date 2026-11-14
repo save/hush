@@ -10,7 +10,7 @@ A free, open-source browser extension that strips the promos, badges and noise f
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-18181b?style=flat-square)](LICENSE)
 [![Manifest V3](https://img.shields.io/badge/chrome-manifest%20v3-18181b?style=flat-square&logo=googlechrome&logoColor=white)](manifest.json)
-[![Version](https://img.shields.io/badge/version-0.5.0-18181b?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.6.0-18181b?style=flat-square)](CHANGELOG.md)
 [![Privacy: nothing collected](https://img.shields.io/badge/privacy-nothing%20collected-18181b?style=flat-square)](PRIVACY.md)
 
 <br />
@@ -45,15 +45,15 @@ A free, open-source browser extension that strips the promos, badges and noise f
 
 ## Install
 
-**From the Chrome Web Store:** coming soon.
+hush isn't on the Chrome Web Store yet. Until it is, installing takes three steps and under a minute (Chrome, Edge, Brave, Arc):
 
-**From source** (Chrome, Edge, Brave, Arc):
+1. **[Download hush.zip](https://github.com/save/hush/releases/latest/download/hush.zip)** and unzip it somewhere you'll keep it. You get a folder called `hush`.
+2. Open `chrome://extensions` (`edge://extensions` in Edge) and switch on **Developer mode**, top right.
+3. Click **Load unpacked**, choose the `hush` folder, and pin hush from the puzzle-piece menu.
 
-1. Download this repo (**Code → Download ZIP**) and unzip it, or `git clone` it.
-2. Open `chrome://extensions` and turn on **Developer mode**.
-3. Click **Load unpacked** and choose the `hush` folder.
+**To update:** download the newest zip, replace the folder, and press reload on hush's card in `chrome://extensions`. Your settings stay.
 
-The popup is already built, so it works straight away.
+Building from source instead? Clone the repo and load the repo folder itself: the popup is already built.
 
 ## Keyboard
 
@@ -77,6 +77,7 @@ npm run build        # the popup: ui/ → build/popup
 npm run dev          # rebuild the popup on save
 npm run site:dev     # the homepage at http://localhost:5180
 npm run site:build   # the homepage → site/dist (static files)
+npm run pack         # build, then pack the extension → release/hush.zip
 ```
 
 After changing the extension, press reload on its card in `chrome://extensions` and refresh the tab.

@@ -1,7 +1,10 @@
 # Changelog
 
-## Unreleased
+## 0.6.0
 
+- **Easy install:** each release ships one `hush.zip`; the homepage walks you through the three steps (download, open extensions, load), with the right extensions address for your browser. `npm run pack` builds the zip.
+- **GitHub, tighter:** the Copilot button in the header and the Agents tab go with "hide Copilot"; the languages bar, contribution activity bar and selected year turn grey.
+- **Homepage:** GitHub joins the before / after demo.
 - **GitHub (new):** Primer's tokens remapped to hush's palette in light and dark, following GitHub's own theme; no Copilot nudges or app banner; a quiet repo sidebar (about, releases, languages); grey contribution graph and language colours; no achievement badges; a calmer dashboard; READMEs at a readable width; pages and file rows fade in. `Ctrl K` gets GitHub pages, repo sections and search.
 - **Reddit (new, untested live):** ads and promoted posts gone; no app, Premium or advertise links; no awards; a quiet menu without games or Reddit Answers; no "recent posts" column on home; votes in greys; outlined flairs; calm titles; mute words; posts settle in. `Ctrl K` gets Reddit pages, community sorts and search.
 - **Calm every site (universal mode, on by default):** on sites without an adapter, display ads and link farms, chat bubbles and notification nags go; empty ad boxes collapse; "subscribe / membership / newsletter" pop-ups are hidden in the first minute of a visit and the page can scroll again.
