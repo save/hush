@@ -16,6 +16,7 @@ Hush.register({
     { key: 'softthumbs', label: 'soft thumbnails', group: 'look', desc: 'Thumbnails softened until hover', keywords: 'images color saturation quiet', default: true },
     { key: 'calmtitles', label: 'calm titles', group: 'look', desc: 'No ALL CAPS, tags or emoji spam in titles', keywords: 'clickbait caps capitals emoji title', default: true },
     { key: 'foldcomments', label: 'fold comments', group: 'feed', desc: 'Comments behind a button', keywords: 'collapse', default: true },
+    { key: 'cinema', label: 'cinema dim', group: 'look', desc: 'The page darkens around a playing video', keywords: 'theater dark dim cinema lights', default: true },
     { key: 'zen', label: 'focus mode', group: 'layout', desc: 'Hide the menu, keep only the content', hint: 'z', keywords: 'cinema theater zen', default: false }
   ],
 
@@ -242,6 +243,40 @@ Hush.register({
       for (const it of items) { if (i > 9) break; it.setAttribute('data-hush-i', String(i++)); }
     }
 
+    // ---- subscriptions: seven channels, then hush's own Show all / Show fewer ----
+    const SUBS_SHOWN = 7;
+    let subsOpen = false;
+    let subsSeen = 0;
+    function syncSubs() {
+      const entries = [...document.querySelectorAll('ytd-guide-renderer ytd-guide-entry-renderer')].filter((e) => {
+        const a = e.querySelector('a#endpoint');
+        return a && /^\/(@|channel\/)/.test(a.getAttribute('href') || '');
+      });
+      const section = entries[0] && entries[0].closest('ytd-guide-section-renderer');
+      if (!section || entries.length <= SUBS_SHOWN + 1) {
+        if (section) section.removeAttribute('data-hush-subs');
+        subsSeen = entries.length;
+        return;
+      }
+      // the list just grew because you opened YouTube's own "Show more": keep it open
+      if (!section.hasAttribute('data-hush-subs') && subsSeen && subsSeen <= SUBS_SHOWN + 1) subsOpen = true;
+      subsSeen = entries.length;
+      const state = subsOpen ? 'open' : 'closed';
+      if (section.getAttribute('data-hush-subs') !== state) section.setAttribute('data-hush-subs', state);
+      entries.forEach((e, i) => { const over = i >= SUBS_SHOWN; if (over !== e.hasAttribute('data-hush-subx')) e.toggleAttribute('data-hush-subx', over); });
+      let btn = section.querySelector(':scope .hush-subs-toggle');
+      if (!btn) {
+        btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'hush-subs-toggle';
+        btn.addEventListener('click', () => { subsOpen = !subsOpen; schedule(); });
+        const items = section.querySelector('#items');
+        (items ? items.parentElement : section).append(btn);
+      }
+      const label = subsOpen ? 'Show fewer' : `Show all ${entries.length}`;
+      if (btn.textContent !== label) btn.textContent = label;
+    }
+
     // ---- shorts links → normal player --------------------------------------------
     function onClick(e) {
       if (!ctx.options.noshorts || e.defaultPrevented || e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey) return;
@@ -290,7 +325,7 @@ Hush.register({
     ).length;
 
     // ---- loop ------------------------------------------------------------------------------
-    const STEPS = [syncRoute, detectTheme, syncGuide, markChips, greet, capHome, capUpNext, foldComments, staggerHome];
+    const STEPS = [syncRoute, detectTheme, syncGuide, markChips, greet, capHome, capUpNext, foldComments, staggerHome, syncSubs];
     let queued = false;
     function tick() {
       queued = false;
@@ -328,7 +363,7 @@ Hush.register({
       window.removeEventListener('popstate', schedule);
       for (const a of document.querySelectorAll('[data-hush-label]')) a.removeAttribute('data-hush-label');
       for (const a of document.querySelectorAll('[data-hush-chip]')) a.removeAttribute('data-hush-chip');
-      document.querySelectorAll('.hush-greet, .hush-yt-btn, .hush-chip-pill').forEach((el) => el.remove());
+      document.querySelectorAll('.hush-greet, .hush-yt-btn, .hush-chip-pill, .hush-subs-toggle').forEach((el) => el.remove());
       for (const a of ['data-hush-cap', 'data-hush-capped', 'data-hush-fold', 'data-hush-chips', 'data-hush-i']) document.querySelectorAll(`[${a}]`).forEach((el) => el.removeAttribute(a));
       for (const a of ['data-hush-path', 'data-hush-theme']) root.removeAttribute(a);
     };

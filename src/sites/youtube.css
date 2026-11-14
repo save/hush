@@ -257,7 +257,7 @@ html[data-hush-site="yt"] :is(ytd-app, ytd-app *, tp-yt-iron-dropdown, tp-yt-iro
 
 /* every navigation: the new page fades up instead of snapping in */
 html[data-hush-site="yt"] ytd-page-manager > :not([hidden]) {
-  animation: hushYtPage 0.42s var(--h-ease) both;
+  animation: hushYtPage 0.42s var(--h-ease) both !important;
 }
 @keyframes hushYtPage { from { opacity: 0; transform: translateY(6px); } }
 
@@ -316,7 +316,7 @@ html[data-hush-site="yt"] .ytSearchboxComponentSuggestionsContainer {
   border-radius: 14px !important;
   background: var(--h-raised) !important;
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35) !important;
-  animation: hushYtMenu 0.2s var(--h-ease) both;
+  animation: hushYtMenu 0.2s var(--h-ease) both !important;
 }
 /* right side: quiet icons; a count becomes a small dot */
 html[data-hush-site="yt"] ytd-masthead #end :is(yt-icon, yt-icon-shape, .yt-spec-icon-shape) { opacity: 0.72; transition: opacity 0.2s ease !important; }
@@ -526,7 +526,7 @@ html[data-hush-site="yt"] ytd-rich-grid-renderer > .hush-greet {
   font: 400 15px/1.4 var(--h-font) !important;
   color: var(--h-dim) !important;
   text-align: left !important;
-  animation: hushYtGreet 0.6s var(--h-ease) both;
+  animation: hushYtGreet 0.6s var(--h-ease) both !important;
 }
 html[data-hush-site="yt"] ytd-rich-grid-renderer > .hush-greet::before {
   content: "Home";
@@ -590,7 +590,7 @@ html[data-hush-site="yt"] badge-shape:is(.ytBadgeShapeLive, .ytBadgeShapeThumbna
   border-radius: 50%;
   background: var(--h-accent);
   vertical-align: 1px;
-  animation: hushYtLive 2.4s ease-in-out infinite;
+  animation: hushYtLive 2.4s ease-in-out infinite !important;
 }
 @keyframes hushYtLive { 50% { opacity: 0.35; } }
 /* words under the picture: medium title, quiet details */
@@ -619,13 +619,13 @@ html[data-hush-site="yt"] :is(ytd-rich-item-renderer, ytd-video-renderer, yt-loc
   opacity: 0.75;
 }
 /* cards settle in, the first screenful staggered */
-html[data-hush-site="yt"] ytd-rich-item-renderer[data-hush-i] { animation: hushYtIn 0.5s var(--h-ease) both; }
-html[data-hush-site="yt"] ytd-rich-item-renderer[data-hush-i="1"] { animation-delay: 40ms; }
-html[data-hush-site="yt"] ytd-rich-item-renderer[data-hush-i="2"] { animation-delay: 80ms; }
-html[data-hush-site="yt"] ytd-rich-item-renderer[data-hush-i="3"] { animation-delay: 120ms; }
-html[data-hush-site="yt"] ytd-rich-item-renderer[data-hush-i="4"] { animation-delay: 160ms; }
-html[data-hush-site="yt"] ytd-rich-item-renderer[data-hush-i="5"] { animation-delay: 200ms; }
-html[data-hush-site="yt"] ytd-rich-item-renderer[data-hush-i="6"] { animation-delay: 240ms; }
+html[data-hush-site="yt"] ytd-rich-item-renderer[data-hush-i] { animation: hushYtIn 0.5s var(--h-ease) both !important; }
+html[data-hush-site="yt"] ytd-rich-item-renderer[data-hush-i="1"] { animation-delay: 40ms !important; }
+html[data-hush-site="yt"] ytd-rich-item-renderer[data-hush-i="2"] { animation-delay: 80ms !important; }
+html[data-hush-site="yt"] ytd-rich-item-renderer[data-hush-i="3"] { animation-delay: 120ms !important; }
+html[data-hush-site="yt"] ytd-rich-item-renderer[data-hush-i="4"] { animation-delay: 160ms !important; }
+html[data-hush-site="yt"] ytd-rich-item-renderer[data-hush-i="5"] { animation-delay: 200ms !important; }
+html[data-hush-site="yt"] ytd-rich-item-renderer[data-hush-i="6"] { animation-delay: 240ms !important; }
 @keyframes hushYtIn { from { opacity: 0; transform: translateY(10px); } }
 
 /* section titles in feeds and results */
@@ -800,7 +800,7 @@ html[data-hush-site="yt"] tp-yt-iron-dropdown :is(ytd-menu-popup-renderer, ytd-m
   border: 1px solid var(--h-line) !important;
   background: var(--h-raised) !important;
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35) !important;
-  animation: hushYtMenu 0.22s var(--h-ease) both;
+  animation: hushYtMenu 0.22s var(--h-ease) both !important;
 }
 @keyframes hushYtMenu { from { opacity: 0; transform: translateY(-4px) scale(0.985); } }
 html[data-hush-site="yt"] tp-yt-iron-dropdown :is(ytd-menu-service-item-renderer, yt-list-item-view-model) { border-radius: 8px !important; }
@@ -813,4 +813,75 @@ html[data-hush-site="yt"] tp-yt-paper-tooltip #tooltip {
 
 @media (prefers-reduced-motion: reduce) {
   html[data-hush-site="yt"] :is(ytd-page-manager > *, ytd-rich-item-renderer[data-hush-i], .hush-greet, tp-yt-iron-dropdown *) { animation: none !important; }
+}
+
+/* ---------- 0.9: subscriptions you can fold, a grey logo, ghost actions, cinema dim ---- */
+
+/* hush folds the subscriptions list; YouTube's own expander rows step aside */
+html[data-hush-site="yt"] ytd-guide-section-renderer[data-hush-subs="closed"] [data-hush-subx] { display: none !important; }
+html[data-hush-site="yt"] ytd-guide-section-renderer[data-hush-subs] ytd-guide-collapsible-entry-renderer :is(#expander-item, #collapser-item) { display: none !important; }
+html[data-hush-site="yt"] ytd-guide-section-renderer[data-hush-subs] ytd-guide-collapsible-entry-renderer :is(#expanded, #expandable-items) { display: block !important; }
+html[data-hush-site="yt"] .hush-subs-toggle {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 34px;
+  margin-top: 2px;
+  padding: 0 12px 0 44px;
+  border-radius: 9px;
+  font: 400 13px/1 var(--h-font);
+  color: var(--h-dim);
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+html[data-hush-site="yt"][data-hush-navstyle="words"] .hush-subs-toggle { padding-left: 12px; }
+html[data-hush-site="yt"][data-hush-navstyle="icons"] .hush-subs-toggle { display: none; }
+html[data-hush-site="yt"] .hush-subs-toggle:hover { background: var(--h-hover); color: var(--h-fg); }
+html[data-hush-site="yt"] .hush-subs-toggle:focus-visible { outline: 2px solid color-mix(in srgb, var(--h-fg) 30%, transparent); outline-offset: -2px; }
+/* rows that come back settle in */
+html[data-hush-site="yt"] ytd-guide-section-renderer[data-hush-subs="open"] [data-hush-subx] { animation: hushYtRow 0.32s var(--h-ease) both !important; }
+@keyframes hushYtRow { from { opacity: 0; transform: translateY(-3px); } }
+
+/* the logo: grey, like the rest of the chrome */
+html[data-hush-site="yt"] ytd-topbar-logo-renderer :is(#logo-icon, yt-icon, ytd-logo) {
+  filter: grayscale(1) brightness(1.15) contrast(0.92) !important;
+  opacity: 0.82 !important;
+  transition: opacity 0.25s ease !important;
+}
+html[data-hush-site="yt"][data-hush-theme="light"] ytd-topbar-logo-renderer :is(#logo-icon, yt-icon, ytd-logo) { filter: grayscale(1) brightness(0.55) !important; }
+html[data-hush-site="yt"] ytd-topbar-logo-renderer:hover :is(#logo-icon, yt-icon, ytd-logo) { opacity: 1 !important; }
+
+/* like / dislike / share / save: ghost buttons, a soft fill only on hover */
+html[data-hush-site="yt"] ytd-watch-metadata #actions :is(.yt-spec-button-shape-next, .ytSegmentedLikeDislikeButtonViewModelSegmentedButtonsWrapper, segmented-like-dislike-button-view-model, like-button-view-model, dislike-button-view-model) {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+html[data-hush-site="yt"] ytd-watch-metadata #actions .yt-spec-button-shape-next:hover { background: var(--h-hover) !important; }
+html[data-hush-site="yt"] ytd-watch-metadata #actions .ytSegmentedLikeDislikeButtonViewModelSegmentedButtonsWrapper::after,
+html[data-hush-site="yt"] ytd-watch-metadata #actions .yt-spec-button-shape-next--segmented-start::after {
+  background: var(--h-line) !important;
+}
+
+/* cinema dim: while a video plays, everything around it sits back; point at it to bring it forward */
+html[data-hush-site="yt"][data-hush-cinema][data-hush-path="watch"] :is(ytd-watch-flexy #secondary, ytd-watch-flexy #below, #masthead-container, ytd-mini-guide-renderer) {
+  transition: opacity 0.9s var(--h-ease), filter 0.9s var(--h-ease) !important;
+}
+html[data-hush-site="yt"][data-hush-cinema][data-hush-path="watch"]:has(#movie_player.playing-mode) :is(ytd-watch-flexy #secondary, ytd-watch-flexy #below, #masthead-container, ytd-mini-guide-renderer):not(:hover, :focus-within) {
+  opacity: 0.32 !important;
+  filter: saturate(0.6) !important;
+}
+html[data-hush-site="yt"][data-hush-cinema][data-hush-path="watch"]:has(#movie_player.playing-mode) ytd-watch-flexy :is(#secondary, #below):hover { transition-duration: 0.3s !important; }
+/* the page itself gets darker around the picture */
+html[data-hush-site="yt"][data-hush-cinema][data-hush-path="watch"] :is(body, ytd-app) { transition: background-color 1s var(--h-ease) !important; }
+html[data-hush-site="yt"][data-hush-cinema][data-hush-path="watch"]:has(#movie_player.playing-mode) :is(body, ytd-app, #page-manager) {
+  background-color: #050505 !important;
+}
+html[data-hush-site="yt"][data-hush-cinema][data-hush-path="watch"]:has(#movie_player.playing-mode) ytd-watch-flexy:not([theater]) #player-container-inner {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04), 0 30px 90px rgba(0, 0, 0, 0.6) !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-hush-site="yt"] [data-hush-subx] { animation: none !important; }
 }

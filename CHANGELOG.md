@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- **Calm every site (universal mode, on by default):** on sites without an adapter, display ads and link farms, chat bubbles and notification nags go; empty ad boxes collapse; "subscribe / membership / newsletter" pop-ups are hidden in the first minute of a visit and the page can scroll again.
+- **Arriving:** every site fades in when it loads.
+- **YouTube:** Subscriptions fold to seven with Show all / Show fewer; a grey logo; like, dislike, share and save as ghost buttons; cinema dim (the page darkens around a playing video, anything you point at comes back). hush's own animations now run with still motion on, as they were meant to.
+- **X:** fixed the bookmarks link flickering in and out.
 - **YouTube, sleeker:** lighter type in a single quiet font, a frosted header with one seamless search pill (the bell and Create stay, a count becomes a dot), slim sidebar rows, outlined chips, a centred column of rounded thumbnails that zoom gently on hover, titles on two lines with views and dates kept, a slim channel banner, and motion throughout: pages fade up on navigation, cards settle in, menus and chips ease.
 - **YouTube, rebuilt from scratch** to match Roblox and X: a sidebar that works expanded (icon + word rows, a soft pill for the current page) and collapsed (a tight rail), pill chips, Home with a quiet greeting, three videos to a row, search as one calm list, a calmer watch page (small up-next thumbnails, a soft description card, no New badges, no doodle logo), quieter channel pages and soft menus. The old 1,400-line stylesheet of layered overrides is now one 700-line file.
 - **Mute words:** hide posts (X), videos (YouTube) and games (Roblox) that mention words or phrases you choose. Type `mute …` in `Ctrl K`, or add them in settings.

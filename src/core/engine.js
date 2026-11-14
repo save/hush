@@ -131,10 +131,49 @@
       leaf.dataset.hushCalm = calm;
     }
   }
+  // ---- universal: tidy up after hidden ads, and quiet "subscribe!" pop-ups ----
+  const AD_SEL = 'ins.adsbygoogle, [id^="div-gpt-ad"], [id^="google_ads_iframe"], iframe[src*="doubleclick.net"], iframe[src*="googlesyndication.com"], [data-google-query-id], amp-ad, [id^="taboola-"], .OUTBRAIN';
+  const NAG = /\b(subscribe|subscription|newsletter|membership|become a member|sign up|join (us|now|today)|unlock|special offer|limited time|don.?t miss|get the app|turn on notifications)\b/i;
+  const nagSeenAt = Date.now();
+  function universalScan() {
+    if (adapter || settings.universal === false) return;
+    // a box that only ever held an ad keeps its reserved height: fold it away
+    for (const ad of document.querySelectorAll(AD_SEL)) {
+      let el = ad.parentElement;
+      for (let i = 0; i < 3 && el && el !== document.body; i++, el = el.parentElement) {
+        if (el.hasAttribute('data-hush-hide')) break;
+        const kids = [...el.children].filter((k) => !/^(SCRIPT|STYLE|NOSCRIPT)$/.test(k.tagName));
+        const onlyAds = kids.length > 0 && kids.every((k) => k.matches(AD_SEL) || k.querySelector(AD_SEL) || !(k.textContent || '').trim());
+        if (!onlyAds || (el.textContent || '').trim().length > 40) break;
+        el.setAttribute('data-hush-hide', '');
+      }
+    }
+    // pop-ups that cover the page to sell something, in the first minute of a visit
+    if (Date.now() - nagSeenAt > 60000) return;
+    for (const el of document.body ? document.body.querySelectorAll(':scope > *, [role="dialog"], [aria-modal="true"], [class*="modal" i], [class*="popup" i], [class*="overlay" i]') : []) {
+      if (el.hasAttribute('data-hush-nag') || el.closest('hush-ui, hush-picker')) continue;
+      const cs = getComputedStyle(el);
+      if (cs.position !== 'fixed' || cs.display === 'none' || +cs.zIndex < 10) continue;
+      const r = el.getBoundingClientRect();
+      if (r.width < innerWidth * 0.3 || r.height < innerHeight * 0.25) continue;
+      const text = (el.innerText || '').slice(0, 600);
+      if (!NAG.test(text) || el.querySelector('input[type="password"]')) continue;
+      el.setAttribute('data-hush-nag', '');
+      el.setAttribute('data-hush-hide', '');
+    }
+    // and if one of them froze the page, let it scroll again
+    if (document.querySelector('[data-hush-nag]')) {
+      for (const n of [document.documentElement, document.body]) {
+        if (n && getComputedStyle(n).overflowY === 'hidden') n.style.setProperty('overflow', 'auto', 'important');
+      }
+    }
+  }
+
   const pageScan = H.throttle(() => {
     if (!on) return;
     try { muteScan(false); } catch (e) { console.warn('[hush] mute', e); }
     try { calmScan(); } catch (e) { console.warn('[hush] titles', e); }
+    try { universalScan(); } catch (e) { console.warn('[hush] universal', e); }
   }, 250);
   new MutationObserver(pageScan).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
 
@@ -204,6 +243,8 @@
     const allowMotion = !!document.querySelector('meta[name="hush"][content~="allow-motion"]');
     setFlag('data-hush-motion', on && settings.motion && !allowMotion);
     setFlag('data-hush-color', on && settings.color);
+    // universal: the calm layer's declutter, only where no adapter takes care of the site
+    setFlag('data-hush-universal', on && !adapter && settings.universal !== false);
     setVibrance(settings.vibrance);
     setRules(rulesHere());
     if (typeof pageScan === 'function') pageScan();
@@ -319,6 +360,7 @@
           }
         },
         { group: 'hush', label: 'still motion', icon: 'wind', keywords: 'animation autoplay video', active: !!settings.motion, run: () => H.save({ motion: !settings.motion }) },
+        { group: 'hush', label: 'calm every site', icon: 'globe', keywords: 'universal ads chat widgets popups declutter all sites', active: settings.universal !== false, run: () => H.save({ universal: settings.universal === false }) },
         { group: 'hush', label: 'mute color', icon: 'droplet', keywords: 'grayscale saturation images', active: !!settings.color, run: () => H.save({ color: !settings.color }) },
         { group: 'hush', label: 'hush something on this page', icon: 'mouse-pointer-click', keywords: 'hide element remove picker block this', toast: false, run: () => setTimeout(() => pick(false), 180) },
         {

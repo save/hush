@@ -22,6 +22,7 @@ export type Settings = {
   color: boolean;
   vibrance: number;
   muted?: string[];
+  universal?: boolean;
   nudge?: number;
   hidden?: Record<string, { s: string; l: string; t: number }[]>;
   sites: Record<string, Record<string, boolean | string>>;

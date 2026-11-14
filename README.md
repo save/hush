@@ -36,6 +36,7 @@ A free, open-source browser extension that strips the promos, badges and noise f
 - **Calm titles.** ALL CAPS, [🔥UPDATE] tags, emoji and "!!!" taken out of YouTube and Roblox titles. Hover for the original.
 - **Gentle time nudges.** Optional: a quiet note after 20, 45 or 90 minutes on a site each day.
 - **A weekly quiet report.** See how much hush kept off your screen this week, and your time per site. Counted on your device only.
+- **Calm every site.** Sites without a tailored adapter still lose display ads, chat bubbles, notification nags and "subscribe!" pop-ups.
 - **Still motion.** Nothing autoplays. Video plays when you press play.
 - **Soft colour.** Thumbnails stop shouting until you point at them. One slider sets how much.
 - **`Ctrl K` everywhere.** Every switch, your weekly report and everything you've hidden, one keystroke away. The toolbar button opens it too.

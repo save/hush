@@ -225,7 +225,9 @@ Hush.register({
 
     // X drops "History" (bookmarks) from the menu on narrower windows; keep it
     function ensureBookmarks(nav) {
-      const xLink = nav.querySelector(':scope > a[href^="/i/history"], :scope > a[href="/i/bookmarks"]');
+      // X's own link only: ours points at /i/history too, and counting it made the two
+      // passes undo each other (add, "already there" → remove, add…), a visible flicker
+      const xLink = nav.querySelector(':scope > a[href^="/i/history"]:not(.hush-x-navlink), :scope > a[href="/i/bookmarks"]:not(.hush-x-navlink)');
       let ours = nav.querySelector(':scope > .hush-x-navlink');
       if (xLink) { if (ours) ours.remove(); return; }
       if (!ours) ours = createBookmarks(nav);
