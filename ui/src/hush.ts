@@ -4,6 +4,8 @@ import '../../src/core/registry.js';
 import '../../src/sites/x.js';
 import '../../src/sites/youtube.js';
 import '../../src/sites/roblox.js';
+import '../../src/sites/github.js';
+import '../../src/sites/reddit.js';
 
 export type Option = {
   key: string;

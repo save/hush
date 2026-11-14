@@ -1,4 +1,4 @@
-import { siGithub, siGooglechrome, siRoblox, siX, siYoutube } from 'simple-icons';
+import { siGithub, siGooglechrome, siReddit, siRoblox, siX, siYoutube } from 'simple-icons';
 import { SUPPORT } from '@ui/config';
 
 type SimpleIcon = { path: string; title: string };
@@ -11,7 +11,7 @@ export function Logo({ icon, className }: { icon: SimpleIcon; className?: string
   );
 }
 
-export const icons = { x: siX, youtube: siYoutube, roblox: siRoblox, github: siGithub, chrome: siGooglechrome };
+export const icons = { x: siX, youtube: siYoutube, roblox: siRoblox, github: siGithub, reddit: siReddit, chrome: siGooglechrome };
 
 export function Mark({ className }: { className?: string }) {
   return (

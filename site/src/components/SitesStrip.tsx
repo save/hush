@@ -9,6 +9,8 @@ const ITEMS: { icon?: { path: string; title: string }; name: string; dim?: boole
   { icon: icons.x, name: 'X' },
   { icon: icons.youtube, name: 'YouTube' },
   { icon: icons.roblox, name: 'Roblox' },
+  { icon: icons.github, name: 'GitHub' },
+  { icon: icons.reddit, name: 'Reddit' },
   { name: 'and every other site', dim: true },
 ];
 

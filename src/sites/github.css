@@ -1,0 +1,321 @@
+/* ==========================================================================
+   hush — GitHub adapter
+   Scoped to html[data-hush-site="gh"]. GitHub is built on Primer, whose
+   colours, borders and buttons all read design tokens, so most of the calm
+   comes from remapping those. Theme comes from github.js (data-hush-theme),
+   which follows GitHub's own light / dark / system setting.
+   Page flags: data-hush-path = home | profile | repo | code | thread | <section>
+   ========================================================================== */
+
+html[data-hush-site="gh"] {
+  --h-bg: #ffffff;
+  --h-muted: #f7f7f8;
+  --h-inset: #f3f3f4;
+  --h-raise: #ffffff;
+  --h-fg: #1b1b1d;
+  --h-dim: #6e6e73;
+  --h-faint: #a8a8ad;
+  --h-line: #e4e4e7;
+  --h-line-soft: #eeeef0;
+  --h-hover: rgba(0, 0, 0, 0.035);
+  --h-field: rgba(0, 0, 0, 0.045);
+  --h-link: #3b5b86;
+  --h-link-strong: #3b5b86;
+  --h-g0: #efeff1;
+  --h-g1: #d4d4d8;
+  --h-g2: #a8a8ad;
+  --h-g3: #6e6e73;
+  --h-g4: #2e2e31;
+  --h-ease: cubic-bezier(0.32, 0.72, 0, 1);
+}
+html[data-hush-site="gh"][data-hush-theme="dark"] {
+  --h-bg: #0b0b0c;
+  --h-muted: #121214;
+  --h-inset: #08080a;
+  --h-raise: #161618;
+  --h-fg: #ececec;
+  --h-dim: #8e8e93;
+  --h-faint: #55555a;
+  --h-line: #232326;
+  --h-line-soft: #1a1a1d;
+  --h-hover: rgba(255, 255, 255, 0.045);
+  --h-field: rgba(255, 255, 255, 0.06);
+  --h-link: #a9bfdc;
+  --h-link-strong: #4a6a96;
+  --h-g0: #161618;
+  --h-g1: #2c2c30;
+  --h-g2: #4e4e54;
+  --h-g3: #85858b;
+  --h-g4: #cfcfd3;
+}
+
+/* ---------- tokens --------------------------------------------------------------
+   Set on <html> and on every element that re-declares a theme (React roots,
+   portals, the marketing header), so nothing falls back to GitHub's palette. */
+html[data-hush-site="gh"],
+html[data-hush-site="gh"] [data-color-mode] {
+  /* surfaces */
+  --bgColor-default: var(--h-bg) !important;
+  --bgColor-muted: var(--h-muted) !important;
+  --bgColor-inset: var(--h-inset) !important;
+  --bgColor-neutral-muted: var(--h-field) !important;
+  --bgColor-accent-muted: color-mix(in srgb, var(--h-link) 12%, transparent) !important;
+  --bgColor-accent-emphasis: var(--h-link-strong) !important;
+  --overlay-bgColor: var(--h-raise) !important;
+  --header-bgColor: var(--h-bg) !important;
+  --header-fgColor-default: var(--h-fg) !important;
+  --header-fgColor-logo: var(--h-fg) !important;
+  --header-borderColor-divider: var(--h-line) !important;
+  --header-search-bgColor: var(--h-field) !important;
+  --header-search-borderColor: transparent !important;
+  /* text */
+  --fgColor-default: var(--h-fg) !important;
+  --fgColor-muted: var(--h-dim) !important;
+  --fgColor-accent: var(--h-link) !important;
+  --fgColor-link: var(--h-link) !important;
+  --fgColor-sponsors: var(--h-dim) !important;
+  /* lines */
+  --borderColor-default: var(--h-line) !important;
+  --borderColor-muted: var(--h-line-soft) !important;
+  --borderColor-accent-emphasis: var(--h-link-strong) !important;
+  --focus-outlineColor: var(--h-link) !important;
+  --underlineNav-borderColor-active: var(--h-fg) !important;
+  --underlineNav-borderColor-hover: var(--h-line) !important;
+  /* buttons: one quiet solid, the rest ghost-like */
+  --button-primary-bgColor-rest: var(--h-fg) !important;
+  --button-primary-bgColor-hover: color-mix(in srgb, var(--h-fg) 86%, var(--h-bg)) !important;
+  --button-primary-bgColor-active: color-mix(in srgb, var(--h-fg) 78%, var(--h-bg)) !important;
+  --button-primary-bgColor-disabled: color-mix(in srgb, var(--h-fg) 30%, var(--h-bg)) !important;
+  --button-primary-fgColor-rest: var(--h-bg) !important;
+  --button-primary-fgColor-disabled: color-mix(in srgb, var(--h-bg) 75%, var(--h-fg)) !important;
+  --button-primary-iconColor-rest: var(--h-bg) !important;
+  --button-primary-borderColor-rest: transparent !important;
+  --button-primary-borderColor-hover: transparent !important;
+  --button-primary-borderColor-disabled: transparent !important;
+  --button-primary-shadow-selected: none !important;
+  --button-default-bgColor-rest: var(--h-muted) !important;
+  --button-default-bgColor-hover: color-mix(in srgb, var(--h-fg) 7%, var(--h-bg)) !important;
+  --button-default-bgColor-active: color-mix(in srgb, var(--h-fg) 10%, var(--h-bg)) !important;
+  --button-default-borderColor-rest: var(--h-line) !important;
+  --button-default-borderColor-hover: var(--h-line) !important;
+  --button-default-shadow-resting: none !important;
+  --button-invisible-bgColor-hover: var(--h-hover) !important;
+  --counter-bgColor-muted: var(--h-field) !important;
+  --control-bgColor-rest: var(--h-muted) !important;
+  --control-borderColor-rest: var(--h-line) !important;
+  --topicTag-borderColor: var(--h-line) !important;
+  --treeViewItem-leadingVisual-iconColor-rest: var(--h-dim) !important;
+  /* shape */
+  --borderRadius-medium: 8px !important;
+  --borderRadius-large: 12px !important;
+  --shadow-resting-small: none !important;
+  --shadow-resting-medium: 0 1px 2px rgba(0, 0, 0, 0.06) !important;
+
+  /* the older color-* tokens, still used on profiles, dashboard and settings */
+  --color-canvas-default: var(--h-bg) !important;
+  --color-canvas-subtle: var(--h-muted) !important;
+  --color-canvas-inset: var(--h-inset) !important;
+  --color-canvas-overlay: var(--h-raise) !important;
+  --color-fg-default: var(--h-fg) !important;
+  --color-fg-muted: var(--h-dim) !important;
+  --color-fg-subtle: var(--h-faint) !important;
+  --color-border-default: var(--h-line) !important;
+  --color-border-muted: var(--h-line-soft) !important;
+  --color-accent-fg: var(--h-link) !important;
+  --color-accent-emphasis: var(--h-link-strong) !important;
+  --color-primer-border-active: var(--h-fg) !important;
+  --color-underlinenav-border-hover: var(--h-line) !important;
+  --color-btn-primary-bg: var(--h-fg) !important;
+  --color-btn-primary-hover-bg: color-mix(in srgb, var(--h-fg) 86%, var(--h-bg)) !important;
+  --color-btn-primary-text: var(--h-bg) !important;
+  --color-btn-primary-border: transparent !important;
+  --color-btn-primary-icon: var(--h-bg) !important;
+  --color-btn-bg: var(--h-muted) !important;
+  --color-btn-hover-bg: color-mix(in srgb, var(--h-fg) 7%, var(--h-bg)) !important;
+  --color-btn-border: var(--h-line) !important;
+  --color-sponsors-fg: var(--h-dim) !important;
+}
+
+/* grey graphs: the contribution calendar and language colours */
+html[data-hush-site="gh"][data-hush-greygraph],
+html[data-hush-site="gh"][data-hush-greygraph] [data-color-mode] {
+  --contribution-default-bgColor-0: var(--h-g0) !important;
+  --contribution-default-bgColor-1: var(--h-g1) !important;
+  --contribution-default-bgColor-2: var(--h-g2) !important;
+  --contribution-default-bgColor-3: var(--h-g3) !important;
+  --contribution-default-bgColor-4: var(--h-g4) !important;
+  --contribution-default-borderColor-0: transparent !important;
+  --contribution-default-borderColor-1: transparent !important;
+  --contribution-default-borderColor-2: transparent !important;
+  --contribution-default-borderColor-3: transparent !important;
+  --contribution-default-borderColor-4: transparent !important;
+  --color-calendar-graph-day-bg: var(--h-g0) !important;
+  --color-calendar-graph-day-L1-bg: var(--h-g1) !important;
+  --color-calendar-graph-day-L2-bg: var(--h-g2) !important;
+  --color-calendar-graph-day-L3-bg: var(--h-g3) !important;
+  --color-calendar-graph-day-L4-bg: var(--h-g4) !important;
+}
+html[data-hush-site="gh"][data-hush-greygraph] :is(.repo-language-color, [data-hush-section="languages"] .Progress, [data-hush-section="languages"] svg[class*="octicon-dot"]) {
+  filter: grayscale(1) !important;
+}
+
+/* the page itself */
+html[data-hush-site="gh"] body { background: var(--h-bg) !important; color: var(--h-fg); }
+
+/* ---------- noise -------------------------------------------------------------- */
+
+/* "get the app" banners */
+html[data-hush-site="gh"] react-partial[partial-name="app-install-banner-partial"] { display: none !important; }
+
+/* Copilot: header chat, "ask Copilot" buttons, dashboard prompts, file-view entry points */
+html[data-hush-site="gh"][data-hush-nocopilot] :is(
+  react-partial[partial-name*="copilot" i],
+  .AppHeader-CopilotChat,
+  :is(button, a)[aria-label*="Copilot" i],
+  :is(button, a)[data-testid*="copilot" i],
+  [data-target*="copilot" i]:is(button, a),
+  copilot-dashboard-entrypoint,
+  [class*="CopilotChat"],
+  [class*="copilotButton"]
+) {
+  display: none !important;
+}
+
+/* a quiet repo sidebar: about, releases, languages */
+html[data-hush-site="gh"][data-hush-quietsidebar] :is(
+  [data-hush-section^="used by"],
+  [data-hush-section^="contributors"],
+  [data-hush-section^="deployments"],
+  [data-hush-section^="packages"],
+  [data-hush-section^="environments"]
+) {
+  display: none !important;
+}
+
+/* profiles: no achievement badges */
+html[data-hush-site="gh"][data-hush-noachievements] [data-hush-section^="achievements"],
+html[data-hush-site="gh"][data-hush-noachievements] :is(img.achievement-badge-sidebar, a[href*="tab=achievements"]) {
+  display: none !important;
+}
+
+/* dashboard: the feed and your repos, without the explore / changelog column */
+html[data-hush-site="gh"][data-hush-nodashrecs][data-hush-path="home"] :is(
+  aside.feed-right-column,
+  .feed-right-column,
+  [aria-label="Explore repositories" i],
+  [aria-label="Latest changes" i],
+  .dashboard-changelog
+) {
+  display: none !important;
+}
+
+/* signed out: the product menus in the header go, search and sign in stay */
+html[data-hush-site="gh"] header.HeaderMktg nav[aria-label="Global"] { visibility: hidden !important; }
+
+/* ---------- the look ---------------------------------------------------------- */
+
+/* header: one surface with the page, a hairline below */
+html[data-hush-site="gh"] :is(header.AppHeader, header.HeaderMktg, .AppHeader-globalBar) {
+  background: var(--h-bg) !important;
+  box-shadow: none !important;
+}
+html[data-hush-site="gh"] :is(header.AppHeader, header.HeaderMktg) { border-bottom: 1px solid var(--h-line-soft) !important; }
+/* the repo / context bar under it: the same surface, not an inset band */
+html[data-hush-site="gh"] header.GlobalNav {
+  background: var(--h-bg) !important;
+  box-shadow: inset 0 -1px 0 var(--h-line-soft) !important;
+  border-top: 0 !important;
+}
+/* the signed-out header is drawn white-on-black by GitHub's brand kit: follow the theme instead */
+html[data-hush-site="gh"] header.HeaderMktg :is(a, button, a *, button *):not(svg *) { color: var(--h-fg) !important; }
+html[data-hush-site="gh"] header.HeaderMktg svg:not([class*="octicon-search"]) { fill: currentColor !important; }
+html[data-hush-site="gh"] header.HeaderMktg :is(*, *::before, *::after) { border-color: var(--h-line) !important; box-shadow: none !important; }
+html[data-hush-site="gh"] header.HeaderMktg :is(button, input)[class*="search" i],
+html[data-hush-site="gh"] header.HeaderMktg [class*="search" i] :is(button, input) { background: var(--h-field) !important; border-color: transparent !important; color: var(--h-dim) !important; }
+html[data-hush-site="gh"] header.HeaderMktg a[href*="signup"],
+html[data-hush-site="gh"] header.HeaderMktg a[href*="signup"] * { background: var(--h-fg) !important; color: var(--h-bg) !important; border-color: transparent !important; }
+html[data-hush-site="gh"] header.HeaderMktg a[href*="signup"] * { background: transparent !important; }
+
+/* tabs under the repo name: no icons shouting, the active one simply brighter */
+html[data-hush-site="gh"] nav[aria-label="Repository"] a:not([aria-current="page"]) { color: var(--h-dim) !important; }
+html[data-hush-site="gh"] nav[aria-label="Repository"] a:not([aria-current="page"]) svg { opacity: 0.7; }
+html[data-hush-site="gh"] nav[aria-label="Repository"] a:hover { color: var(--h-fg) !important; }
+
+/* counters: small grey numbers, no pills */
+html[data-hush-site="gh"] :is(span[class*="CounterLabel"], .Counter) {
+  background: transparent !important;
+  border: 0 !important;
+  color: var(--h-dim) !important;
+  padding-inline: 2px !important;
+  font-weight: 400 !important;
+}
+
+/* topics: outlined and grey, not bright blue pills */
+html[data-hush-site="gh"] :is(a[class*="TopicTag"], a.topic-tag) {
+  background: transparent !important;
+  border: 1px solid var(--h-line) !important;
+  color: var(--h-dim) !important;
+  font-weight: 400 !important;
+  transition: color 0.18s ease, border-color 0.18s ease !important;
+}
+html[data-hush-site="gh"] :is(a[class*="TopicTag"], a.topic-tag):hover { color: var(--h-fg) !important; border-color: var(--h-faint) !important; }
+
+/* links: readable, underlined only on hover */
+html[data-hush-site="gh"] :is(.markdown-body, [class*="sidebarSection"], .BorderGrid) a:not([class*="Button"]):not([class*="TopicTag"]):not(.topic-tag) { text-decoration: none; }
+
+/* file list: grey folders, hairlines, a soft hover */
+html[data-hush-site="gh"] :is(svg.icon-directory, svg.octicon-file-directory-fill) { color: var(--h-dim) !important; fill: var(--h-dim) !important; }
+html[data-hush-site="gh"] tr.react-directory-row { transition: background-color 0.16s ease !important; }
+html[data-hush-site="gh"] tr.react-directory-row:hover { background: var(--h-hover) !important; }
+html[data-hush-site="gh"] tr.react-directory-row td { border-color: var(--h-line-soft) !important; }
+
+/* label colours on issues and PRs keep their meaning but sit back a little */
+html[data-hush-site="gh"] :is(.IssueLabel, a[class*="IssueLabel"], span[class*="IssueLabel"]) { filter: saturate(0.55); }
+
+/* the "Latest" release badge and state pills stay, just softer */
+html[data-hush-site="gh"] :is(.Label--success, span[class*="Label"][class*="success"]) { filter: saturate(0.6); }
+
+/* READMEs and long markdown: a comfortable measure, more air */
+html[data-hush-site="gh"][data-hush-readable] article.markdown-body {
+  max-width: 780px !important;
+  margin-inline: auto !important;
+  line-height: 1.7 !important;
+}
+html[data-hush-site="gh"][data-hush-readable] article.markdown-body :is(h1, h2) { border-bottom-color: var(--h-line-soft) !important; }
+
+/* code blocks: a quiet well */
+html[data-hush-site="gh"] .markdown-body :is(pre, .highlight pre) { background: var(--h-muted) !important; border: 1px solid var(--h-line-soft); }
+
+/* footer: small and faint */
+html[data-hush-site="gh"] footer.footer { opacity: 0.55; transition: opacity 0.3s ease; }
+html[data-hush-site="gh"] footer.footer:hover { opacity: 1; }
+
+/* the loading bar along the top: grey */
+html[data-hush-site="gh"] .progress-pjax-loader :is(.progress-pjax-loader-bar, .Progress-item) { background: var(--h-dim) !important; }
+
+/* ---------- motion ------------------------------------------------------------
+   Opacity only: a transform on these containers would break GitHub's sticky
+   headers. !important so "still motion" (which stops the site's motion) lets
+   hush's own quiet arrivals through. */
+@keyframes hushGhIn { from { opacity: 0; } }
+@keyframes hushGhRow { from { opacity: 0; transform: translateY(3px); } }
+html[data-hush-site="gh"][data-hush-site] main {
+  animation: hushGhIn 0.45s var(--h-ease) both !important;
+  animation-iteration-count: 1 !important;
+}
+html[data-hush-site="gh"][data-hush-site] tr.react-directory-row {
+  animation: hushGhRow 0.4s var(--h-ease) both !important;
+  animation-iteration-count: 1 !important;
+}
+html[data-hush-site="gh"] tr.react-directory-row:nth-child(2) { animation-delay: 0.02s !important; }
+html[data-hush-site="gh"] tr.react-directory-row:nth-child(3) { animation-delay: 0.04s !important; }
+html[data-hush-site="gh"] tr.react-directory-row:nth-child(4) { animation-delay: 0.06s !important; }
+html[data-hush-site="gh"] tr.react-directory-row:nth-child(5) { animation-delay: 0.08s !important; }
+html[data-hush-site="gh"] tr.react-directory-row:nth-child(6) { animation-delay: 0.1s !important; }
+html[data-hush-site="gh"] tr.react-directory-row:nth-child(7) { animation-delay: 0.12s !important; }
+html[data-hush-site="gh"] tr.react-directory-row:nth-child(8) { animation-delay: 0.14s !important; }
+html[data-hush-site="gh"] tr.react-directory-row:nth-child(n + 9) { animation-delay: 0.16s !important; }
+html[data-hush-site="gh"] :is(a, button) { transition-timing-function: var(--h-ease); }
+@media (prefers-reduced-motion: reduce) {
+  html[data-hush-site="gh"][data-hush-site] :is(main, tr.react-directory-row) { animation: none !important; }
+}

@@ -37,6 +37,24 @@
 - **Rewrites:** Roblox's design tokens to hush's palette (light and dark); the blue Play button → neutral; menu and header links lowercase; section headers small; tabs as words with a thin underline; filter pills soft; tiles with soft corners and quiet stats.
 - **Keyboard:** Roblox has no shortcuts of its own, so hush adds `g` chords, `/` search and `z` focus mode, with key caps on hover in the menu.
 
+## What hush does on GitHub
+
+- **Removes:** Copilot buttons, chats and prompts (option); the "get the app" banner; "Used by", contributors, deployments and packages in the repo sidebar (option: quiet repo sidebar); achievement badges on profiles (option); the explore and changelog column on your dashboard (option); the product menus in the signed-out header.
+- **Rewrites:** Primer's design tokens to hush's palette, light and dark, following GitHub's own theme setting; one neutral accent instead of blue and green; the Code button and other primary buttons as a quiet solid; the active tab underline in the text colour instead of orange; counters as small grey numbers; topics outlined and grey; folders grey; issue labels a little less saturated; the contribution graph and language colours in greys (option: grey graphs).
+- **Layout:** the header and repo bar share the page's surface with a hairline between; READMEs and long markdown get a comfortable line length and more line height (option: readable READMEs); the footer is faint until you point at it.
+- **Motion:** pages fade in on navigation and file rows settle in one after another. Opacity only, so GitHub's sticky headers keep working.
+- **Keyboard:** GitHub has its own shortcuts (`g c`, `g i`, `s`, `/` …), so hush adds none. `Ctrl K` gets your dashboard, notifications, pull requests, issues, repositories and stars, the current repo's code, issues, pull requests, actions and releases, and search (this repo, or all of GitHub).
+
+## What hush does on Reddit
+
+> Written without live access to reddit.com, so it is deliberately conservative: selectors are Reddit's own element names, links and labels, and a miss leaves Reddit as it was. Reports and screenshots welcome.
+
+- **Removes:** ads and promoted posts in feeds, comments and sidebars; "get the app", Premium and advertise links; awards (option); games, resources and Reddit Answers in the menu (option: quiet menu); the "recent posts" column on home, popular and all (option: quiet home sidebar). A community's own sidebar stays.
+- **Rewrites:** Reddit's `--color-*` tokens to hush's palette, light and dark; Create, Join and Log in as one quiet solid; votes in greys, an upvote simply brighter (option: neutral votes); flairs outlined and grey; post titles without ALL CAPS, emoji or "!!!" (option: calm titles).
+- **Layout:** one surface for header and page with a hairline; rounded post cards with a soft hover; softer separators; images and video quieter until you point at them (option: soft media, off by default).
+- **Motion:** posts and comments settle in as the feed loads them. With still motion on, videos in the feed don't autoplay.
+- **Mute words** hide posts that mention them. Old Reddit (old.reddit.com) is left alone.
+
 ## Menu style
 
 Every adapter with a sidebar has a **menu** setting: **words**, **icons**, or **both** (default). In icon mode the word slides out beside the icon on hover. Change it in the popup (segmented control) or the palette (`ctrl k` → "menu", enter cycles).

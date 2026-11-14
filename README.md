@@ -6,7 +6,7 @@
 
 **The web is loud. hush turns it down.**
 
-A free, open-source browser extension that strips the promos, badges and noise from X, YouTube and Roblox, and gives them calmer layouts you can actually think in.
+A free, open-source browser extension that strips the promos, badges and noise from X, YouTube, Roblox, GitHub and Reddit, and gives them calmer layouts you can actually think in.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-18181b?style=flat-square)](LICENSE)
 [![Manifest V3](https://img.shields.io/badge/chrome-manifest%20v3-18181b?style=flat-square&logo=googlechrome&logoColor=white)](manifest.json)
@@ -30,10 +30,10 @@ A free, open-source browser extension that strips the promos, badges and noise f
 
 ## Features
 
-- **Tailored for X, YouTube and Roblox.** Each site has its own adapter that removes upsells, ads, Shorts, trends and promoted posts, and rebuilds the page as one calm column.
+- **Tailored for X, YouTube, Roblox, GitHub and Reddit.** Each site has its own adapter that removes upsells, ads, Shorts, trends, Copilot nudges and promoted posts, and rebuilds the page in one quiet palette.
 - **Hush anything.** Right-click any element on any site and choose **hush this**. It stays hidden until you bring it back from `Ctrl K` or settings.
 - **Mute words.** Hide posts, videos and games that mention anything you choose. Type `mute crypto` in `Ctrl K`.
-- **Calm titles.** ALL CAPS, [🔥UPDATE] tags, emoji and "!!!" taken out of YouTube and Roblox titles. Hover for the original.
+- **Calm titles.** ALL CAPS, [🔥UPDATE] tags, emoji and "!!!" taken out of YouTube, Roblox and Reddit titles. Hover for the original.
 - **Gentle time nudges.** Optional: a quiet note after 20, 45 or 90 minutes on a site each day.
 - **A weekly quiet report.** See how much hush kept off your screen this week, and your time per site. Counted on your device only.
 - **Calm every site.** Sites without a tailored adapter still lose display ads, chat bubbles, notification nags and "subscribe!" pop-ups.
@@ -84,7 +84,7 @@ After changing the extension, press reload on its card in `chrome://extensions` 
 ```
 manifest.json      the extension
 src/core/          engine, palette, picker, shared registry and calm layer
-src/sites/         one adapter per site (x, youtube, roblox)
+src/sites/         one adapter per site (x, youtube, roblox, github, reddit)
 ui/                the popup: React, shadcn/ui, Tailwind v4
 site/              the homepage: React, Motion, a hand-written WebGL shader
 docs/              site-by-site details and media

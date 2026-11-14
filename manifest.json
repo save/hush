@@ -46,6 +46,8 @@
         "src/sites/x.js",
         "src/sites/youtube.js",
         "src/sites/roblox.js",
+        "src/sites/github.js",
+        "src/sites/reddit.js",
         "src/core/picker.js",
         "src/core/engine.js"
       ]
@@ -82,6 +84,27 @@
       "run_at": "document_start",
       "css": [
         "src/sites/roblox.css"
+      ]
+    },
+    {
+      "matches": [
+        "*://github.com/*"
+      ],
+      "run_at": "document_start",
+      "css": [
+        "src/sites/github.css"
+      ]
+    },
+    {
+      "matches": [
+        "*://www.reddit.com/*",
+        "*://reddit.com/*",
+        "*://new.reddit.com/*",
+        "*://sh.reddit.com/*"
+      ],
+      "run_at": "document_start",
+      "css": [
+        "src/sites/reddit.css"
       ]
     }
   ],

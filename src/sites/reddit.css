@@ -1,0 +1,188 @@
+/* ==========================================================================
+   hush — Reddit adapter
+   Scoped to html[data-hush-site="rd"]. Reddit's web components read --color-*
+   tokens that inherit into their shadow roots, so a remap on <html> calms the
+   whole page. Theme comes from reddit.js (data-hush-theme).
+   Page flags: data-hush-path = home | popular | sub | post | user | search | other
+   Note: written without live access to reddit.com; selectors are deliberately
+   conservative (tag names, hrefs, ARIA) so a miss leaves Reddit as it was.
+   ========================================================================== */
+
+html[data-hush-site="rd"] {
+  --h-bg: #ffffff;
+  --h-muted: #f7f7f8;
+  --h-raise: #ffffff;
+  --h-fg: #1b1b1d;
+  --h-dim: #6e6e73;
+  --h-faint: #a8a8ad;
+  --h-line: #e4e4e7;
+  --h-line-soft: #eeeef0;
+  --h-hover: rgba(0, 0, 0, 0.035);
+  --h-field: rgba(0, 0, 0, 0.045);
+  --h-link: #3b5b86;
+  --h-ease: cubic-bezier(0.32, 0.72, 0, 1);
+}
+html[data-hush-site="rd"][data-hush-theme="dark"] {
+  --h-bg: #0b0b0c;
+  --h-muted: #121214;
+  --h-raise: #161618;
+  --h-fg: #ececec;
+  --h-dim: #8e8e93;
+  --h-faint: #55555a;
+  --h-line: #232326;
+  --h-line-soft: #1a1a1d;
+  --h-hover: rgba(255, 255, 255, 0.045);
+  --h-field: rgba(255, 255, 255, 0.06);
+  --h-link: #a9bfdc;
+}
+
+/* ---------- tokens ------------------------------------------------------------ */
+html[data-hush-site="rd"],
+html[data-hush-site="rd"] :is(.theme-dark, .theme-light) {
+  /* surfaces */
+  --color-neutral-background: var(--h-bg) !important;
+  --color-neutral-background-weak: var(--h-muted) !important;
+  --color-neutral-background-strong: var(--h-raise) !important;
+  --color-neutral-background-container: var(--h-muted) !important;
+  --color-neutral-background-container-strong: var(--h-raise) !important;
+  --color-neutral-background-hover: var(--h-hover) !important;
+  --color-neutral-background-container-hover: var(--h-hover) !important;
+  --color-neutral-background-selected: var(--h-field) !important;
+  --shreddit-content-background: var(--h-bg) !important;
+  /* text */
+  --color-neutral-content: var(--h-fg) !important;
+  --color-neutral-content-strong: var(--h-fg) !important;
+  --color-neutral-content-weak: var(--h-dim) !important;
+  --color-secondary-plain: var(--h-link) !important;
+  --color-secondary-plain-weak: var(--h-dim) !important;
+  /* lines */
+  --color-neutral-border: var(--h-line) !important;
+  --color-neutral-border-weak: var(--h-line-soft) !important;
+  --color-neutral-border-medium: var(--h-line) !important;
+  /* buttons: Create / Join / Log in become one quiet solid */
+  --color-primary-background: var(--h-fg) !important;
+  --color-primary-background-hover: color-mix(in srgb, var(--h-fg) 86%, var(--h-bg)) !important;
+  --color-primary-onBackground: var(--h-bg) !important;
+  --color-primary-plain: var(--h-fg) !important;
+  --color-brand-background: var(--h-fg) !important;
+  --color-brand-onBackground: var(--h-bg) !important;
+  --color-secondary-background: var(--h-field) !important;
+  --color-secondary-background-hover: color-mix(in srgb, var(--h-fg) 10%, transparent) !important;
+  --color-secondary-onBackground: var(--h-fg) !important;
+  --color-global-focus: var(--h-link) !important;
+}
+
+/* votes in greys: an upvote is simply brighter, a downvote dimmer */
+html[data-hush-site="rd"][data-hush-neutralvotes],
+html[data-hush-site="rd"][data-hush-neutralvotes] :is(.theme-dark, .theme-light) {
+  --color-upvote-background: var(--h-fg) !important;
+  --color-upvote-background-hover: color-mix(in srgb, var(--h-fg) 86%, var(--h-bg)) !important;
+  --color-upvote-plain: var(--h-fg) !important;
+  --color-action-upvote: var(--h-fg) !important;
+  --color-downvote-background: var(--h-faint) !important;
+  --color-downvote-background-hover: var(--h-dim) !important;
+  --color-downvote-plain: var(--h-dim) !important;
+  --color-action-downvote: var(--h-dim) !important;
+}
+
+html[data-hush-site="rd"] body { background: var(--h-bg) !important; }
+
+/* ---------- noise -------------------------------------------------------------- */
+
+/* ads and promoted posts, wherever they appear */
+html[data-hush-site="rd"] :is(
+  shreddit-ad-post,
+  shreddit-comments-page-ad,
+  shreddit-sidebar-ad,
+  shreddit-dynamic-ad-link,
+  shreddit-comment-tree-ad,
+  [data-testid="ad-post"],
+  [data-promoted="true"],
+  shreddit-post[promoted],
+  article:has(> shreddit-ad-post),
+  article:has(> shreddit-post[promoted])
+) {
+  display: none !important;
+}
+
+/* "get the app", Premium, advertise */
+html[data-hush-site="rd"] :is(
+  faceplate-tracker[noun="get_app"],
+  faceplate-tracker[noun="advertise"],
+  faceplate-tracker[noun="premium"],
+  #get-app,
+  a[href*="ads.reddit.com"],
+  a[href^="/premium"],
+  a[href^="https://www.reddit.com/premium"],
+  xpromo-app-selector,
+  xpromo-nsfw-blocking-modal,
+  shreddit-async-loader[bundlename*="xpromo"]
+) {
+  display: none !important;
+}
+
+/* awards */
+html[data-hush-site="rd"][data-hush-noawards] :is(award-button, shreddit-post-award, shreddit-award-button, [noun="award"], faceplate-tracker[noun="award"]) {
+  display: none !important;
+}
+
+/* a quiet left menu: no games, resources or Reddit Answers */
+html[data-hush-site="rd"][data-hush-quietnav] :is(
+  games-section-badge-controller,
+  [data-hush-section^="games"],
+  [data-hush-section^="resources"],
+  [data-hush-section*="reddit answers"],
+  a[href^="/answers"],
+  a[href^="https://www.reddit.com/answers"],
+  li:has(> a[href^="/answers"])
+) {
+  display: none !important;
+}
+
+/* home, popular, all: no "recent posts" column; in a community the sidebar is useful and stays */
+html[data-hush-site="rd"][data-hush-quietright]:is([data-hush-path="home"], [data-hush-path="popular"]) :is(#right-sidebar-container, recent-posts) {
+  display: none !important;
+}
+
+/* ---------- the look ---------------------------------------------------------- */
+
+/* header: one surface with the page, a hairline below */
+html[data-hush-site="rd"] :is(reddit-header-large, reddit-header-small, header) {
+  background: var(--h-bg) !important;
+  box-shadow: none !important;
+}
+html[data-hush-site="rd"] reddit-header-large { border-bottom: 1px solid var(--h-line-soft) !important; }
+
+/* post cards: rounded, a soft hover, no hard rules between them */
+html[data-hush-site="rd"] shreddit-post {
+  border-radius: 14px !important;
+  transition: background-color 0.18s ease !important;
+}
+html[data-hush-site="rd"] shreddit-feed hr,
+html[data-hush-site="rd"] shreddit-feed + hr { border-color: var(--h-line-soft) !important; opacity: 0.7; }
+
+/* flairs: outlined and grey instead of coloured pills */
+html[data-hush-site="rd"] :is(shreddit-post-flair, flair-tag-renderer) :is(span, a) {
+  background: transparent !important;
+  color: var(--h-dim) !important;
+  box-shadow: inset 0 0 0 1px var(--h-line) !important;
+}
+
+/* soft media: quieter until you point at it */
+html[data-hush-site="rd"][data-hush-softmedia] shreddit-post :is(img, video, shreddit-player, shreddit-player-2) {
+  filter: saturate(calc(var(--hush-sat, 0.9) * 0.6)) brightness(0.94);
+  transition: filter 0.3s ease !important;
+}
+html[data-hush-site="rd"][data-hush-softmedia] shreddit-post:hover :is(img, video, shreddit-player, shreddit-player-2) { filter: none; }
+
+/* ---------- motion -------------------------------------------------------------
+   Posts settle in as the feed loads them. Opacity only, and !important so
+   "still motion" (which stops Reddit's own motion) lets this through. */
+@keyframes hushRdIn { from { opacity: 0; } }
+html[data-hush-site="rd"][data-hush-site] :is(shreddit-post, shreddit-comment) {
+  animation: hushRdIn 0.4s var(--h-ease) both !important;
+  animation-iteration-count: 1 !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-hush-site="rd"][data-hush-site] :is(shreddit-post, shreddit-comment) { animation: none !important; }
+}
