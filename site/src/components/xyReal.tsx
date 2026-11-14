@@ -390,8 +390,8 @@ export function YtCalm() {
           </aside>
           <main className="min-w-0 flex-1 overflow-hidden pr-10 pl-6">
             <div className="pt-6 pb-5">
-              <div className="text-[32px] leading-[1.15] font-bold tracking-[-0.025em]">Home</div>
-              <div className="mt-0.5 text-[18px]" style={{ color: XH.dim }}>good evening</div>
+              <div className="text-[26px] leading-[1.2] font-semibold tracking-[-0.025em]">Home</div>
+              <div className="mt-0.5 text-[15px]" style={{ color: XH.dim }}>good evening</div>
             </div>
             <div className="flex gap-2 pt-1 pb-6 text-[14px] font-medium">
               {['All', 'Gaming', 'Cooking', 'Camping', 'Podcasts'].map((c, i) => (

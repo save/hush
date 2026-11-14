@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- **YouTube, sleeker:** lighter type in a single quiet font, a frosted header with one seamless search pill (the bell and Create stay, a count becomes a dot), slim sidebar rows, outlined chips, a centred column of rounded thumbnails that zoom gently on hover, titles on two lines with views and dates kept, a slim channel banner, and motion throughout: pages fade up on navigation, cards settle in, menus and chips ease.
 - **YouTube, rebuilt from scratch** to match Roblox and X: a sidebar that works expanded (icon + word rows, a soft pill for the current page) and collapsed (a tight rail), pill chips, Home with a quiet greeting, three videos to a row, search as one calm list, a calmer watch page (small up-next thumbnails, a soft description card, no New badges, no doodle logo), quieter channel pages and soft menus. The old 1,400-line stylesheet of layered overrides is now one 700-line file.
 - **Mute words:** hide posts (X), videos (YouTube) and games (Roblox) that mention words or phrases you choose. Type `mute …` in `Ctrl K`, or add them in settings.
 - **Calm titles:** YouTube and Roblox titles lose ALL CAPS, leading [TAGS], emoji and "!!!". The original is in the tooltip. On by default, per site.
