@@ -12,7 +12,7 @@ Hush.register({
     { key: 'nochat', label: 'hide live chat', group: 'feed', desc: 'No live chat beside streams', keywords: 'stream', default: true },
     { key: 'norelated', label: 'hide recommendations', group: 'feed', desc: 'No up next sidebar', keywords: 'up next related sidebar', default: false },
     { key: 'nocomments', label: 'hide comments', group: 'feed', desc: 'No comment section at all', default: false },
-    { key: 'capfeed', label: 'calm home feed', group: 'feed', desc: 'Three rows, then a quiet “Show more”', keywords: 'endless infinite limit up next', default: true },
+    { key: 'capfeed', label: 'calm home feed', group: 'feed', desc: 'Nine videos (3 × 3), then a quiet “Show more”', keywords: 'endless infinite limit up next', default: true },
     { key: 'softthumbs', label: 'soft thumbnails', group: 'look', desc: 'Thumbnails softened until hover', keywords: 'images color saturation quiet', default: true },
     { key: 'calmtitles', label: 'calm titles', group: 'look', desc: 'No ALL CAPS, tags or emoji spam in titles', keywords: 'clickbait caps capitals emoji title', default: true },
     { key: 'foldcomments', label: 'fold comments', group: 'feed', desc: 'Comments behind a button', keywords: 'collapse', default: true },

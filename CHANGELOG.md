@@ -6,8 +6,8 @@
 - **X:** "Follows you" is a quiet note after the handle instead of a grey box.
 - **YouTube subscriptions:** "Show all" now loads every channel you follow (YouTube only sends the first few until asked) and shows the real count; it no longer counts the Explore links.
 - **YouTube thumbnails:** four to a row (three, then two on narrower windows), a step darker until you point at one.
-- **YouTube home:** three rows of videos, then a quiet "Show more" (was five).
-- **YouTube sidebar:** the You section's own "Show more" works again (playlists, Watch later and Liked videos were being hidden).
+- **YouTube home:** a 3 × 3 grid of nine videos, then a quiet "Show more" (was five rows).
+- **YouTube sidebar:** the You section's own "Show more" works again. Expanding it added a store link, which made an old promo rule hide the whole section; your own sections are never hidden now.
 - **Brave:** the homepage recognises Brave (and Edge, Opera): the button says "Add to Brave" and the install steps give `brave://extensions`. The README notes that hush and Shields work side by side.
 
 ## 0.6.0

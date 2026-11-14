@@ -175,8 +175,8 @@ html[data-hush-site="yt"][data-hush-noshorts] :is(
 html[data-hush-site="yt"][data-hush-noshorts] :is(ytd-video-renderer, ytd-grid-video-renderer, ytd-rich-item-renderer, yt-lockup-view-model):has(a[href^="/shorts/"]) {
   display: none !important;
 }
-/* guide sections that only sell more YouTube */
-html[data-hush-site="yt"] ytd-guide-section-renderer:has(a[href^="/feed/trending"], a[href^="/gaming"], a[href*="/premium"], a[href^="/feed/storefront"], a[href*="music.youtube"], a[href*="youtubekids"], a[href^="/channel/UC4R8DWoMoI7CAwX8_LjQHig"]),
+/* guide sections that only sell more YouTube (never your own sections: the You list gains a store link when expanded) */
+html[data-hush-site="yt"] ytd-guide-section-renderer:has(a[href^="/feed/trending"], a[href^="/gaming"], a[href*="/premium"], a[href^="/feed/storefront"], a[href*="music.youtube"], a[href*="youtubekids"], a[href^="/channel/UC4R8DWoMoI7CAwX8_LjQHig"]):not(:has(a[href^="/feed/history"], a[href^="/feed/you"], a[href^="/feed/playlists"], a[href^="/feed/channels"], a[href^="/feed/subscriptions"])),
 html[data-hush-site="yt"] ytd-guide-entry-renderer:has(a[href^="/feed/storefront"], a[href*="/premium"], a[href^="/reporthistory"], a[href^="/account"], a[href*="support.google"], a[href*="/feedback"]) {
   display: none !important;
 }
@@ -1096,4 +1096,13 @@ html[data-hush-site="yt"] :is(ytd-rich-item-renderer, ytd-video-renderer, yt-loc
 /* YouTube still thinks in threes and trims the margin of every "first" card; keep them all even */
 html[data-hush-site="yt"] ytd-browse ytd-rich-grid-renderer > #contents > ytd-rich-item-renderer[is-in-first-column] {
   margin-left: calc(var(--ytd-rich-grid-item-margin) / 2) !important;
+}
+
+/* home: a 3 × 3 grid, then the quiet "Show more" (three more rows each time) */
+html[data-hush-site="yt"] ytd-browse[page-subtype="home"] ytd-rich-grid-renderer {
+  --ytd-rich-grid-items-per-row: 3 !important;
+  --ytd-rich-grid-posts-per-row: 3 !important;
+}
+@media (max-width: 900px) {
+  html[data-hush-site="yt"] ytd-browse[page-subtype="home"] ytd-rich-grid-renderer { --ytd-rich-grid-items-per-row: 2 !important; --ytd-rich-grid-posts-per-row: 2 !important; }
 }
