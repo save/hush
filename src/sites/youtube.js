@@ -12,7 +12,7 @@ Hush.register({
     { key: 'nochat', label: 'hide live chat', group: 'feed', desc: 'No live chat beside streams', keywords: 'stream', default: true },
     { key: 'norelated', label: 'hide recommendations', group: 'feed', desc: 'No up next sidebar', keywords: 'up next related sidebar', default: false },
     { key: 'nocomments', label: 'hide comments', group: 'feed', desc: 'No comment section at all', default: false },
-    { key: 'capfeed', label: 'calm home feed', group: 'feed', desc: 'Five rows, then a quiet “Show more”', keywords: 'endless infinite limit up next', default: true },
+    { key: 'capfeed', label: 'calm home feed', group: 'feed', desc: 'Three rows, then a quiet “Show more”', keywords: 'endless infinite limit up next', default: true },
     { key: 'softthumbs', label: 'soft thumbnails', group: 'look', desc: 'Thumbnails softened until hover', keywords: 'images color saturation quiet', default: true },
     { key: 'calmtitles', label: 'calm titles', group: 'look', desc: 'No ALL CAPS, tags or emoji spam in titles', keywords: 'clickbait caps capitals emoji title', default: true },
     { key: 'foldcomments', label: 'fold comments', group: 'feed', desc: 'Comments behind a button', keywords: 'collapse', default: true },
@@ -136,8 +136,8 @@ Hush.register({
       if (!contents) return;
       const items = [...contents.querySelectorAll(':scope > ytd-rich-item-renderer:not([data-hush-hide])')].filter((i) => !i.matches(':has(ytd-ad-slot-renderer)'));
       const perRow = parseInt(getComputedStyle(grid).getPropertyValue('--ytd-rich-grid-items-per-row'), 10) || 4;
-      // five rows before the quiet "Show more"; each press adds five more
-      const step = perRow * 5;
+      // three rows before the quiet "Show more"; each press adds three more
+      const step = perRow * 3;
       const capped = ctx.options.capfeed && items.length > step;
       const limit = Math.max(+(grid.dataset.hushLimit || 0), step);
       items.forEach((it, i) => {
@@ -259,6 +259,8 @@ Hush.register({
       let best = null;
       let bestScore = 0;
       for (const s of document.querySelectorAll('ytd-guide-renderer ytd-guide-section-renderer')) {
+        // the You section links to your own channel; it is never the subscriptions list
+        if (s.querySelector('a[href^="/feed/history"], a[href^="/feed/you"], a[href^="/feed/playlists"]')) continue;
         const n = [...s.querySelectorAll('ytd-guide-entry-renderer')].filter(isChannel).length;
         if (!n) continue;
         const score = n + (s.querySelector('ytd-guide-collapsible-entry-renderer') ? 1000 : 0);

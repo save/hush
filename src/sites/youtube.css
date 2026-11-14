@@ -987,14 +987,6 @@ html[data-hush-site="yt"] :is(ytd-guide-entry-renderer:not([active]), ytd-guide-
 html[data-hush-site="yt"] :is(ytd-guide-entry-renderer, ytd-guide-collapsible-entry-renderer) a#endpoint:hover tp-yt-paper-item { opacity: 1; }
 html[data-hush-site="yt"] ytd-guide-entry-renderer[active] a#endpoint { background: rgba(255, 255, 255, 0.09) !important; }
 html[data-hush-site="yt"] :is(ytd-guide-entry-renderer, ytd-guide-collapsible-entry-renderer):not([active]) a#endpoint:hover { background: rgba(255, 255, 255, 0.05) !important; }
-/* the "You" list keeps to You and History; playlists, liked and watch later live on the You page */
-html[data-hush-site="yt"] ytd-guide-entry-renderer:has(> a#endpoint:is(
-  [data-hush-label="playlists"], [data-hush-label="watch later"], [data-hush-label="liked videos"],
-  [data-hush-label="your videos"], [data-hush-label="your clips"], [data-hush-label="downloads"],
-  [data-hush-label="your courses"], [data-hush-label="your movies & tv"], [data-hush-label="your podcasts"]
-)) {
-  display: none !important;
-}
 /* a collapsible section's header row ("You ›") reads as a plain row */
 html[data-hush-site="yt"] ytd-guide-collapsible-section-entry-renderer #header-entry :is(yt-icon:not(.guide-icon), .guide-entry-badge) { display: none !important; }
 
