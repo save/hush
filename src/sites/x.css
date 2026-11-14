@@ -1036,3 +1036,30 @@ html[data-hush-site="x"] [data-testid="pillLabel"] img {
   html[data-hush-site="x"] [data-testid="cellInnerDiv"] > div,
   html[data-hush-site="x"] [data-testid="pillLabel"] { animation: none !important; }
 }
+
+/* "Follows you": a quiet note after the handle, not a grey slab */
+html[data-hush-site="x"] [data-testid="userFollowIndicator"] {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin-left: 6px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px;
+}
+html[data-hush-site="x"] [data-testid="userFollowIndicator"]::before {
+  content: "";
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--h-faint);
+}
+html[data-hush-site="x"] [data-testid="userFollowIndicator"] :is(div, span) {
+  background: transparent !important;
+  color: var(--h-dim) !important;
+  font: 400 12.5px/1 var(--h-font) !important;
+  letter-spacing: 0 !important;
+  text-transform: lowercase;
+  padding: 0 !important;
+}

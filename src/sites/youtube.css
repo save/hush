@@ -1,5 +1,5 @@
 /* ==========================================================================
-   hush — YouTube adapter (0.8)
+   hush — YouTube adapter (1.0)
 
    Same house style as Roblox and X: plain words in normal case, one size
    step up from the site, soft pills for "you are here", quiet metadata,
@@ -11,20 +11,38 @@
    data-hush-theme = dark | light, data-hush-navstyle = words | icons | both
    ========================================================================== */
 
+/* ---------- the typeface: Geist ships with hush, so YouTube reads the same everywhere ---- */
+@font-face {
+  font-family: "hush Geist";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("chrome-extension://__MSG_@@extension_id__/fonts/geist-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "hush Geist";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("chrome-extension://__MSG_@@extension_id__/fonts/geist-latin-ext-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
 /* ---------- tokens ------------------------------------------------------------ */
 
 html[data-hush-site="yt"] {
-  --h-page: #0b0b0c;
+  --h-page: #0a0a0a;
   --h-raised: #151517;
-  --h-fg: #ececec;
-  --h-dim: #8e8e93;
+  --h-fg: #e4e4e4;
+  --h-dim: #8b8b8b;
   --h-faint: #5c5c62;
   --h-line: rgba(255, 255, 255, 0.07);
   --h-hover: rgba(255, 255, 255, 0.05);
   --h-pill: rgba(255, 255, 255, 0.09);
   --h-field: rgba(255, 255, 255, 0.04);
   --h-accent: #ff4b4b;
-  --h-font: "Inter", "Geist", "SF Pro Text", -apple-system, "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --h-font: "Inter", "hush Geist", "Geist", "SF Pro Text", -apple-system, "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
   --h-ease: cubic-bezier(0.32, 0.72, 0, 1);
 }
 html[data-hush-site="yt"][data-hush-theme="light"] {
@@ -844,15 +862,6 @@ html[data-hush-site="yt"] .hush-subs-toggle:focus-visible { outline: 2px solid c
 html[data-hush-site="yt"] ytd-guide-section-renderer[data-hush-subs="open"] [data-hush-subx] { animation: hushYtRow 0.32s var(--h-ease) both !important; }
 @keyframes hushYtRow { from { opacity: 0; transform: translateY(-3px); } }
 
-/* the logo: grey, like the rest of the chrome */
-html[data-hush-site="yt"] ytd-topbar-logo-renderer :is(#logo-icon, yt-icon, ytd-logo) {
-  filter: grayscale(1) brightness(1.15) contrast(0.92) !important;
-  opacity: 0.82 !important;
-  transition: opacity 0.25s ease !important;
-}
-html[data-hush-site="yt"][data-hush-theme="light"] ytd-topbar-logo-renderer :is(#logo-icon, yt-icon, ytd-logo) { filter: grayscale(1) brightness(0.55) !important; }
-html[data-hush-site="yt"] ytd-topbar-logo-renderer:hover :is(#logo-icon, yt-icon, ytd-logo) { opacity: 1 !important; }
-
 /* like / dislike / share / save: ghost buttons, a soft fill only on hover */
 html[data-hush-site="yt"] ytd-watch-metadata #actions :is(.yt-spec-button-shape-next, .ytSegmentedLikeDislikeButtonViewModelSegmentedButtonsWrapper, segmented-like-dislike-button-view-model, like-button-view-model, dislike-button-view-model) {
   background: transparent !important;
@@ -885,3 +894,186 @@ html[data-hush-site="yt"][data-hush-cinema][data-hush-path="watch"]:has(#movie_p
 @media (prefers-reduced-motion: reduce) {
   html[data-hush-site="yt"] [data-hush-subx] { animation: none !important; }
 }
+
+/* ==========================================================================
+   1.0: exactly the homepage picture
+   Values from the homepage mock (site/src/components/xyReal.tsx, YtCalm):
+   a 64px header with the colour logo, one 650px search pill and your avatar;
+   a 240px list sidebar (40px rows, 14px medium, a soft pill for "here");
+   "Home" and the greeting; filled pill chips; three videos to a row with
+   16px corners, one-line titles and just the channel underneath.
+   ========================================================================== */
+
+/* header: 64px, page-coloured, no frost */
+html[data-hush-site="yt"] ytd-app { --ytd-masthead-height: 64px !important; }
+html[data-hush-site="yt"] :is(#masthead-container, ytd-masthead, ytd-masthead #background, #frosted-glass) {
+  background: var(--h-page) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+html[data-hush-site="yt"] ytd-masthead #container.ytd-masthead { height: 64px !important; padding: 0 20px !important; }
+html[data-hush-site="yt"] #frosted-glass { height: 64px !important; }
+html[data-hush-site="yt"] ytd-masthead #start { width: 240px !important; min-width: 240px !important; }
+html[data-hush-site="yt"] ytd-masthead #end { min-width: 240px !important; justify-content: flex-end !important; }
+
+/* the search: one 44px pill, the magnifier inside on the right */
+html[data-hush-site="yt"] ytd-masthead #center { max-width: 650px !important; flex: 0 1 650px !important; margin: 0 auto !important; }
+html[data-hush-site="yt"] :is(yt-searchbox.ytSearchboxComponentHost, ytd-searchbox #search-form) {
+  height: 44px !important;
+  max-width: 650px !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+html[data-hush-site="yt"] :is(yt-searchbox .ytSearchboxComponentInputBox, ytd-searchbox #container) { height: 42px !important; padding-left: 20px !important; }
+html[data-hush-site="yt"] :is(yt-searchbox .ytSearchboxComponentSearchButton, #search-icon-legacy) { height: 42px !important; width: 50px !important; padding-right: 8px !important; opacity: 0.8; }
+html[data-hush-site="yt"] :is(yt-searchbox input, ytd-searchbox input) { font-size: 15.5px !important; }
+html[data-hush-site="yt"] :is(yt-searchbox input, ytd-searchbox input)::placeholder { color: var(--h-dim) !important; opacity: 1; }
+
+/* right side: just you. Create and the bell step aside; sign in stays when signed out */
+html[data-hush-site="yt"] ytd-masthead #end :is(
+  ytd-notification-topbar-button-renderer,
+  ytd-topbar-menu-button-renderer:has(button[aria-label*="Create" i], a[aria-label*="Create" i]),
+  ytd-button-renderer:has(button[aria-label*="Create" i], a[aria-label*="Create" i]),
+  yt-button-view-model:has(button[aria-label*="Create" i])
+) {
+  display: none !important;
+}
+html[data-hush-site="yt"] #voice-search-button { display: none !important; }
+html[data-hush-site="yt"] ytd-masthead #avatar-btn :is(yt-img-shadow, #img, img) { width: 36px !important; height: 36px !important; }
+
+/* ---------- sidebar: 240px, 40px rows, 14px medium, a soft pill for "here" ---------- */
+html[data-hush-site="yt"] ytd-guide-renderer { padding: 8px 12px 28px !important; }
+html[data-hush-site="yt"] ytd-guide-section-renderer { padding: 0 !important; }
+html[data-hush-site="yt"] ytd-guide-section-renderer:not([hidden]) ~ ytd-guide-section-renderer:not([hidden]) {
+  margin-top: 8px !important;
+  padding-top: 8px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.07) !important;
+}
+html[data-hush-site="yt"] ytd-guide-section-renderer #guide-section-title {
+  padding: 6px 12px !important;
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0 !important;
+  color: var(--h-dim) !important;
+}
+html[data-hush-site="yt"] ytd-guide-section-renderer #guide-section-title :is(a, yt-formatted-string) {
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  color: var(--h-dim) !important;
+}
+html[data-hush-site="yt"] :is(ytd-guide-entry-renderer, ytd-guide-collapsible-entry-renderer) a#endpoint {
+  height: 40px !important;
+  margin: 0 0 2px !important;
+  padding: 0 12px !important;
+  border-radius: 10px !important;
+}
+html[data-hush-site="yt"] :is(ytd-guide-entry-renderer, ytd-guide-collapsible-entry-renderer) tp-yt-paper-item { height: 40px !important; }
+html[data-hush-site="yt"] :is(ytd-guide-entry-renderer, ytd-guide-collapsible-entry-renderer) :is(yt-icon.guide-icon, .guide-icon):not([hidden]) {
+  width: 20px !important;
+  height: 20px !important;
+  margin: 0 16px 0 0 !important;
+  color: var(--h-fg) !important;
+}
+html[data-hush-site="yt"] ytd-guide-entry-renderer yt-img-shadow:not([hidden]) { width: 20px !important; height: 20px !important; margin: 0 16px 0 0 !important; opacity: 1; }
+html[data-hush-site="yt"] ytd-guide-entry-renderer yt-img-shadow img { width: 20px !important; height: 20px !important; filter: saturate(0.9) contrast(0.98) brightness(0.96); }
+html[data-hush-site="yt"] :is(ytd-guide-entry-renderer, ytd-guide-collapsible-entry-renderer) :is(.title, yt-formatted-string) {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  line-height: 40px !important;
+  color: var(--h-fg) !important;
+}
+/* every row but "here" sits back a little; pointing at one brings it forward */
+html[data-hush-site="yt"] :is(ytd-guide-entry-renderer:not([active]), ytd-guide-collapsible-entry-renderer) a#endpoint tp-yt-paper-item { opacity: 0.82; transition: opacity 0.18s ease !important; }
+html[data-hush-site="yt"] :is(ytd-guide-entry-renderer, ytd-guide-collapsible-entry-renderer) a#endpoint:hover tp-yt-paper-item { opacity: 1; }
+html[data-hush-site="yt"] ytd-guide-entry-renderer[active] a#endpoint { background: rgba(255, 255, 255, 0.09) !important; }
+html[data-hush-site="yt"] :is(ytd-guide-entry-renderer, ytd-guide-collapsible-entry-renderer):not([active]) a#endpoint:hover { background: rgba(255, 255, 255, 0.05) !important; }
+/* the "You" list keeps to You and History; playlists, liked and watch later live on the You page */
+html[data-hush-site="yt"] ytd-guide-entry-renderer:has(> a#endpoint:is(
+  [data-hush-label="playlists"], [data-hush-label="watch later"], [data-hush-label="liked videos"],
+  [data-hush-label="your videos"], [data-hush-label="your clips"], [data-hush-label="downloads"],
+  [data-hush-label="your courses"], [data-hush-label="your movies & tv"], [data-hush-label="your podcasts"]
+)) {
+  display: none !important;
+}
+/* a collapsible section's header row ("You ›") reads as a plain row */
+html[data-hush-site="yt"] ytd-guide-collapsible-section-entry-renderer #header-entry :is(yt-icon:not(.guide-icon), .guide-entry-badge) { display: none !important; }
+
+/* ---------- home: heading, chips, then the grid ---------- */
+html[data-hush-site="yt"] ytd-browse[page-subtype="home"] ytd-rich-grid-renderer {
+  --ytd-rich-grid-item-margin: 28px !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 40px 0 24px !important;
+  box-sizing: border-box !important;
+}
+html[data-hush-site="yt"] ytd-browse[page-subtype="home"] ytd-rich-grid-renderer > #contents { margin: 0 -14px !important; padding: 0 !important; }
+html[data-hush-site="yt"] ytd-browse[page-subtype="home"] ytd-rich-grid-renderer > #contents > ytd-rich-item-renderer { margin: 0 14px 36px !important; }
+html[data-hush-site="yt"] ytd-rich-grid-renderer > .hush-greet {
+  padding: 24px 0 20px !important;
+  font-size: 15px !important;
+}
+html[data-hush-site="yt"] ytd-browse[page-subtype="home"] #chips-wrapper { padding: 4px 0 24px !important; }
+
+/* chips: filled pills, the selected one bright */
+html[data-hush-site="yt"] :is(yt-chip-cloud-chip-renderer, chip-view-model) { margin: 0 8px 0 0 !important; }
+html[data-hush-site="yt"] :is(yt-chip-cloud-chip-renderer, chip-view-model) :is(.ytChipShapeChip, [id="chip-container"]) {
+  height: 38px !important;
+  padding: 0 18px !important;
+  background: rgba(255, 255, 255, 0.07) !important;
+  box-shadow: none !important;
+  color: var(--h-fg) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+html[data-hush-site="yt"] :is(yt-chip-cloud-chip-renderer, chip-view-model):hover :is(.ytChipShapeChip, [id="chip-container"]) { background: rgba(255, 255, 255, 0.11) !important; color: var(--h-fg) !important; }
+html[data-hush-site="yt"] yt-chip-cloud-chip-renderer:is([selected], :has([aria-selected="true"])) :is(.ytChipShapeChip, [id="chip-container"]),
+html[data-hush-site="yt"] :is(yt-chip-cloud-chip-renderer, chip-view-model) .ytChipShapeChip.ytChipShapeActive {
+  background: var(--h-fg) !important;
+  color: var(--h-page) !important;
+}
+
+/* ---------- cards: 16px corners, small round pills ---------- */
+html[data-hush-site="yt"] :is(ytd-thumbnail, yt-thumbnail-view-model, .ytThumbnailViewModelImage, ytd-thumbnail #thumbnail, .yt-lockup-view-model-wiz__content-image, .yt-lockup-view-model__content-image, .ytLockupViewModelContentImage) {
+  border-radius: 16px !important;
+}
+html[data-hush-site="yt"] :is(ytd-thumbnail-overlay-time-status-renderer, yt-thumbnail-badge-view-model) { margin: 10px !important; }
+html[data-hush-site="yt"] :is(ytd-thumbnail-overlay-time-status-renderer, yt-thumbnail-badge-view-model) :is(.badge-shape, badge-shape, .yt-badge-shape, .ytBadgeShapeBadge, .yt-thumbnail-overlay-badge-view-model) {
+  padding: 3px 9px !important;
+  background: rgba(10, 10, 10, 0.7) !important;
+  color: #fff !important;
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  text-transform: lowercase !important;
+}
+html[data-hush-site="yt"] :is(ytd-thumbnail-overlay-time-status-renderer, yt-thumbnail-badge-view-model) :is(.ytBadgeShapeText, .badge-shape-wiz__text, .yt-badge-shape__text) { font-size: 12.5px !important; font-weight: 500 !important; }
+
+/* ---------- the words on home: avatar 36, a 12px gap, one 16px line, the channel ---------- */
+html[data-hush-site="yt"][data-hush-path="home"] :is(yt-lockup-view-model :is(.yt-lockup-view-model__metadata, .ytLockupViewModelMetadata), ytd-rich-grid-media #details) { margin-top: 14px !important; }
+html[data-hush-site="yt"][data-hush-path="home"] :is(yt-lockup-view-model :is(.yt-lockup-metadata-view-model__avatar, .ytLockupMetadataViewModelAvatar), ytd-rich-grid-media #avatar-link) { margin-right: 12px !important; }
+html[data-hush-site="yt"][data-hush-path="home"] :is(ytd-rich-grid-media #video-title, yt-lockup-view-model :is(.yt-lockup-metadata-view-model__title, .yt-lockup-metadata-view-model-wiz__title, .ytLockupMetadataViewModelTitle)) {
+  display: block !important;
+  -webkit-line-clamp: 1 !important;
+  line-clamp: 1 !important;
+  max-height: none !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+  font-size: 16px !important;
+  line-height: 1.35 !important;
+  font-weight: 500 !important;
+  color: var(--h-fg) !important;
+}
+html[data-hush-site="yt"][data-hush-path="home"] :is(ytd-rich-grid-media #video-title, yt-lockup-view-model :is(.yt-lockup-metadata-view-model__title, .ytLockupMetadataViewModelTitle)) span { font-weight: 500 !important; white-space: nowrap !important; }
+/* the channel only: views and dates step aside on home */
+html[data-hush-site="yt"][data-hush-path="home"] :is(.yt-content-metadata-view-model__metadata-row, .ytContentMetadataViewModelMetadataRow):not(:first-child),
+html[data-hush-site="yt"][data-hush-path="home"] ytd-rich-grid-media #metadata-line {
+  display: none !important;
+}
+html[data-hush-site="yt"][data-hush-path="home"] :is(.yt-content-metadata-view-model, .ytContentMetadataViewModelHost, ytd-rich-grid-media ytd-channel-name) { margin-top: 4px !important; }
+html[data-hush-site="yt"][data-hush-path="home"] :is(.yt-content-metadata-view-model, .ytContentMetadataViewModelHost, ytd-rich-grid-media ytd-channel-name) :is(span, a, yt-formatted-string) {
+  font-size: 14px !important;
+  color: var(--h-dim) !important;
+}
+
+/* the sidebar's "here" pill is painted once, on the link (YouTube also paints the row) */
+html[data-hush-site="yt"] ytd-guide-entry-renderer[active] { background: transparent !important; }

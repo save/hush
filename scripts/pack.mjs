@@ -7,7 +7,7 @@ import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const INCLUDE = ['manifest.json', 'src', 'build/popup', 'icons', 'LICENSE', 'PRIVACY.md', 'README.md'];
+const INCLUDE = ['manifest.json', 'src', 'build/popup', 'icons', 'fonts', 'LICENSE', 'PRIVACY.md', 'README.md'];
 const outDir = path.join(root, 'release');
 const out = path.join(outDir, 'hush.zip');
 

@@ -1,7 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.6.1
 
+- **YouTube, exactly like the homepage:** a 64px header with the colour logo, one wide search pill and just your avatar (Create, the bell and voice search go); a list sidebar with 40px rows and a soft pill for where you are, You and History only in the You list; filled pill chips; three videos to a row with 16px corners, one-line titles and just the channel on home. Geist now ships with hush so YouTube reads the same on every computer.
+- **X:** "Follows you" is a quiet note after the handle instead of a grey box.
 - **Brave:** the homepage recognises Brave (and Edge, Opera): the button says "Add to Brave" and the install steps give `brave://extensions`. The README notes that hush and Shields work side by side.
 
 ## 0.6.0
