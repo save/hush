@@ -5,6 +5,7 @@ import { Shader } from './components/Shader';
 import { BrowserDemo } from './components/BrowserDemo';
 import { SitesStrip } from './components/SitesStrip';
 import { Install } from './components/Install';
+import { BrowserIcon, useBrowser } from './components/browser';
 import { photo } from './components/mocks';
 import { icons, LINKS, Logo, Mark } from './components/brand';
 
@@ -29,6 +30,7 @@ function Reveal({ children, delay = 0, className, y = 16 }: { children: React.Re
 /* ------------------------------ buttons -------------------------------- */
 
 function ChromeButton({ size = 'md' }: { size?: 'md' | 'lg' }) {
+  const browser = useBrowser();
   return (
     <a
       href={LINKS.chrome}
@@ -39,8 +41,8 @@ function ChromeButton({ size = 'md' }: { size?: 'md' | 'lg' }) {
     >
       {/* a light that passes over on hover */}
       <span className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 -skew-x-12 bg-black/[0.07] transition-transform duration-700 ease-out group-hover:translate-x-[300%]" />
-      <Logo icon={icons.chrome} className="size-4" />
-      Add to Chrome
+      <BrowserIcon browser={browser} className="size-4" />
+      Add to {browser.name}
       <span className="text-black/40">· free</span>
     </a>
   );
@@ -65,6 +67,7 @@ function GithubButton({ size = 'md' }: { size?: 'md' | 'lg' }) {
 /* -------------------------------- nav ---------------------------------- */
 
 function Nav() {
+  const browser = useBrowser();
   const { scrollY } = useScroll();
   const [solid, setSolid] = React.useState(false);
   React.useEffect(() => scrollY.on('change', (v) => setSolid(v > 24)), [scrollY]);
@@ -95,8 +98,8 @@ function Nav() {
             <Logo icon={icons.github} className="size-4" />
           </a>
           <a href={LINKS.chrome} className="inline-flex h-8 items-center gap-2 rounded-full bg-white px-3.5 text-[13px] font-medium text-black transition-transform active:scale-[0.97]">
-            <Logo icon={icons.chrome} className="size-3.5" />
-            <span className="hidden sm:inline">Add to Chrome</span>
+            <BrowserIcon browser={browser} className="size-3.5" />
+            <span className="hidden sm:inline">Add to {browser.name}</span>
             <span className="sm:hidden">Install</span>
           </a>
         </div>
@@ -155,7 +158,7 @@ function Hero() {
           <span className="beam-spin absolute top-1/2 left-1/2 aspect-square w-[160%] bg-[conic-gradient(from_0deg,transparent_0%,transparent_62%,rgb(255_255_255/0.25)_74%,rgb(255_255_255/0.95)_86%,oklch(0.72_0.19_25)_93%,transparent_100%)]" />
           <span className="relative inline-flex items-center gap-2 rounded-full bg-[#0c0c0f] py-1 pr-3 pl-1.5">
             <span className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] font-medium text-fg">New</span>
-            Free and open source, for Chrome
+            Free and open source, for Chrome, Brave and Edge
             <ArrowRight className="size-3 transition-transform duration-300 group-hover:translate-x-0.5" />
           </span>
         </motion.a>

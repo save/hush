@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- **Brave:** the homepage recognises Brave (and Edge, Opera): the button says "Add to Brave" and the install steps give `brave://extensions`. The README notes that hush and Shields work side by side.
+
 ## 0.6.0
 
 - **Easy install:** each release ships one `hush.zip`; the homepage walks you through the three steps (download, open extensions, load), with the right extensions address for your browser. `npm run pack` builds the zip.

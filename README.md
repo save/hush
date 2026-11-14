@@ -47,11 +47,13 @@ A free, open-source browser extension that strips the promos, badges and noise f
 
 ## Install
 
-hush isn't on the Chrome Web Store yet. Until it is, installing takes three steps and under a minute (Chrome, Edge, Brave, Arc):
+hush isn't on the Chrome Web Store yet. Until it is, installing takes three steps and under a minute (Chrome, Brave, Edge, Arc, Opera):
 
 1. **[Download hush.zip](https://github.com/save/hush/releases/latest/download/hush.zip)** and unzip it somewhere you'll keep it. You get a folder called `hush`.
-2. Open `chrome://extensions` (`edge://extensions` in Edge) and switch on **Developer mode**, top right.
+2. Open `chrome://extensions` (`brave://extensions` in Brave, `edge://extensions` in Edge) and switch on **Developer mode**, top right.
 3. Click **Load unpacked**, choose the `hush` folder, and pin hush from the puzzle-piece menu.
+
+**Brave:** hush and Shields work side by side. Shields blocks ads at the network level; hush calms what's left (layouts, upsells, Shorts, badges). Keep both on.
 
 **To update:** download the newest zip, replace the folder, and press reload on hush's card in `chrome://extensions`. Your settings stay.
 

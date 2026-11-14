@@ -3,20 +3,14 @@ import { AnimatePresence, motion } from 'motion/react';
 import { Check, Copy, Download, FolderOpen, Puzzle, RotateCw } from 'lucide-react';
 import manifest from '../../../manifest.json';
 import { LINKS } from './brand';
+import { useBrowser } from './browser';
 
 const EASE = [0.32, 0.72, 0, 1] as const;
 const cx = (...c: (string | false | undefined)[]) => c.filter(Boolean).join(' ');
 
-// Edge and Opera have their own extensions page; everything Chromium else takes chrome://
-function extensionsUrl() {
-  const ua = typeof navigator === 'undefined' ? '' : navigator.userAgent;
-  if (/Edg\//.test(ua)) return 'edge://extensions';
-  if (/OPR\//.test(ua)) return 'opera://extensions';
-  return 'chrome://extensions';
-}
-
 function CopyUrl() {
-  const url = React.useMemo(extensionsUrl, []);
+  // brave://, edge://, opera:// or chrome:// (Arc and the rest)
+  const url = useBrowser().extensions;
   const [copied, setCopied] = React.useState(false);
   const copy = async () => {
     try { await navigator.clipboard.writeText(url); } catch { /* the text is selectable anyway */ }
@@ -139,7 +133,7 @@ export function Install() {
         className="mt-6 flex flex-col items-center gap-1.5 text-center text-[12.5px] text-faint"
       >
         <span>
-          Version {manifest.version} · Chrome, Edge, Brave and Arc · The Chrome Web Store version is on its way, and will update itself.
+          Version {manifest.version} · Chrome, Brave, Edge, Arc and Opera · The Chrome Web Store version is on its way, and will update itself.
         </span>
         <span className="flex items-center gap-1.5">
           <RotateCw className="size-3" /> To update: download again, replace the folder, press reload on hush's card.
