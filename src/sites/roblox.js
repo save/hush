@@ -19,7 +19,7 @@ Hush.register({
     { key: 'calmtitles', label: 'calm titles', group: 'look', desc: 'No [🔥UPDATE] tags, ALL CAPS or emoji in game names', keywords: 'caps emoji tags names clickbait', default: true },
     { key: 'norecs', label: 'hide recommendations', group: 'feed', desc: 'No “people also join”', keywords: 'people also join similar', default: false },
     { key: 'nochat', label: 'hide chat list', group: 'feed', desc: 'No chats list in the corner; a chat you open still shows', keywords: 'friends dock messages', default: false },
-    { key: 'zen', label: 'focus mode', group: 'layout', desc: 'Hide the menu, keep only the content', hint: 'z', keywords: 'zen hide menu nav', default: false }
+    { key: 'zen', label: 'focus mode', group: 'layout', desc: 'Just the page; the menu becomes a small island at the bottom', hint: 'z', keywords: 'zen hide menu nav', default: false }
   ],
 
   setup(ctx) {
@@ -343,6 +343,27 @@ Hush.register({
     this.countHidden = () => document.querySelectorAll('[data-hush-cap]').length;
 
     // ---- loop -----------------------------------------------------------------------------------
+    // ---- focus mode: the menu becomes a "dynamic island" at the bottom (src/core/island.js) ----
+    const navCount = (id) => () => {
+      const n = document.querySelector(`#left-navigation-container a[data-hush-nav="${id}"] :is(.foundation-web-status-indicator, .foundation-web-badge)`);
+      return n ? (n.textContent || '').trim() : '';
+    };
+    const island = Hush.island({
+      items: [
+        { id: 'home', label: 'home', icon: 'house', path: () => '/home', active: () => pageKind() === 'home' },
+        { id: 'charts', label: 'charts', icon: 'chart-column', path: () => '/charts' },
+        { id: 'marketplace', label: 'marketplace', icon: 'shopping-bag', path: () => '/catalog' },
+        { id: 'avatar', label: 'avatar', icon: 'shirt', path: () => '/my/avatar' },
+        { id: 'friends', label: 'friends', icon: 'users', path: () => '/users/friends', count: navCount('friends') },
+        { id: 'messages', label: 'messages', icon: 'message-circle', path: () => '/my/messages/#!/inbox', active: () => location.pathname.startsWith('/my/messages'), count: navCount('messages') },
+        { id: 'profile', label: 'profile', icon: 'user', path: () => '/users/profile', active: () => pageKind() === 'profile' }
+      ],
+      extra: [{ id: 'search', label: 'search', icon: 'search', run: () => focusSearch() }],
+      go,
+      onLeave: () => { ctx.setOption('zen', false); ctx.toast('focus mode off', false); }
+    });
+    function syncIsland() { island.sync(!!ctx.options.zen); }
+
     // ---- profile: badges show as small round icons, so their names go in a tooltip --------
     function titleBadges() {
       if (root.getAttribute('data-hush-path') !== 'profile') return;
@@ -361,7 +382,7 @@ Hush.register({
       }
     }
 
-    const STEPS = [syncRoute, detectTheme, syncNav, syncHeader, cleanSorts, capFeed, greet, dedupeHeaders, foldDescription, foldBadges, syncTabUnderline, staggerTiles, syncChat, titleBadges];
+    const STEPS = [syncRoute, detectTheme, syncNav, syncHeader, cleanSorts, capFeed, greet, dedupeHeaders, foldDescription, foldBadges, syncTabUnderline, staggerTiles, syncChat, titleBadges, syncIsland];
     let queued = false;
     function tick() {
       queued = false;
@@ -383,11 +404,12 @@ Hush.register({
     window.addEventListener('resize', schedule, { passive: true });
     // option changes (capfeed) re-run the loop
     const optObs = new MutationObserver(schedule);
-    optObs.observe(root, { attributes: true, attributeFilter: ['data-hush-capfeed'] });
+    optObs.observe(root, { attributes: true, attributeFilter: ['data-hush-capfeed', 'data-hush-zen'] });
 
     return () => {
       observer.disconnect();
       optObs.disconnect();
+      island.destroy();
       unbindKeys();
       window.removeEventListener('popstate', schedule);
       window.removeEventListener('hashchange', schedule);

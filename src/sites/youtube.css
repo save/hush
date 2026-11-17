@@ -1114,3 +1114,6 @@ html[data-hush-site="yt"] yt-searchbox .ytSearchboxComponentInputBox.ytSearchbox
 html[data-hush-site="yt"] yt-searchbox .ytSearchboxComponentInputBox.ytSearchboxComponentInputBoxHasFocus:not(#hush-x).ytSearchboxComponentInputBoxUnified { padding-left: 52px !important; }
 html[data-hush-site="yt"] yt-searchbox .ytSearchboxComponentInputBox.ytSearchboxComponentInputBoxHasFocus:not(#hush-x).ytSearchboxComponentInputBoxMultimodal { padding-left: 0 !important; }
 html[data-hush-site="yt"] yt-searchbox .ytSearchboxComponentInputBox.ytSearchboxComponentInputBoxHasFocus:not(#hush-x).ytSearchboxComponentInputBoxMultimodal.ytSearchboxComponentInputBoxHasAttachments { padding-left: 16px !important; }
+
+/* focus mode: room at the bottom of the page for the island (styles in generic.css) */
+html[data-hush-site="yt"][data-hush-zen] ytd-page-manager { padding-bottom: 96px !important; }

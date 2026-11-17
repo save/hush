@@ -17,7 +17,7 @@ Hush.register({
     { key: 'calmtitles', label: 'calm titles', group: 'look', desc: 'No ALL CAPS, tags or emoji spam in titles', keywords: 'clickbait caps capitals emoji title', default: true },
     { key: 'foldcomments', label: 'fold comments', group: 'feed', desc: 'Comments behind a button', keywords: 'collapse', default: true },
     { key: 'cinema', label: 'cinema dim', group: 'look', desc: 'The page darkens around a playing video', keywords: 'theater dark dim cinema lights', default: true },
-    { key: 'zen', label: 'focus mode', group: 'layout', desc: 'Hide the menu, keep only the content', hint: 'z', keywords: 'cinema theater zen', default: false }
+    { key: 'zen', label: 'focus mode', group: 'layout', desc: 'Just the page; the menu becomes a small island at the bottom', hint: 'z', keywords: 'cinema theater zen', default: false }
   ],
 
   // the video you opened may autoplay even with "still motion" on; previews may not
@@ -337,6 +337,20 @@ Hush.register({
     document.addEventListener('click', onClick, true);
 
     // ---- keyboard ------------------------------------------------------------------
+    // ---- focus mode: the menu becomes a "dynamic island" at the bottom (src/core/island.js) ----
+    const island = Hush.island({
+      items: [
+        { id: 'home', label: 'home', icon: 'house', path: () => '/' },
+        { id: 'subscriptions', label: 'subscriptions', icon: 'list-video', path: () => '/feed/subscriptions' },
+        { id: 'history', label: 'history', icon: 'history', path: () => '/feed/history' },
+        { id: 'you', label: 'you', icon: 'circle-user', path: () => '/feed/you' }
+      ],
+      extra: [{ id: 'search', label: 'search', icon: 'search', run: () => focusSearch() }],
+      go,
+      onLeave: () => { ctx.setOption('zen', false); ctx.toast('focus mode off', false); }
+    });
+    function syncIsland() { island.sync(!!ctx.options.zen); }
+
     // YouTube's own keys stay (k / space play, j / l seek, f, m, t, c, / search, shift+n).
     // hush adds: z focus mode, ctrl/⌘ k tune (engine).
     function onKey(e) {
@@ -371,7 +385,7 @@ Hush.register({
     ).length;
 
     // ---- loop ------------------------------------------------------------------------------
-    const STEPS = [syncRoute, detectTheme, syncGuide, markChips, greet, capHome, capUpNext, foldComments, staggerHome, syncSubs];
+    const STEPS = [syncRoute, detectTheme, syncGuide, markChips, greet, capHome, capUpNext, foldComments, staggerHome, syncSubs, syncIsland];
     let queued = false;
     function tick() {
       queued = false;
@@ -395,13 +409,14 @@ Hush.register({
     const themeObs = new MutationObserver(detectTheme);
     themeObs.observe(root, { attributes: true, attributeFilter: ['dark'] });
     // YouTube sizes the player in JS; when hush changes the layout, ask it to re-measure
-    const layoutObs = new MutationObserver(() => requestAnimationFrame(() => window.dispatchEvent(new Event('resize'))));
+    const layoutObs = new MutationObserver(() => { schedule(); requestAnimationFrame(() => window.dispatchEvent(new Event('resize'))); });
     layoutObs.observe(root, { attributes: true, attributeFilter: ['data-hush-zen', 'data-hush-norelated', 'data-hush-nochat', 'data-hush-site'] });
 
     return () => {
       observer.disconnect();
       themeObs.disconnect();
       layoutObs.disconnect();
+      island.destroy();
       requestAnimationFrame(() => window.dispatchEvent(new Event('resize')));
       document.removeEventListener('click', onClick, true);
       window.removeEventListener('keydown', onKey, true);
