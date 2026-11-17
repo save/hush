@@ -232,9 +232,9 @@ html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav] .text-tru
   text-transform: lowercase;
   display: inline-block;
 }
-/* unread badge: a plain number */
-html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav] .foundation-web-badge,
-html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav] .foundation-web-badge * {
+/* unread count: a plain number (Roblox calls it a badge or, since late 2026, a status indicator) */
+html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav] :is(.foundation-web-badge, .foundation-web-status-indicator),
+html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav] :is(.foundation-web-badge, .foundation-web-status-indicator) * {
   background: transparent !important;
   color: var(--h-fg) !important;
   font-size: 12.5px !important;
@@ -254,11 +254,11 @@ html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav]:is(:hover
   opacity: 1;
   transform: none;
 }
-html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav]:has(.hush-keys):is(:hover, :focus-visible) .foundation-web-badge {
+html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav]:has(.hush-keys):is(:hover, :focus-visible) :is(.foundation-web-badge, .foundation-web-status-indicator) {
   opacity: 0;
 }
 /* the account row: avatar + name, no age-check label */
-html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav="me"] :is(.foundation-web-badge, [class*="badge"]) {
+html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav="me"] :is(.foundation-web-badge, .foundation-web-status-indicator, [class*="badge"]) {
   display: none !important;
 }
 html[data-hush-site="rbx"] #left-navigation-container a[data-hush-nav="me"] {
