@@ -18,7 +18,7 @@ Hush.register({
     { key: 'softthumbs', label: 'soft thumbnails', group: 'look', desc: 'Thumbnails softened until hover', keywords: 'images color saturation quiet', default: true },
     { key: 'calmtitles', label: 'calm titles', group: 'look', desc: 'No [🔥UPDATE] tags, ALL CAPS or emoji in game names', keywords: 'caps emoji tags names clickbait', default: true },
     { key: 'norecs', label: 'hide recommendations', group: 'feed', desc: 'No “people also join”', keywords: 'people also join similar', default: false },
-    { key: 'nochat', label: 'hide chat', group: 'feed', desc: 'No chat dock in the corner', keywords: 'friends dock messages', default: false },
+    { key: 'nochat', label: 'hide chat list', group: 'feed', desc: 'No friends list in the corner; chats you open still show', keywords: 'friends dock messages', default: false },
     { key: 'zen', label: 'focus mode', group: 'layout', desc: 'Hide the menu, keep only the content', hint: 'z', keywords: 'zen hide menu nav', default: false }
   ],
 

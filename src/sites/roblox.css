@@ -126,9 +126,13 @@ html[data-hush-site="rbx"] [data-hush-cap],
 html[data-hush-site="rbx"] [data-hush-capped] [data-testid="sentinel-tile"] {
   display: none !important;
 }
-/* chat bar (option) */
-html[data-hush-site="rbx"][data-hush-nochat] #chat-container {
+/* hide chat (option): the friends list in the corner goes, but a conversation you open
+   yourself (from a friend's Chat button) always shows, next to the corner, not beside a gap */
+html[data-hush-site="rbx"][data-hush-nochat] #chat-container .react-chat-root > section:has(.react-chat-thread-list) {
   display: none !important;
+}
+html[data-hush-site="rbx"][data-hush-nochat] #chat-container .react-chat-root > .fixed:not(.react-chat-tray-area) {
+  right: 16px !important;
 }
 /* game page recommendations (option) */
 html[data-hush-site="rbx"][data-hush-norecs] .container-list.games-detail,

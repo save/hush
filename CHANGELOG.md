@@ -2,7 +2,7 @@
 
 ## 0.6.2
 
-- **Roblox chat, redesigned:** a floating rounded card above the corner, a pill search, roomy rows with a dot for unread, soft message bubbles that join up in runs, a pill to type in, and a gentle open animation. Chat now shows by default ("hide chat" is still an option).
+- **Roblox chat, redesigned:** a floating rounded card above the corner, a pill search, roomy rows with a dot for unread, soft message bubbles that join up in runs, a pill to type in, and a gentle open animation. Chat now shows by default. "Hide chat" now hides only the friends list in the corner: a chat you open from a friend always shows.
 - **Roblox:** message and friend counts are plain numbers again (Roblox renamed its badge).
 - **YouTube:** titles no longer pile up when you go from one video to the next; the search box keeps room for its magnifier, so it no longer covers what you type.
 
