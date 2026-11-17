@@ -343,6 +343,16 @@ Hush.register({
     this.countHidden = () => document.querySelectorAll('[data-hush-cap]').length;
 
     // ---- loop -----------------------------------------------------------------------------------
+    // ---- profile: badges show as small round icons, so their names go in a tooltip --------
+    function titleBadges() {
+      if (root.getAttribute('data-hush-path') !== 'profile') return;
+      for (const tile of document.querySelectorAll('.profile-content > .profile-carousel .base-tile')) {
+        const link = tile.querySelector('a');
+        const name = (tile.querySelector('.base-tile-title') || {}).textContent;
+        if (link && name && link.title !== name.trim()) link.title = name.trim();
+      }
+    }
+
     // ---- chat: mark the row the message box sits in, so CSS can lay it out --------
     function syncChat() {
       for (const input of document.querySelectorAll('#chat-container .react-chat-message-input')) {
@@ -351,7 +361,7 @@ Hush.register({
       }
     }
 
-    const STEPS = [syncRoute, detectTheme, syncNav, syncHeader, cleanSorts, capFeed, greet, dedupeHeaders, foldDescription, foldBadges, syncTabUnderline, staggerTiles, syncChat];
+    const STEPS = [syncRoute, detectTheme, syncNav, syncHeader, cleanSorts, capFeed, greet, dedupeHeaders, foldDescription, foldBadges, syncTabUnderline, staggerTiles, syncChat, titleBadges];
     let queued = false;
     function tick() {
       queued = false;

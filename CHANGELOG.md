@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- **Roblox profiles, redesigned:** a header card with your avatar beside your name, buttons, stats and bio; under it, a main column of compact strips you can scroll sideways (what you're wearing as small tiles, games, store, favorites, communities) and a side column with a grid of eight friends and your badges as a small row of round icons (names on hover). The empty column that used to sit beside everything is gone.
+
 ## 0.6.4
 
 - **X focus mode (z):** the menu becomes a small "dynamic island" at the bottom of the screen. It springs up when focus mode turns on, names the page you're on (and others as you point at them), shows a dot for unread notifications and chats, and shrinks to just where you are while you scroll down. Post and leave focus sit at its end.

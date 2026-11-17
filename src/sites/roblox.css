@@ -1184,57 +1184,85 @@ html[data-hush-site="rbx"] #group-container .group-section-content-transparent.t
 }
 
 /* ==========================================================================
-   profile: a portrait column (full-body avatar, name, actions, stats, bio)
-   beside the content, instead of a 1100px banner shouting over everything.
+   profile: a header card, then two columns
+   The avatar sits in a card beside your name, buttons, stats and bio. Under it, a main
+   column of compact strips (what you're wearing, games, store, favorites, communities)
+   and a narrow side column with friends and a small grid of badges. Badges matter least,
+   so they get the least room.
    ========================================================================== */
 
 @media (min-width: 1000px) {
   html[data-hush-site="rbx"] .profile-platform-container > div {
     display: grid !important;
-    grid-template-columns: 272px minmax(0, 1fr);
-    grid-template-rows: auto auto 1fr;
-    column-gap: 48px;
+    grid-template-columns: 176px minmax(0, 1fr) 292px;
+    column-gap: 32px;
+    row-gap: 0;
     align-items: start;
   }
-  html[data-hush-site="rbx"] .profile-platform-container .currently-wearing-avatar-with-background {
-    grid-column: 1;
+  /* the card behind the avatar and identity */
+  html[data-hush-site="rbx"] .profile-platform-container > div::before {
+    content: "";
     grid-row: 1;
+    grid-column: 1 / -1;
+    align-self: stretch;
+    border-radius: 22px;
+    background:
+      radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--h-fg) 7%, transparent), transparent 60%),
+      color-mix(in srgb, var(--h-fg) 3%, transparent);
+    box-shadow: inset 0 0 0 1px var(--h-line);
+  }
+  html[data-hush-site="rbx"] .profile-platform-container .currently-wearing-avatar-with-background {
+    grid-row: 1;
+    grid-column: 1;
+    position: relative;
+    z-index: 1;
+    height: 232px !important;
+    margin: 16px 0 16px 16px !important;
+    background: transparent !important;
+    box-shadow: none !important;
   }
   html[data-hush-site="rbx"] .profile-platform-container .profile-header-overlay {
-    grid-column: 1;
-    grid-row: 2;
-    margin-top: 20px !important;
+    grid-row: 1;
+    grid-column: 2 / -1;
+    position: relative;
+    z-index: 1;
+    align-self: center;
+    margin: 0 !important;
+    padding: 24px 28px 24px 0 !important;
   }
+  /* the sections become items of this grid, so each can be placed */
   html[data-hush-site="rbx"] .profile-platform-container .profile-content {
-    grid-column: 2;
-    grid-row: 1 / span 3;
-    padding-top: 0 !important;
-    min-width: 0;
+    display: contents !important;
   }
-  /* identity stacks vertically in the narrow column */
+  html[data-hush-site="rbx"] .profile-content > * { margin-top: 36px !important; min-width: 0; }
+  html[data-hush-site="rbx"] .profile-content > .profile-currently-wearing { grid-column: 1 / 3; grid-row: 2; }
+  html[data-hush-site="rbx"] .profile-content > .profile-experiences { grid-column: 1 / 3; grid-row: 3; }
+  html[data-hush-site="rbx"] .profile-content > .profile-store { grid-column: 1 / 3; grid-row: 4; }
+  html[data-hush-site="rbx"] .profile-content > .profile-favorite-experiences { grid-column: 1 / 3; grid-row: 5; }
+  html[data-hush-site="rbx"] .profile-content > .profile-communities { grid-column: 1 / 3; grid-row: 6; }
+  html[data-hush-site="rbx"] .profile-content > .react-friends-carousel-container { grid-column: 3; grid-row: 2 / span 2; }
+  html[data-hush-site="rbx"] .profile-content > .profile-carousel { grid-column: 3; grid-row: 4 / span 3; }
+  html[data-hush-site="rbx"] .profile-content > :is(.react-friends-carousel-container, .profile-carousel) { align-self: start; }
+
+  /* identity, laid out across the card: name and buttons on one line */
   html[data-hush-site="rbx"] .user-profile-header-info {
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 16px !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: 14px 20px !important;
   }
-  html[data-hush-site="rbx"] .user-profile-header-info .buttons-show-on-desktop,
-  html[data-hush-site="rbx"] .user-profile-header-info .buttons-show-on-desktop > div,
-  html[data-hush-site="rbx"] .user-profile-header-info .button-container {
-    width: 100% !important;
-  }
-  html[data-hush-site="rbx"] .user-profile-header-info .button-container { flex: 1 !important; }
-  html[data-hush-site="rbx"] .user-profile-header-info .button-container > * { flex: 1 !important; min-width: 0 !important; width: auto !important; }
-  /* the portrait already shows the avatar; the headshot would repeat it */
+  html[data-hush-site="rbx"] .user-profile-header-info :is(.buttons-show-on-desktop, .buttons-show-on-desktop > div, .button-container) { width: auto !important; flex: none !important; }
+  html[data-hush-site="rbx"] .user-profile-header-info .button-container > * { flex: none !important; width: auto !important; }
   html[data-hush-site="rbx"] .user-profile-header-details-avatar-container { display: none !important; }
+  html[data-hush-site="rbx"] .user-profile-header .text-heading-large { font: 650 28px/1.15 var(--h-font) !important; letter-spacing: -0.03em !important; }
+  html[data-hush-site="rbx"] .user-profile-header .description-content { max-width: 620px; }
 }
 
-/* the portrait */
+/* the avatar */
 html[data-hush-site="rbx"] .currently-wearing-avatar-with-background {
-  height: 340px !important;
   border-radius: 16px !important;
   overflow: hidden !important;
-  background: var(--h-hover) !important;
-  box-shadow: inset 0 0 0 1px var(--h-line) !important;
 }
 html[data-hush-site="rbx"] .currently-wearing-avatar-with-background :is(.profile-avatar-left, .thumbnail-holder, .avatar-thumbnail-container) {
   width: 100% !important;
@@ -1249,8 +1277,103 @@ html[data-hush-site="rbx"] .currently-wearing-avatar-with-background img {
 html[data-hush-site="rbx"] .currently-wearing-avatar-with-background .avatar-toggle-button button {
   border-radius: 8px !important;
   box-shadow: none !important;
+  transform: scale(0.85);
+  transform-origin: top right;
 }
-html[data-hush-site="rbx"] .profile-header-overlay { margin-top: 20px !important; }
+
+/* strips: rows of tiles that scroll sideways, sized per section */
+html[data-hush-site="rbx"] .profile-content [class*="carouselContainer"] > [class*="-carousel"] {
+  gap: 12px !important;
+  overflow-x: auto !important;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+html[data-hush-site="rbx"] .profile-content [class*="carouselContainer"] > [class*="-carousel"]::-webkit-scrollbar { display: none; }
+html[data-hush-site="rbx"] .profile-content [class*="carouselItem"] {
+  flex: 0 0 var(--h-tile, 150px) !important;
+  width: var(--h-tile, 150px) !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  scroll-snap-align: start;
+}
+html[data-hush-site="rbx"] .profile-content [class*="carouselItem"] :is(.base-tile, .base-tile > a, .base-tile-thumbnail-wrapper) { width: 100% !important; }
+html[data-hush-site="rbx"] .profile-content [class*="carouselItem"] .base-tile-thumbnail-wrapper { height: auto !important; aspect-ratio: 1; }
+html[data-hush-site="rbx"] .profile-content [class*="carouselItem"] .base-tile-thumbnail-wrapper :is(span, img) { width: 100% !important; height: 100% !important; }
+html[data-hush-site="rbx"] .profile-content [class*="carouselItem"] .base-tile-title { font: 500 13px/1.3 var(--h-font) !important; margin-top: 8px !important; }
+html[data-hush-site="rbx"] .profile-content [class*="carouselItem"] .base-tile-metadata { font: 400 12px/1.35 var(--h-font) !important; color: var(--h-dim) !important; }
+html[data-hush-site="rbx"] .profile-currently-wearing { --h-tile: 104px; }
+html[data-hush-site="rbx"] .profile-currently-wearing .base-tile-title { font-size: 12px !important; }
+html[data-hush-site="rbx"] :is(.profile-experiences, .profile-store, .profile-favorite-experiences) { --h-tile: 152px; }
+html[data-hush-site="rbx"] .profile-communities { --h-tile: 128px; }
+/* the paging arrows: small and quiet, only over the strip you point at */
+html[data-hush-site="rbx"] .profile-content .scroll-arrow {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  opacity: 0;
+  transition: opacity 0.2s ease !important;
+}
+html[data-hush-site="rbx"] .profile-content [class*="carouselContainer"]:hover .scroll-arrow { opacity: 1; }
+
+/* friends: a tidy grid of eight in the side column */
+html[data-hush-site="rbx"] .profile-content > .react-friends-carousel-container .friends-carousel-container { overflow: visible !important; }
+html[data-hush-site="rbx"] .profile-content > .react-friends-carousel-container .friends-carousel-list-container {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px 8px !important;
+  width: 100% !important;
+  transform: none !important;
+}
+html[data-hush-site="rbx"] .profile-content > .react-friends-carousel-container .friends-carousel-list-container > * { width: auto !important; min-width: 0 !important; margin: 0 !important; }
+html[data-hush-site="rbx"] .profile-content > .react-friends-carousel-container .friends-carousel-list-container > :nth-child(n + 9) { display: none !important; }
+html[data-hush-site="rbx"] .profile-content > .react-friends-carousel-container .friends-carousel-tile { width: 100% !important; }
+html[data-hush-site="rbx"] .profile-content > .react-friends-carousel-container .friends-carousel-tile :is(.thumbnail-2d-container, .avatar-card-image, img) { width: 100% !important; height: auto !important; aspect-ratio: 1; }
+html[data-hush-site="rbx"] .profile-content > .react-friends-carousel-container :is(.scroll-arrow, [class*="arrow"]) { display: none !important; }
+html[data-hush-site="rbx"] .profile-content > .react-friends-carousel-container .friends-carousel-tile .text-overflow,
+html[data-hush-site="rbx"] .profile-content > .react-friends-carousel-container .friends-carousel-tile [class*="name"] { font-size: 11.5px !important; }
+
+/* badges: a small grid of round icons, two rows at most; the name shows on hover */
+html[data-hush-site="rbx"] .profile-content > .profile-carousel [class*="carouselContainer"] > [class*="-carousel"] {
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px !important;
+  overflow: visible !important;
+}
+html[data-hush-site="rbx"] .profile-content > .profile-carousel [class*="carouselItem"] { --h-tile: auto; flex: none !important; width: auto !important; }
+html[data-hush-site="rbx"] .profile-content > .profile-carousel [class*="carouselItem"]:nth-child(n + 13) { display: none !important; }
+html[data-hush-site="rbx"] .profile-content > .profile-carousel .base-tile-thumbnail-wrapper { border-radius: 50% !important; overflow: hidden; background: var(--h-field); }
+html[data-hush-site="rbx"] .profile-content > .profile-carousel .base-tile-thumbnail-wrapper :is(span, img) { border-radius: 50% !important; }
+html[data-hush-site="rbx"] .profile-content > .profile-carousel :is(.base-tile-title, .base-tile-metadata) { display: none !important; }
+html[data-hush-site="rbx"] .profile-content > .profile-carousel .scroll-arrow { display: none !important; }
+html[data-hush-site="rbx"] .profile-content > .profile-carousel .base-tile a { transition: transform 0.2s var(--hush-ease) !important; }
+html[data-hush-site="rbx"] .profile-content > .profile-carousel .base-tile a:hover { transform: translateY(-2px) scale(1.06); }
+
+/* the 3D avatar keeps its own canvas size: fit it to the card */
+html[data-hush-site="rbx"] .currently-wearing-avatar-with-background :is(.thumbnail-3d-container, .thumbnail-2d-container) { display: block !important; width: 100% !important; height: 100% !important; }
+html[data-hush-site="rbx"] .currently-wearing-avatar-with-background canvas { width: 100% !important; height: 100% !important; object-fit: contain; }
+/* friend tiles fit their grid cell: square avatar, one short line of name */
+html[data-hush-site="rbx"] .profile-content > .react-friends-carousel-container .friends-carousel-tile :is(.options-dropdown, .options-dropdown > div, .avatar-card-fullbody, .avatar-card-link) {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  height: auto !important;
+}
+html[data-hush-site="rbx"] .profile-content > .react-friends-carousel-container .friends-carousel-tile .avatar-card-fullbody { aspect-ratio: 1; }
+html[data-hush-site="rbx"] .profile-content > .react-friends-carousel-container .friends-carousel-tile :is(.avatar-card-image, .avatar-card-image img) { width: 100% !important; height: 100% !important; border-radius: 50% !important; }
+html[data-hush-site="rbx"] .profile-content > .react-friends-carousel-container .friends-carousel-tile .avatar-status { transform: scale(0.7); transform-origin: bottom right; }
+html[data-hush-site="rbx"] .profile-content > .react-friends-carousel-container .friends-carousel-tile .options-dropdown > div > a { width: 100% !important; min-width: 0 !important; }
+html[data-hush-site="rbx"] .profile-content > .react-friends-carousel-container .friends-carousel-tile .text-truncate-end { font-size: 11.5px !important; }
+html[data-hush-site="rbx"] .profile-content > .react-friends-carousel-container .friends-carousel-tile .text-label-small,
+html[data-hush-site="rbx"] .profile-content > .react-friends-carousel-container .friends-carousel-tile .friend-tile-verified-badge { display: none !important; }
+/* Roblox draws only as many friends as fit the strip it measures: let it measure a wide strip, show eight */
+html[data-hush-site="rbx"] .profile-content > .react-friends-carousel-container { overflow: hidden !important; }
+@media (min-width: 1000px) {
+  html[data-hush-site="rbx"] .profile-content > .react-friends-carousel-container .friends-carousel-container { width: 1000px !important; max-width: none !important; }
+  html[data-hush-site="rbx"] .profile-content > .react-friends-carousel-container .friends-carousel-list-container { width: 292px !important; }
+}
 
 /* identity */
 html[data-hush-site="rbx"] .user-profile-header { gap: 14px !important; }
