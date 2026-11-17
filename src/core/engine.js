@@ -106,13 +106,30 @@
     for (const d of el.querySelectorAll('*')) if (!d.childElementCount && (d.textContent || '').trim()) return d;
     return el;
   }
+  /**
+   * Put new words in a title without taking it away from the site. Sites like YouTube keep a
+   * reference to the text node they render into and update that node on the next video; if
+   * we swapped the node out (textContent = …), their update would land beside our leftover
+   * text and titles would pile up. So: change the node they own, in place.
+   */
+  function setOwnText(el, value) {
+    const texts = [...el.childNodes].filter((n) => n.nodeType === Node.TEXT_NODE);
+    if (!texts.length || texts.length !== [...el.childNodes].filter((n) => n.nodeType !== Node.COMMENT_NODE).length) return false;
+    texts[0].nodeValue = value;
+    for (const t of texts.slice(1)) t.nodeValue = '';
+    return true;
+  }
   let calmWasOn = false;
   function calmScan() {
     if (!adapter || !adapter.titles) return;
     const want = on && !!H.siteOptions(settings, adapter).calmtitles;
     if (!want) {
       if (calmWasOn) {
-        for (const el of document.querySelectorAll('[data-hush-orig]')) { el.textContent = el.dataset.hushOrig; delete el.dataset.hushOrig; delete el.dataset.hushCalm; }
+        for (const el of document.querySelectorAll('[data-hush-orig]')) {
+          if (el.dataset.hushCalm === el.textContent) setOwnText(el, el.dataset.hushOrig);
+          delete el.dataset.hushOrig; delete el.dataset.hushCalm;
+        }
+        for (const el of document.querySelectorAll('[data-hush-title]')) { el.removeAttribute('title'); el.removeAttribute('data-hush-title'); }
         calmWasOn = false;
       }
       return;
@@ -122,13 +139,18 @@
       const leaf = leafOf(t);
       const cur = leaf.textContent || '';
       if (leaf.dataset.hushCalm === cur) continue;
+      // the site put a new title here (next video, recycled card): start from that
+      delete leaf.dataset.hushOrig;
       const calm = H.calmTitle(cur);
-      if (calm !== cur) {
+      if (calm !== cur && setOwnText(leaf, calm)) {
         leaf.dataset.hushOrig = cur;
-        if (!t.getAttribute('title')) t.setAttribute('title', cur.trim());
-        leaf.textContent = calm;
+        // the original on hover; only replace a tooltip hush set itself
+        if (!t.getAttribute('title') || t.hasAttribute('data-hush-title')) { t.setAttribute('title', cur.trim()); t.setAttribute('data-hush-title', ''); }
+        leaf.dataset.hushCalm = calm;
+      } else {
+        if (t.hasAttribute('data-hush-title')) { t.removeAttribute('title'); t.removeAttribute('data-hush-title'); }
+        leaf.dataset.hushCalm = cur;
       }
-      leaf.dataset.hushCalm = calm;
     }
   }
   // ---- universal: tidy up after hidden ads, and quiet "subscribe!" pop-ups ----

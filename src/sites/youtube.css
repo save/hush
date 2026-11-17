@@ -1106,3 +1106,11 @@ html[data-hush-site="yt"] ytd-browse[page-subtype="home"] ytd-rich-grid-renderer
 @media (max-width: 900px) {
   html[data-hush-site="yt"] ytd-browse[page-subtype="home"] ytd-rich-grid-renderer { --ytd-rich-grid-items-per-row: 2 !important; --ytd-rich-grid-posts-per-row: 2 !important; }
 }
+
+/* search, focused: YouTube puts a magnifier on the left and pads the field 48px for it.
+   hush's pill padding mustn't take that room away, or the icon sits on the first letters.
+   (:not(#hush-x) only adds weight: an earlier rule here includes an id.) */
+html[data-hush-site="yt"] yt-searchbox .ytSearchboxComponentInputBox.ytSearchboxComponentInputBoxHasFocus:not(#hush-x) { padding-left: 48px !important; }
+html[data-hush-site="yt"] yt-searchbox .ytSearchboxComponentInputBox.ytSearchboxComponentInputBoxHasFocus:not(#hush-x).ytSearchboxComponentInputBoxUnified { padding-left: 52px !important; }
+html[data-hush-site="yt"] yt-searchbox .ytSearchboxComponentInputBox.ytSearchboxComponentInputBoxHasFocus:not(#hush-x).ytSearchboxComponentInputBoxMultimodal { padding-left: 0 !important; }
+html[data-hush-site="yt"] yt-searchbox .ytSearchboxComponentInputBox.ytSearchboxComponentInputBoxHasFocus:not(#hush-x).ytSearchboxComponentInputBoxMultimodal.ytSearchboxComponentInputBoxHasAttachments { padding-left: 16px !important; }
