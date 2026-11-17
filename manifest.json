@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "hush",
   "short_name": "hush",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Turn the volume down on the web. Calm, minimal versions of the sites you use every day.",
   "permissions": [
     "storage",

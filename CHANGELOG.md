@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.6.2
 
 - **Roblox chat, redesigned:** a floating rounded card above the corner, a pill search, roomy rows with a dot for unread, soft message bubbles that join up in runs, a pill to type in, and a gentle open animation. Chat now shows by default ("hide chat" is still an option).
 - **Roblox:** message and friend counts are plain numbers again (Roblox renamed its badge).
