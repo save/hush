@@ -967,9 +967,11 @@ html[data-hush-site="x"][data-hush-banners] a[href$="/header_photo"] {
   max-height: 120px !important;
   overflow: hidden !important;
 }
-html[data-hush-site="x"][data-hush-banners][data-hush-path="profile"] a[href$="/photo"] {
-  width: 96px !important;
-  height: 96px !important;
+/* the avatar shrinks as one piece (picture, ring and backdrop together), so the ring always
+   matches the picture; sized from its bottom-left corner, it overlaps the shorter banner less */
+html[data-hush-site="x"][data-hush-banners][data-hush-path="profile"] div:has(> div > div > div > div > a[href$="/photo"]) {
+  transform: scale(0.68);
+  transform-origin: 0 100%;
 }
 html[data-hush-site="x"][data-hush-path="profile"] [data-testid="UserName"] :is(span, div)[dir] {
   letter-spacing: -0.01em;
@@ -1062,4 +1064,104 @@ html[data-hush-site="x"] [data-testid="userFollowIndicator"] :is(div, span) {
   letter-spacing: 0 !important;
   text-transform: lowercase;
   padding: 0 !important;
+}
+
+/* ---------- focus mode: the dynamic island ---------------------------------------------
+   The menu as a small floating pill at the bottom of the screen. It springs up when focus
+   mode turns on, names the page you're on, names others as you point at them, and shrinks to
+   just where you are while you scroll down. */
+html[data-hush-site="x"] {
+  --h-island: rgba(14, 14, 14, 0.92);
+  --h-island-ring: rgba(255, 255, 255, 0.09);
+  --h-island-fg: #f2f2f2;
+  --h-island-dim: rgba(242, 242, 242, 0.55);
+  --h-island-on: rgba(255, 255, 255, 0.13);
+  --h-island-shadow: 0 22px 50px -14px rgba(0, 0, 0, 0.75);
+}
+html[data-hush-site="x"][data-hush-theme="light"] {
+  --h-island: rgba(255, 255, 255, 0.92);
+  --h-island-ring: rgba(0, 0, 0, 0.08);
+  --h-island-fg: #141414;
+  --h-island-dim: rgba(20, 20, 20, 0.5);
+  --h-island-on: rgba(0, 0, 0, 0.07);
+  --h-island-shadow: 0 20px 44px -16px rgba(0, 0, 0, 0.28);
+}
+html[data-hush-site="x"] .hush-island {
+  position: fixed;
+  left: 50%;
+  bottom: 22px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px;
+  border-radius: 999px;
+  background: var(--h-island);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  backdrop-filter: blur(22px) saturate(1.5);
+  box-shadow: var(--h-island-shadow), 0 0 0 1px var(--h-island-ring), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  font-family: var(--h-font);
+  transform: translateX(-50%);
+  animation: hushIslandIn 0.62s cubic-bezier(0.34, 1.5, 0.5, 1) both !important;
+}
+@keyframes hushIslandIn {
+  0% { opacity: 0; transform: translateX(-50%) translateY(28px) scale(0.6, 0.8); filter: blur(6px); }
+  60% { opacity: 1; filter: blur(0); }
+}
+html[data-hush-site="x"] .hush-island-item {
+  all: unset;
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: 42px;
+  max-width: 220px;
+  padding: 0 11px;
+  border-radius: 999px;
+  color: var(--h-island-dim);
+  cursor: pointer;
+  overflow: hidden;
+  transition: background-color 0.25s ease, color 0.2s ease, gap 0.38s cubic-bezier(0.32, 0.72, 0, 1), max-width 0.42s cubic-bezier(0.32, 0.72, 0, 1), padding 0.42s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.25s ease !important;
+}
+html[data-hush-site="x"] .hush-island-item svg { width: 20px; height: 20px; flex: 0 0 auto; display: block; transition: transform 0.3s cubic-bezier(0.34, 1.5, 0.5, 1) !important; }
+html[data-hush-site="x"] .hush-island-label {
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  transition: max-width 0.42s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.22s ease !important;
+}
+html[data-hush-site="x"] .hush-island-item:is(:hover, :focus-visible) { color: var(--h-island-fg); }
+html[data-hush-site="x"] .hush-island-item:is(:hover, :focus-visible) svg { transform: translateY(-1px); }
+html[data-hush-site="x"] .hush-island-item:is(:hover, :focus-visible, [data-active]) { gap: 8px; padding: 0 14px 0 12px; }
+html[data-hush-site="x"] .hush-island-item:is(:hover, :focus-visible, [data-active]) .hush-island-label { max-width: 120px; opacity: 1; }
+html[data-hush-site="x"] .hush-island-item[data-active] { background: var(--h-island-on); color: var(--h-island-fg); }
+html[data-hush-site="x"] .hush-island-item:active svg { transform: scale(0.9); }
+/* unread: a small dot on the icon */
+html[data-hush-site="x"] .hush-island-dot {
+  position: absolute;
+  top: 9px;
+  left: 25px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--h-accent);
+  box-shadow: 0 0 0 2px var(--h-island);
+  transform: scale(0);
+  transition: transform 0.3s cubic-bezier(0.34, 1.5, 0.5, 1) !important;
+}
+html[data-hush-site="x"] .hush-island-item[data-count]:not([data-count=""]) .hush-island-dot { transform: scale(1); }
+html[data-hush-site="x"] .hush-island-sep { width: 1px; height: 20px; margin: 0 4px; background: var(--h-island-ring); flex: 0 0 auto; transition: opacity 0.25s ease, margin 0.4s ease !important; }
+/* scrolling down: just where you are */
+html[data-hush-site="x"] .hush-island[data-compact] .hush-island-item:not([data-active]) { max-width: 0; padding: 0; opacity: 0; }
+html[data-hush-site="x"] .hush-island[data-compact] .hush-island-sep { opacity: 0; margin: 0; width: 0; }
+html[data-hush-site="x"] .hush-island { transition: padding 0.42s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.3s ease !important; }
+/* room at the bottom of the column so the island never covers the last post */
+html[data-hush-site="x"][data-hush-zen]:not([data-hush-wide]) main[role="main"] { padding-bottom: 96px !important; }
+@media (prefers-reduced-motion: reduce) {
+  html[data-hush-site="x"] .hush-island { animation: none !important; }
 }

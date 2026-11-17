@@ -126,17 +126,13 @@ html[data-hush-site="rbx"] [data-hush-cap],
 html[data-hush-site="rbx"] [data-hush-capped] [data-testid="sentinel-tile"] {
   display: none !important;
 }
-/* the friends list beside a chat: open or closed (roblox.js sets this; the friends button
-   in a conversation toggles it, "hide chat list" decides how it starts). A conversation you
-   open always shows; with the list closed it moves into the corner instead of beside a gap. */
-html[data-hush-site="rbx"][data-hush-chatlist="closed"] #chat-container .react-chat-root > section:has(.react-chat-thread-list) {
+/* hide chat list (option): the list in the corner goes, but a conversation you open yourself
+   (from a friend's Chat button) always shows, moved into the corner instead of beside a gap */
+html[data-hush-site="rbx"][data-hush-nochat] #chat-container .react-chat-root > section:has(.react-chat-thread-list) {
   display: none !important;
 }
-html[data-hush-site="rbx"][data-hush-chatlist="closed"] #chat-container .react-chat-root > .fixed:not(.react-chat-tray-area) {
+html[data-hush-site="rbx"][data-hush-nochat] #chat-container .react-chat-root > .fixed:not(.react-chat-tray-area) {
   right: 16px !important;
-}
-html[data-hush-site="rbx"][data-hush-chatlist="open"] #chat-container .react-chat-root > section:has(.react-chat-thread-list) {
-  animation: hushChatIn 0.28s var(--hush-ease) both !important;
 }
 /* game page recommendations (option) */
 html[data-hush-site="rbx"][data-hush-norecs] .container-list.games-detail,
@@ -1554,11 +1550,10 @@ html[data-hush-site="rbx"] #chat-container .react-chat-message-bubble-outgoing.r
 html[data-hush-site="rbx"] #chat-container .react-chat-message-group { gap: 2px !important; margin-top: 10px !important; }
 html[data-hush-site="rbx"] #chat-container .react-chat-hidden-message { color: var(--h-faint) !important; font-style: italic; }
 
-/* typing: one pill, with a round friends button beside it */
+/* typing: one quiet pill. No outline and no glow: while you type it just gets a touch lighter */
 html[data-hush-site="rbx"] #chat-container [data-hush-chatbar] {
   display: flex !important;
   align-items: flex-end !important;
-  gap: 8px !important;
   padding: 8px 12px 12px !important;
   background: transparent !important;
 }
@@ -1574,8 +1569,9 @@ html[data-hush-site="rbx"] #chat-container .react-chat-message-input {
   transition: box-shadow 0.2s ease, background-color 0.2s ease !important;
 }
 html[data-hush-site="rbx"] #chat-container .react-chat-message-input:focus-within {
-  background: transparent !important;
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--h-fg) 22%, transparent), 0 0 0 4px var(--h-hover) !important;
+  background: color-mix(in srgb, var(--h-fg) 9%, transparent) !important;
+  box-shadow: none !important;
+  outline: 0 !important;
 }
 /* the field itself: no box of its own (the search-pill look above must not land here) */
 html[data-hush-site="rbx"] #chat-container .react-chat-message-input :is(textarea, .foundation-web-input, .react-chat-message-input-textarea) {
@@ -1596,27 +1592,6 @@ html[data-hush-site="rbx"] #chat-container .react-chat-message-input :is(textare
   color: var(--h-fg) !important;
 }
 html[data-hush-site="rbx"] #chat-container .react-chat-message-input textarea::placeholder { color: var(--h-dim) !important; opacity: 1; }
-/* the friends button: opens the list of everyone you chat with */
-html[data-hush-site="rbx"] #chat-container .hush-chat-friends {
-  all: unset;
-  box-sizing: border-box;
-  flex: 0 0 auto;
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--h-field);
-  color: var(--h-dim);
-  cursor: pointer;
-  transition: background-color 0.18s ease, color 0.18s ease, transform 0.2s var(--hush-ease) !important;
-}
-html[data-hush-site="rbx"] #chat-container .hush-chat-friends:hover { color: var(--h-fg); background: color-mix(in srgb, var(--h-fg) 10%, transparent); }
-html[data-hush-site="rbx"] #chat-container .hush-chat-friends:active { transform: scale(0.94); }
-html[data-hush-site="rbx"] #chat-container .hush-chat-friends:focus-visible { box-shadow: 0 0 0 2px var(--h-chat-panel), 0 0 0 4px color-mix(in srgb, var(--h-fg) 40%, transparent); }
-html[data-hush-site="rbx"] #chat-container .hush-chat-friends[aria-pressed="true"] { background: var(--h-chat-out); color: var(--h-chat-out-fg); }
-html[data-hush-site="rbx"] #chat-container .hush-chat-friends svg { width: 18px; height: 18px; display: block; }
-
 /* the header of a conversation: just who it is, and close (details and settings live on their profile) */
 html[data-hush-site="rbx"] #chat-container .react-chat-dialog-header-actions button[aria-label="Chat Details"] { display: none !important; }
 

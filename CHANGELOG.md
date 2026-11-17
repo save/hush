@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.4
+
+- **X focus mode (z):** the menu becomes a small "dynamic island" at the bottom of the screen. It springs up when focus mode turns on, names the page you're on (and others as you point at them), shows a dot for unread notifications and chats, and shrinks to just where you are while you scroll down. Post and leave focus sit at its end.
+- **X profiles:** the profile picture and its ring shrink together, so the ring no longer sticks out from behind a smaller picture.
+- **Roblox chat:** the friends button is gone (your chats list already opens beside a conversation); the message box has no outline or glow, it just gets a touch lighter while you type.
+
 ## 0.6.3
 
 - **Roblox chat:** the message box is one clean pill (it was a pill inside a pill), with a round friends button beside it that opens and closes your chats list. "Hide chat list" now only sets whether that list starts closed.

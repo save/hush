@@ -18,7 +18,7 @@ Hush.register({
     { key: 'banners', label: 'quiet profile banners', group: 'look', desc: 'Short, faded profile headers', keywords: 'header photo', default: true },
     { key: 'softmedia', label: 'soft media', group: 'look', desc: 'Images sit back until you point at them', keywords: 'images video color saturation thumbnails', default: true },
     { key: 'checkin', label: 'scroll check-ins', group: 'feed', desc: 'A quiet nudge every 50 posts', keywords: 'endless feed nudge break', default: true },
-    { key: 'zen', label: 'focus mode', group: 'layout', desc: 'Hide the menu, keep only the content', hint: 'z', keywords: 'zen hide menu nav', default: false }
+    { key: 'zen', label: 'focus mode', group: 'layout', desc: 'Just the column; the menu becomes a small island at the bottom', hint: 'z', keywords: 'zen hide menu nav', default: false }
   ],
 
   setup(ctx) {
@@ -703,9 +703,105 @@ Hush.register({
       return cmds;
     };
 
+    // ---- focus mode: the menu becomes a "dynamic island" at the bottom of the screen ----------
+    // A floating pill of icons. The page you're on shows its name; others show theirs when you
+    // point at them. Scrolling down shrinks it to just where you are; scrolling up or pointing
+    // brings the rest back.
+    const ISLAND = [
+      { id: 'home', label: 'home', icon: 'house', path: () => '/home' },
+      { id: 'explore', label: 'explore', icon: 'compass', path: () => '/explore' },
+      { id: 'notifications', label: 'notifications', icon: 'bell', path: () => '/notifications', count: 'AppTabBar_Notifications_Link' },
+      { id: 'chat', label: 'chat', icon: 'message-circle', path: () => (document.querySelector('a[data-testid="AppTabBar_DirectMessage_Link"]') || {}).getAttribute?.('href') || '/i/chat', count: 'AppTabBar_DirectMessage_Link' },
+      { id: 'bookmarks', label: 'bookmarks', icon: 'bookmark', path: () => '/i/history' },
+      { id: 'profile', label: 'profile', icon: 'user', path: () => profilePath() }
+    ];
+    function lucide(name) {
+      const NS = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(NS, 'svg');
+      for (const [k, v] of Object.entries({ viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.9', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'aria-hidden': 'true' })) svg.setAttribute(k, v);
+      for (const [tag, attrs] of (Hush.icons && Hush.icons[name]) || []) {
+        const el = document.createElementNS(NS, tag);
+        for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+        svg.append(el);
+      }
+      return svg;
+    }
+    let island = null;
+    function islandItem(label, glyph, onClick) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'hush-island-item';
+      b.setAttribute('aria-label', label);
+      const l = document.createElement('span');
+      l.className = 'hush-island-label';
+      l.textContent = label;
+      const dot = document.createElement('span');
+      dot.className = 'hush-island-dot';
+      b.append(lucide(glyph), l, dot);
+      b.addEventListener('click', (e) => { e.preventDefault(); onClick(); });
+      return b;
+    }
+    function buildIsland() {
+      const el = document.createElement('nav');
+      el.className = 'hush-island';
+      el.setAttribute('aria-label', 'menu');
+      for (const it of ISLAND) {
+        const b = islandItem(it.label, it.icon, () => go(it.path()));
+        b.dataset.id = it.id;
+        el.append(b);
+      }
+      const sep = document.createElement('span');
+      sep.className = 'hush-island-sep';
+      el.append(sep);
+      const write = islandItem('post', 'pencil', () => {
+        const btn = document.querySelector('a[data-testid="SideNav_NewTweet_Button"]');
+        if (btn) btn.click(); else go('/compose/post');
+      });
+      write.dataset.id = 'write';
+      const leave = islandItem('leave focus', 'focus', () => { ctx.setOption('zen', false); ctx.toast('focus mode off', false); });
+      leave.dataset.id = 'leave';
+      el.append(write, leave);
+      el.addEventListener('pointerenter', () => el.removeAttribute('data-compact'));
+      return el;
+    }
+    function syncIsland() {
+      const want = !!ctx.options.zen && !root.hasAttribute('data-hush-wide');
+      if (!want) { if (island) { island.remove(); island = null; } return; }
+      if (!island || !island.isConnected) { island = buildIsland(); document.body.append(island); }
+      const p = location.pathname;
+      for (const b of island.querySelectorAll('.hush-island-item[data-id]')) {
+        const it = ISLAND.find((x) => x.id === b.dataset.id);
+        if (!it) continue;
+        const path = it.path();
+        const active = !!path && (p === path || p.startsWith(path + '/'));
+        if (active !== b.hasAttribute('data-active')) b.toggleAttribute('data-active', active);
+        if (it.count) {
+          const src = document.querySelector(`a[data-testid="${it.count}"]`);
+          const n = src ? src.dataset.hushTail || '' : '';
+          if (b.dataset.count !== n) b.dataset.count = n;
+        }
+      }
+    }
+    // scrolling down tucks the island away to just where you are; scrolling up brings it back
+    let lastY = scrollY;
+    let islandFrame = 0;
+    const onIslandScroll = () => {
+      if (islandFrame) return;
+      islandFrame = requestAnimationFrame(() => {
+        islandFrame = 0;
+        const y = scrollY, dy = y - lastY;
+        if (Math.abs(dy) < 6) return;
+        lastY = y;
+        if (!island || island.matches(':hover, :focus-within')) return;
+        if (dy > 0 && y > 160) island.setAttribute('data-compact', '');
+        else if (dy < 0) island.removeAttribute('data-compact');
+      });
+    };
+    window.addEventListener('scroll', onIslandScroll, { passive: true });
+
     // ---- loop --------------------------------------------------------------------
     let queued = false;
-    const STEPS = [syncRoute, detectTheme, syncNav, cleanTimeline, huntPromos, recolorLines, styleChat, markComposers, markSticky, markInlineBlue, markSearch, syncTabIndicators, markHomeComposer];
+    const STEPS = [syncRoute, detectTheme, syncNav, cleanTimeline, huntPromos, recolorLines, styleChat, markComposers, markSticky, markInlineBlue, markSearch, syncTabIndicators, markHomeComposer, syncIsland];
     const warned = new Set();
     function tick() {
       queued = false;
@@ -742,6 +838,8 @@ Hush.register({
       window.removeEventListener('keydown', onKey, true);
       window.removeEventListener('keydown', onActionKey, true);
       window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('scroll', onIslandScroll);
+      if (island) island.remove();
       document.removeEventListener('click', onPointer, true);
       document.removeEventListener('click', onRepostMenu, true);
       lineSheet.remove();
