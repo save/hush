@@ -126,13 +126,17 @@ html[data-hush-site="rbx"] [data-hush-cap],
 html[data-hush-site="rbx"] [data-hush-capped] [data-testid="sentinel-tile"] {
   display: none !important;
 }
-/* hide chat (option): the friends list in the corner goes, but a conversation you open
-   yourself (from a friend's Chat button) always shows, next to the corner, not beside a gap */
-html[data-hush-site="rbx"][data-hush-nochat] #chat-container .react-chat-root > section:has(.react-chat-thread-list) {
+/* the friends list beside a chat: open or closed (roblox.js sets this; the friends button
+   in a conversation toggles it, "hide chat list" decides how it starts). A conversation you
+   open always shows; with the list closed it moves into the corner instead of beside a gap. */
+html[data-hush-site="rbx"][data-hush-chatlist="closed"] #chat-container .react-chat-root > section:has(.react-chat-thread-list) {
   display: none !important;
 }
-html[data-hush-site="rbx"][data-hush-nochat] #chat-container .react-chat-root > .fixed:not(.react-chat-tray-area) {
+html[data-hush-site="rbx"][data-hush-chatlist="closed"] #chat-container .react-chat-root > .fixed:not(.react-chat-tray-area) {
   right: 16px !important;
+}
+html[data-hush-site="rbx"][data-hush-chatlist="open"] #chat-container .react-chat-root > section:has(.react-chat-thread-list) {
+  animation: hushChatIn 0.28s var(--hush-ease) both !important;
 }
 /* game page recommendations (option) */
 html[data-hush-site="rbx"][data-hush-norecs] .container-list.games-detail,
@@ -1550,23 +1554,83 @@ html[data-hush-site="rbx"] #chat-container .react-chat-message-bubble-outgoing.r
 html[data-hush-site="rbx"] #chat-container .react-chat-message-group { gap: 2px !important; margin-top: 10px !important; }
 html[data-hush-site="rbx"] #chat-container .react-chat-hidden-message { color: var(--h-faint) !important; font-style: italic; }
 
-/* typing: a pill */
+/* typing: one pill, with a round friends button beside it */
+html[data-hush-site="rbx"] #chat-container [data-hush-chatbar] {
+  display: flex !important;
+  align-items: flex-end !important;
+  gap: 8px !important;
+  padding: 8px 12px 12px !important;
+  background: transparent !important;
+}
 html[data-hush-site="rbx"] #chat-container .react-chat-message-input {
-  margin: 6px 10px 10px !important;
-  padding: 4px 6px 4px 14px !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
   border: 0 !important;
   border-radius: 20px !important;
   background: var(--h-field) !important;
+  box-shadow: none !important;
   transition: box-shadow 0.2s ease, background-color 0.2s ease !important;
 }
-html[data-hush-site="rbx"] #chat-container .react-chat-message-input:focus-within { background: transparent !important; box-shadow: inset 0 0 0 1px var(--h-line), 0 0 0 3px var(--h-hover) !important; }
-html[data-hush-site="rbx"] #chat-container .react-chat-message-input-textarea {
+html[data-hush-site="rbx"] #chat-container .react-chat-message-input:focus-within {
   background: transparent !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--h-fg) 22%, transparent), 0 0 0 4px var(--h-hover) !important;
+}
+/* the field itself: no box of its own (the search-pill look above must not land here) */
+html[data-hush-site="rbx"] #chat-container .react-chat-message-input :is(textarea, .foundation-web-input, .react-chat-message-input-textarea) {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 40px !important;
+  max-height: 120px !important;
+  margin: 0 !important;
+  padding: 10px 16px !important;
   border: 0 !important;
+  border-radius: 20px !important;
+  outline: 0 !important;
+  background: transparent !important;
   box-shadow: none !important;
-  font: 400 13.5px/1.4 var(--h-font) !important;
+  resize: none !important;
+  font: 400 13.5px/20px var(--h-font) !important;
   color: var(--h-fg) !important;
 }
+html[data-hush-site="rbx"] #chat-container .react-chat-message-input textarea::placeholder { color: var(--h-dim) !important; opacity: 1; }
+/* the friends button: opens the list of everyone you chat with */
+html[data-hush-site="rbx"] #chat-container .hush-chat-friends {
+  all: unset;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--h-field);
+  color: var(--h-dim);
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease, transform 0.2s var(--hush-ease) !important;
+}
+html[data-hush-site="rbx"] #chat-container .hush-chat-friends:hover { color: var(--h-fg); background: color-mix(in srgb, var(--h-fg) 10%, transparent); }
+html[data-hush-site="rbx"] #chat-container .hush-chat-friends:active { transform: scale(0.94); }
+html[data-hush-site="rbx"] #chat-container .hush-chat-friends:focus-visible { box-shadow: 0 0 0 2px var(--h-chat-panel), 0 0 0 4px color-mix(in srgb, var(--h-fg) 40%, transparent); }
+html[data-hush-site="rbx"] #chat-container .hush-chat-friends[aria-pressed="true"] { background: var(--h-chat-out); color: var(--h-chat-out-fg); }
+html[data-hush-site="rbx"] #chat-container .hush-chat-friends svg { width: 18px; height: 18px; display: block; }
+
+/* the header of a conversation: just who it is, and close (details and settings live on their profile) */
+html[data-hush-site="rbx"] #chat-container .react-chat-dialog-header-actions button[aria-label="Chat Details"] { display: none !important; }
+
+/* the first-chat card: who it is, without the safety lecture */
+html[data-hush-site="rbx"] #chat-container .react-chat-osa-inline-card {
+  border: 0 !important;
+  border-radius: 14px !important;
+  background: var(--h-chat-in) !important;
+  padding: 12px 14px !important;
+}
+html[data-hush-site="rbx"] #chat-container .react-chat-osa-inline-card > .content-default { display: none !important; }
+html[data-hush-site="rbx"] #chat-container .react-chat-osa-inline-card .text-label-medium { margin-top: 8px !important; font: 500 12.5px var(--h-font) !important; color: var(--h-dim) !important; }
+/* dates between messages: small and quiet */
+html[data-hush-site="rbx"] #chat-container .react-chat-dialog-scroll li > .text-caption-small { font: 400 11px var(--h-font) !important; color: var(--h-faint) !important; }
 
 /* game links in chat: a small card */
 html[data-hush-site="rbx"] #chat-container .react-chat-game-card { border: 0 !important; border-radius: 14px !important; background: var(--h-chat-in) !important; overflow: hidden; }

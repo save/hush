@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.3
+
+- **Roblox chat:** the message box is one clean pill (it was a pill inside a pill), with a round friends button beside it that opens and closes your chats list. "Hide chat list" now only sets whether that list starts closed.
+- **Roblox chat:** no settings gear in a conversation's header, and the first-chat card shows who it is without the safety paragraph.
+
 ## 0.6.2
 
 - **Roblox chat, redesigned:** a floating rounded card above the corner, a pill search, roomy rows with a dot for unread, soft message bubbles that join up in runs, a pill to type in, and a gentle open animation. Chat now shows by default. "Hide chat" now hides only the friends list in the corner: a chat you open from a friend always shows.

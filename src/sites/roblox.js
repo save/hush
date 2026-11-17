@@ -18,7 +18,7 @@ Hush.register({
     { key: 'softthumbs', label: 'soft thumbnails', group: 'look', desc: 'Thumbnails softened until hover', keywords: 'images color saturation quiet', default: true },
     { key: 'calmtitles', label: 'calm titles', group: 'look', desc: 'No [🔥UPDATE] tags, ALL CAPS or emoji in game names', keywords: 'caps emoji tags names clickbait', default: true },
     { key: 'norecs', label: 'hide recommendations', group: 'feed', desc: 'No “people also join”', keywords: 'people also join similar', default: false },
-    { key: 'nochat', label: 'hide chat list', group: 'feed', desc: 'No friends list in the corner; chats you open still show', keywords: 'friends dock messages', default: false },
+    { key: 'nochat', label: 'hide chat list', group: 'feed', desc: 'Your chats list starts closed; the friends button in a chat opens it', keywords: 'friends dock messages', default: false },
     { key: 'zen', label: 'focus mode', group: 'layout', desc: 'Hide the menu, keep only the content', hint: 'z', keywords: 'zen hide menu nav', default: false }
   ],
 
@@ -343,7 +343,62 @@ Hush.register({
     this.countHidden = () => document.querySelectorAll('[data-hush-cap]').length;
 
     // ---- loop -----------------------------------------------------------------------------------
-    const STEPS = [syncRoute, detectTheme, syncNav, syncHeader, cleanSorts, capFeed, greet, dedupeHeaders, foldDescription, foldBadges, syncTabUnderline, staggerTiles];
+    // ---- chat: a friends button beside the message box, toggling the friends list --------
+    // "hide chat list" decides how the list starts; the button opens and closes it after that.
+    let chatListOpen = null;
+    let chatListFrom = null;
+    function friendsIcon() {
+      const NS = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(NS, 'svg');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      svg.setAttribute('fill', 'none');
+      svg.setAttribute('stroke', 'currentColor');
+      svg.setAttribute('stroke-width', '2');
+      svg.setAttribute('stroke-linecap', 'round');
+      svg.setAttribute('stroke-linejoin', 'round');
+      svg.setAttribute('aria-hidden', 'true');
+      for (const d of ['M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2', 'M22 21v-2a4 4 0 0 0-3-3.87', 'M16 3.13a4 4 0 0 1 0 7.75']) {
+        const p = document.createElementNS(NS, 'path');
+        p.setAttribute('d', d);
+        svg.append(p);
+      }
+      const c = document.createElementNS(NS, 'circle');
+      c.setAttribute('cx', '9');
+      c.setAttribute('cy', '7');
+      c.setAttribute('r', '4');
+      svg.append(c);
+      return svg;
+    }
+    function syncChat() {
+      const hide = !!ctx.options.nochat;
+      if (chatListOpen === null || chatListFrom !== hide) { chatListOpen = !hide; chatListFrom = hide; }
+      const state = chatListOpen ? 'open' : 'closed';
+      if (root.getAttribute('data-hush-chatlist') !== state) root.setAttribute('data-hush-chatlist', state);
+      for (const input of document.querySelectorAll('#chat-container .react-chat-message-input')) {
+        const bar = input.parentElement;
+        if (!bar) continue;
+        if (!bar.hasAttribute('data-hush-chatbar')) bar.setAttribute('data-hush-chatbar', '');
+        let btn = bar.querySelector(':scope > .hush-chat-friends');
+        if (!btn) {
+          btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'hush-chat-friends';
+          btn.append(friendsIcon());
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            chatListOpen = !chatListOpen;
+            schedule();
+          });
+          bar.insertBefore(btn, input);
+        }
+        const label = chatListOpen ? 'Hide your chats' : 'Show your chats';
+        if (btn.getAttribute('aria-label') !== label) { btn.setAttribute('aria-label', label); btn.title = label; }
+        if (btn.getAttribute('aria-pressed') !== String(chatListOpen)) btn.setAttribute('aria-pressed', String(chatListOpen));
+      }
+    }
+
+    const STEPS = [syncRoute, detectTheme, syncNav, syncHeader, cleanSorts, capFeed, greet, dedupeHeaders, foldDescription, foldBadges, syncTabUnderline, staggerTiles, syncChat];
     let queued = false;
     function tick() {
       queued = false;
@@ -365,7 +420,7 @@ Hush.register({
     window.addEventListener('resize', schedule, { passive: true });
     // option changes (capfeed) re-run the loop
     const optObs = new MutationObserver(schedule);
-    optObs.observe(root, { attributes: true, attributeFilter: ['data-hush-capfeed'] });
+    optObs.observe(root, { attributes: true, attributeFilter: ['data-hush-capfeed', 'data-hush-nochat'] });
 
     return () => {
       observer.disconnect();
@@ -373,7 +428,9 @@ Hush.register({
       unbindKeys();
       window.removeEventListener('popstate', schedule);
       window.removeEventListener('hashchange', schedule);
-      document.querySelectorAll('.hush-more, .hush-toggle, .hush-tab-ind, #left-navigation-container .hush-keys').forEach((el) => el.remove());
+      document.querySelectorAll('.hush-more, .hush-toggle, .hush-tab-ind, #left-navigation-container .hush-keys, .hush-chat-friends').forEach((el) => el.remove());
+      document.querySelectorAll('[data-hush-chatbar]').forEach((el) => el.removeAttribute('data-hush-chatbar'));
+      root.removeAttribute('data-hush-chatlist');
       for (const a of ['data-hush-hide', 'data-hush-cap', 'data-hush-capped', 'data-hush-nav', 'data-hush-navhide', 'data-hush-active', 'data-hush-checked', 'data-hush-seen', 'data-hush-greet', 'data-hush-dupe', 'data-hush-fold', 'data-hush-tabs', 'data-hush-i']) {
         document.querySelectorAll(`[${a}]`).forEach((el) => el.removeAttribute(a));
       }
