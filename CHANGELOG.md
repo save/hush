@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.6.5
 
 - **Focus mode's island on YouTube and Roblox:** press `z` and the menu becomes the same small floating pill as on X (home, subscriptions, history, you and search on YouTube; home, charts, marketplace, avatar, friends, messages, profile and search on Roblox). It names where you are, shows a dot for unread friends and messages on Roblox, and shrinks while you scroll down. One shared island now runs on all three sites.
 - **Roblox profiles:** Roblox's own layout, made quieter: a flat rounded avatar stage, your headshot with a ring where it overlaps, a bigger name, quiet buttons and stat pills, strips of tiles you can scroll sideways, and badges as one small row of round icons (names on hover).
