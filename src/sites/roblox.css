@@ -1406,3 +1406,171 @@ html[data-hush-site="rbx"] .friend-carousel-container :is([class*="friend-name"]
   font-size: 12.5px !important;
   color: var(--h-dim) !important;
 }
+
+/* ==========================================================================
+   chat: hush's own take on Roblox's chat (react-chat-*)
+   A floating card instead of a slab stuck to the screen edge, quiet rows with a dot for
+   unread, soft bubbles that join up in runs, a pill to type in, and gentle motion.
+   Roblox's colour tokens are already remapped above, so light and dark both follow.
+   ========================================================================== */
+
+html[data-hush-site="rbx"] {
+  --h-chat-panel: #ffffff;
+  --h-chat-raise: 0 24px 60px -24px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(0, 0, 0, 0.06);
+  --h-chat-out: #1b1b1b;
+  --h-chat-out-fg: #ffffff;
+  --h-chat-in: rgba(0, 0, 0, 0.05);
+}
+html[data-hush-site="rbx"][data-hush-theme="dark"] {
+  --h-chat-panel: #121212;
+  --h-chat-raise: 0 24px 60px -20px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.07);
+  --h-chat-out: #e4e4e4;
+  --h-chat-out-fg: #0a0a0a;
+  --h-chat-in: rgba(255, 255, 255, 0.07);
+}
+
+/* the dock floats a little above the bottom-right corner */
+html[data-hush-site="rbx"] #chat-container .react-chat-root { bottom: 16px !important; right: 16px !important; font-family: var(--h-font) !important; }
+html[data-hush-site="rbx"] #chat-container :is(.react-chat-tray-area, .react-chat-root > .fixed) { bottom: 16px !important; }
+
+/* every chat surface: one rounded card */
+html[data-hush-site="rbx"] #chat-container :is(section.react-chat-top-radius, .react-chat-window, .react-chat-dialog-shell, .react-chat-minimized-tray) {
+  border: 0 !important;
+  border-radius: 18px !important;
+  background: var(--h-chat-panel) !important;
+  box-shadow: var(--h-chat-raise) !important;
+  overflow: hidden;
+  animation: hushChatIn 0.32s var(--hush-ease) both !important;
+}
+@keyframes hushChatIn { from { opacity: 0; transform: translateY(10px) scale(0.985); } }
+
+/* headers: a clear title, no rule underneath, quiet ghost buttons */
+html[data-hush-site="rbx"] #chat-container :is(div.react-chat-top-radius, .react-chat-dialog-header) {
+  background: transparent !important;
+  border: 0 !important;
+  min-height: 52px !important;
+  padding: 0 10px 0 16px !important;
+}
+html[data-hush-site="rbx"] #chat-container div.react-chat-top-radius .text-title-medium,
+html[data-hush-site="rbx"] #chat-container .react-chat-dialog-title {
+  font: 600 15px/1.2 var(--h-font) !important;
+  letter-spacing: -0.015em !important;
+  color: var(--h-fg) !important;
+}
+html[data-hush-site="rbx"] #chat-container .foundation-web-icon-button {
+  border-radius: 10px !important;
+  color: var(--h-dim) !important;
+  transition: background-color 0.16s ease, color 0.16s ease !important;
+}
+html[data-hush-site="rbx"] #chat-container .foundation-web-icon-button:hover { background: var(--h-hover) !important; color: var(--h-fg) !important; }
+html[data-hush-site="rbx"] #chat-container .foundation-web-icon-button [class*="state-layer"] { display: none !important; }
+
+/* search: a soft pill */
+html[data-hush-site="rbx"] #chat-container .foundation-web-input {
+  height: 34px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: var(--h-field) !important;
+  box-shadow: none !important;
+  padding: 0 12px !important;
+  transition: background-color 0.16s ease, box-shadow 0.2s ease !important;
+}
+html[data-hush-site="rbx"] #chat-container .foundation-web-input:focus-within { background: transparent !important; box-shadow: inset 0 0 0 1px var(--h-line), 0 0 0 3px var(--h-hover) !important; }
+html[data-hush-site="rbx"] #chat-container .foundation-web-input input { font: 400 13px var(--h-font) !important; color: var(--h-fg) !important; }
+html[data-hush-site="rbx"] #chat-container .foundation-web-input input::placeholder { color: var(--h-dim) !important; }
+html[data-hush-site="rbx"] #chat-container .foundation-web-input .icon { opacity: 0.55; }
+
+/* the list: roomy rows, a soft pill for hover and "open" */
+html[data-hush-site="rbx"] #chat-container .react-chat-thread-list { padding: 4px 6px 8px !important; scrollbar-width: thin; }
+html[data-hush-site="rbx"] #chat-container :is(.react-chat-row, .react-chat-minimized-row, .react-chat-details-row) {
+  min-height: 48px !important;
+  margin: 0 0 1px !important;
+  padding: 0 10px !important;
+  border-radius: 12px !important;
+  background: transparent !important;
+  transition: background-color 0.16s ease !important;
+}
+html[data-hush-site="rbx"] #chat-container :is(.react-chat-row, .react-chat-minimized-row, .react-chat-details-row):hover { background: var(--h-hover) !important; }
+html[data-hush-site="rbx"] #chat-container .react-chat-row-selected { background: var(--h-field) !important; }
+html[data-hush-site="rbx"] #chat-container .react-chat-row-title { font: 500 13.5px/1.25 var(--h-font) !important; letter-spacing: -0.01em; color: var(--h-fg) !important; }
+html[data-hush-site="rbx"] #chat-container .react-chat-row-title-line .text-caption-medium { font: 400 11px var(--h-font) !important; color: var(--h-faint) !important; font-variant-numeric: tabular-nums; }
+html[data-hush-site="rbx"] #chat-container .react-chat-row-preview { font: 400 12px/1.35 var(--h-font) !important; color: var(--h-dim) !important; }
+/* unread: a small dot, not a badge */
+html[data-hush-site="rbx"] #chat-container :is(.react-chat-row, .react-chat-minimized-row) [class*="badge"],
+html[data-hush-site="rbx"] #chat-container :is(.react-chat-row, .react-chat-minimized-row) .foundation-web-status-indicator,
+html[data-hush-site="rbx"] #chat-container .react-chat-dialog-unread-badge {
+  min-width: 8px !important;
+  width: 8px !important;
+  height: 8px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  font-size: 0 !important;
+  background: var(--h-accent) !important;
+}
+html[data-hush-site="rbx"] #chat-container :is(.react-chat-row, .react-chat-minimized-row) .foundation-web-status-indicator * { font-size: 0 !important; }
+
+/* avatars: round, with presence as a small ring-cut dot */
+html[data-hush-site="rbx"] #chat-container :is(.react-chat-avatar-headshot, .react-chat-message-avatar, .react-chat-group-avatar) { border-radius: 50% !important; background: var(--h-field) !important; }
+html[data-hush-site="rbx"] #chat-container :is(.react-chat-presence-dot, .react-chat-dialog-presence-dot) {
+  width: 9px !important;
+  height: 9px !important;
+  border: 2px solid var(--h-chat-panel) !important;
+  box-sizing: content-box;
+}
+html[data-hush-site="rbx"] #chat-container .react-chat-presence-online { background: #3fbf6f !important; }
+html[data-hush-site="rbx"] #chat-container .react-chat-presence-in-game { background: #3f8cff !important; }
+html[data-hush-site="rbx"] #chat-container .react-chat-presence-in-studio { background: #f2a03d !important; }
+
+/* a conversation: soft bubbles that join up in runs */
+html[data-hush-site="rbx"] #chat-container .react-chat-dialog-scroll { padding: 6px 12px 10px !important; scrollbar-width: thin; }
+html[data-hush-site="rbx"] #chat-container .react-chat-message-bubble {
+  border: 0 !important;
+  border-radius: 18px !important;
+  padding: 8px 12px !important;
+  font: 400 13.5px/1.4 var(--h-font) !important;
+  letter-spacing: -0.005em;
+  box-shadow: none !important;
+  animation: hushChatMsg 0.28s var(--hush-ease) both !important;
+}
+@keyframes hushChatMsg { from { opacity: 0; transform: translateY(4px); } }
+html[data-hush-site="rbx"] #chat-container .react-chat-message-bubble-incoming { background: var(--h-chat-in) !important; color: var(--h-fg) !important; }
+html[data-hush-site="rbx"] #chat-container .react-chat-message-bubble-outgoing { background: var(--h-chat-out) !important; color: var(--h-chat-out-fg) !important; }
+html[data-hush-site="rbx"] #chat-container .react-chat-message-bubble-outgoing * { color: inherit !important; }
+/* runs: the corner on the speaker's side tightens between messages */
+html[data-hush-site="rbx"] #chat-container .react-chat-message-bubble-incoming.react-chat-message-bubble-first { border-bottom-left-radius: 6px !important; }
+html[data-hush-site="rbx"] #chat-container .react-chat-message-bubble-incoming.react-chat-message-bubble-middle { border-top-left-radius: 6px !important; border-bottom-left-radius: 6px !important; }
+html[data-hush-site="rbx"] #chat-container .react-chat-message-bubble-incoming.react-chat-message-bubble-last { border-top-left-radius: 6px !important; }
+html[data-hush-site="rbx"] #chat-container .react-chat-message-bubble-outgoing.react-chat-message-bubble-first { border-bottom-right-radius: 6px !important; }
+html[data-hush-site="rbx"] #chat-container .react-chat-message-bubble-outgoing.react-chat-message-bubble-middle { border-top-right-radius: 6px !important; border-bottom-right-radius: 6px !important; }
+html[data-hush-site="rbx"] #chat-container .react-chat-message-bubble-outgoing.react-chat-message-bubble-last { border-top-right-radius: 6px !important; }
+html[data-hush-site="rbx"] #chat-container .react-chat-message-group { gap: 2px !important; margin-top: 10px !important; }
+html[data-hush-site="rbx"] #chat-container .react-chat-hidden-message { color: var(--h-faint) !important; font-style: italic; }
+
+/* typing: a pill */
+html[data-hush-site="rbx"] #chat-container .react-chat-message-input {
+  margin: 6px 10px 10px !important;
+  padding: 4px 6px 4px 14px !important;
+  border: 0 !important;
+  border-radius: 20px !important;
+  background: var(--h-field) !important;
+  transition: box-shadow 0.2s ease, background-color 0.2s ease !important;
+}
+html[data-hush-site="rbx"] #chat-container .react-chat-message-input:focus-within { background: transparent !important; box-shadow: inset 0 0 0 1px var(--h-line), 0 0 0 3px var(--h-hover) !important; }
+html[data-hush-site="rbx"] #chat-container .react-chat-message-input-textarea {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  font: 400 13.5px/1.4 var(--h-font) !important;
+  color: var(--h-fg) !important;
+}
+
+/* game links in chat: a small card */
+html[data-hush-site="rbx"] #chat-container .react-chat-game-card { border: 0 !important; border-radius: 14px !important; background: var(--h-chat-in) !important; overflow: hidden; }
+html[data-hush-site="rbx"] #chat-container .react-chat-game-card-thumb { border-radius: 10px !important; }
+
+/* the minimised tray: a quiet pill */
+html[data-hush-site="rbx"] #chat-container .react-chat-minimized-tray { border-radius: 999px !important; padding: 4px !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-hush-site="rbx"] #chat-container * { animation: none !important; }
+}

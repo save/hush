@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- **Roblox chat, redesigned:** a floating rounded card above the corner, a pill search, roomy rows with a dot for unread, soft message bubbles that join up in runs, a pill to type in, and a gentle open animation. Chat now shows by default ("hide chat" is still an option).
+- **Roblox:** message and friend counts are plain numbers again (Roblox renamed its badge).
+- **YouTube:** titles no longer pile up when you go from one video to the next; the search box keeps room for its magnifier, so it no longer covers what you type.
+
 ## 0.6.1
 
 - **YouTube, exactly like the homepage:** a 64px header with the colour logo, one wide search pill and just your avatar (Create, the bell and voice search go); a list sidebar with 40px rows and a soft pill for where you are; filled pill chips; three videos to a row with 16px corners, one-line titles and just the channel on home. Geist now ships with hush so YouTube reads the same on every computer.
