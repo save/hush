@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { ArrowUpRight, Coffee, Github, Heart, Lock, MessageSquare, Share2, Star } from 'lucide-react';
+import { ArrowUpRight, Check, Coffee, Copy, Github, Heart, Lock, MessageSquare, Share2, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge, Separator } from '@/components/ui/misc';
-import { SUPPORT } from './config';
+import { SUPPORT, WALLETS } from './config';
 
 function Mark({ className }: { className?: string }) {
   return (
@@ -32,6 +32,38 @@ function open(href: string) {
   if (!href) return;
   if (typeof chrome !== 'undefined' && chrome.tabs?.create) chrome.tabs.create({ url: href });
   else window.open(href, '_blank', 'noopener');
+}
+
+// one wallet: the coin, its network, the full address, and a copy button
+function Wallet({ coin, network, address }: { coin: string; network: string; address: string }) {
+  const [copied, setCopied] = React.useState(false);
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(address);
+    } catch {
+      const t = document.createElement('textarea');
+      t.value = address;
+      document.body.append(t);
+      t.select();
+      document.execCommand('copy');
+      t.remove();
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1600);
+  };
+  return (
+    <div className="flex items-center gap-3 rounded-lg border px-4 py-3">
+      <span className="w-12 shrink-0">
+        <span className="block text-sm font-medium">{coin}</span>
+        <span className="block text-[10px] leading-tight text-muted-foreground">{network}</span>
+      </span>
+      <code className="min-w-0 flex-1 font-mono text-xs break-all text-muted-foreground select-all">{address}</code>
+      <Button variant="outline" size="sm" className="shrink-0" onClick={copy} aria-label={`Copy the ${coin} address`}>
+        {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+        {copied ? 'Copied' : 'Copy'}
+      </Button>
+    </div>
+  );
 }
 
 export function SupportPage() {
@@ -97,6 +129,19 @@ export function SupportPage() {
             </Card>
           );
         })}
+      </section>
+
+      {/* crypto */}
+      <section className="flex flex-col gap-4 animate-in fade-in-0 duration-500 fill-mode-both" style={{ animationDelay: '320ms' }}>
+        <div>
+          <h2 className="text-sm font-medium">Tip in crypto</h2>
+          <p className="text-sm text-muted-foreground">Send each coin only on the network shown, or it can be lost.</p>
+        </div>
+        <div className="grid gap-2">
+          {WALLETS.map((w) => (
+            <Wallet key={w.coin} {...w} />
+          ))}
+        </div>
       </section>
 
       <Separator />
