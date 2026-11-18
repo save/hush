@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Clock, Pause, SkipBack, SkipForward } from 'lucide-react';
+import { icons } from './brand';
 
 const EASE = [0.32, 0.72, 0, 1] as const;
 const SPRING = { type: 'spring', stiffness: 380, damping: 30, mass: 0.9 } as const;
@@ -9,12 +10,12 @@ const cx = (...c: (string | false | undefined)[]) => c.filter(Boolean).join(' ')
 // The top island, played out on a pretend page: the same black pill, sizes and states as
 // src/core/live.js, so what you see here is what you get in the browser.
 
-type Step = 'playing' | 'away' | 'timer' | 'note';
+type Step = 'playing' | 'away' | 'timer' | 'notice';
 const STEPS: { id: Step; title: string; body: string }[] = [
   { id: 'playing', title: 'Now playing', body: 'Spotify, YouTube, SoundCloud and more, from any tab. Point at it for the controls.' },
   { id: 'away', title: 'Out of the way', body: 'It finds a gap in each site’s header, so it never sits on a search box. Or drag it anywhere.' },
   { id: 'timer', title: 'Timers', body: 'Type “timer 25 study” in Ctrl K. The countdown follows you to every tab.' },
-  { id: 'note', title: 'Notes', body: 'hush’s little messages land here instead of popping up in a corner.' },
+  { id: 'notice', title: 'Notifications', body: 'A Roblox message, an X reply, a GitHub ping: it drops in on whatever tab you’re on. Click to jump there.' },
 ];
 const DWELL = 4600;
 
@@ -57,8 +58,8 @@ function useProgress(active: boolean) {
   return { pos: f(p), left: '-' + f(243 - p), pct: (p / 243) * 100 };
 }
 
-type View = 'compact' | 'media' | 'timer' | 'note';
-const SIZE: Record<View, [number, number, number]> = { compact: [208, 34, 17], media: [372, 158, 40], timer: [150, 34, 17], note: [178, 36, 18] };
+type View = 'compact' | 'media' | 'timer' | 'notice';
+const SIZE: Record<View, [number, number, number]> = { compact: [208, 34, 17], media: [372, 158, 40], timer: [150, 34, 17], notice: [360, 68, 34] };
 
 const layer = {
   initial: { opacity: 0, filter: 'blur(6px)', scale: 0.94 },
@@ -117,10 +118,16 @@ function Pill({ view, x, onHover }: { view: View; x: number; onHover: (on: boole
             <span className="font-mono text-[13px] font-medium tabular-nums">{time}</span>
           </motion.div>
         )}
-        {view === 'note' && (
-          <motion.div key="n" {...layer} className="absolute inset-0 flex items-center gap-2.5 px-4 text-[13px] font-medium">
-            <span className="size-2 rounded-full bg-[#30d158] shadow-[0_0_8px_#30d158]" />
-            focus mode on
+        {view === 'notice' && (
+          <motion.div key="n" {...layer} className="absolute inset-0 flex items-center gap-3 pr-[18px] pl-3.5 text-left">
+            <span className="grid size-10 shrink-0 place-items-center rounded-[11px] bg-[#3a3a3c] shadow-[inset_0_0_0_.5px_rgba(255,255,255,.14)]">
+              <svg viewBox="0 0 24 24" className="size-[21px] fill-white"><path d={icons.roblox.path} /></svg>
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-[14px] font-semibold">Alex</span>
+              <span className="mt-0.5 block truncate text-[13px] text-white/60">you on? join my server, we need one more</span>
+            </span>
+            <span className="mt-[-18px] text-[11.5px] whitespace-nowrap text-white/40">Roblox · now</span>
           </motion.div>
         )}
       </AnimatePresence>
@@ -196,8 +203,8 @@ export function IslandShowcase() {
   if (id === 'playing') view = phase || hover ? 'media' : 'compact';
   if (id === 'away') { view = hover ? 'media' : 'compact'; x = phase || narrow ? gap : width / 2; }
   if (id === 'timer') view = 'timer';
-  if (id === 'note') view = 'note';
-  if (hover && id !== 'timer' && id !== 'note') view = 'media';
+  if (id === 'notice') view = 'notice';
+  if (hover && id !== 'timer' && id !== 'notice') view = 'media';
   // keep the open player on the stage
   const half = SIZE[view][0] / 2 + 10;
   x = Math.min(Math.max(x, half), width - half);

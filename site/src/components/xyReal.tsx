@@ -1,10 +1,11 @@
 import * as React from 'react';
 import {
   BadgeCheck, BarChart2, Bell, Bookmark, CalendarClock, ChevronRight, Clapperboard, Clock, Film, Flame, Heart, History, Home,
-  Image as ImageIcon, Library, ListVideo, Mail, MapPin, MessageCircle, Mic, MoreHorizontal, PenSquare, Plus, Repeat2, Search, Smile, Sparkles,
+  Image as ImageIcon, Library, ListVideo, Mail, MapPin, MessageCircle, Mic, MoreHorizontal, Plus, Repeat2, Search, Smile, Sparkles,
   ThumbsUp, Upload, User, Users, Crown, Music2, Gamepad2, Trophy,
 } from 'lucide-react';
 import { Real } from './rbxReal';
+import { FocusIsland } from './focusIsland';
 
 /*
  * X and YouTube, at real size (1440 wide), and with hush, using the values
@@ -133,26 +134,10 @@ export function XLoud() {
 }
 
 export function XCalm() {
-  // x.css: menu 220px with 180px rows, 13.5px/1.6 in --h-dim; column 600px; the pair is centred
-  const nav: [React.ElementType, string][] = [[Home, 'home'], [Search, 'explore'], [Bell, 'notifications'], [Mail, 'chat'], [Bookmark, 'bookmarks'], [User, 'profile'], [MoreHorizontal, 'more']];
+  // focus mode (z): the menu is the island at the bottom; was: x.css menu 220px with 180px rows, 13.5px/1.6 in --h-dim; column 600px; the pair is centred
   return (
     <Real>
       <div className="flex h-full justify-center" style={{ background: '#000', color: XH.fg, fontFamily: HUSH_FONT }}>
-        <header className="w-[220px] shrink-0 pt-[18px]">
-          <div className="mb-3 grid size-[44px] place-items-center pl-1 text-[22px] font-black opacity-80">𝕏</div>
-          {nav.map(([I, l], i) => (
-            <div key={l} className="relative flex w-[180px] items-center gap-3 py-[5px] pl-3 text-[13.5px] leading-[1.6]" style={{ color: i === 0 ? XH.fg : XH.dim }}>
-              {i === 0 && <span className="absolute left-0 size-[5px] rounded-full" style={{ background: XH.accent }} />}
-              <I className="size-[17px]" strokeWidth={1.8} />
-              {l}
-              {l === 'notifications' && <span className="ml-auto text-[12px]" style={{ color: XH.dim }}>3</span>}
-            </div>
-          ))}
-          <div className="mt-2 flex w-[180px] items-center gap-3 py-[5px] pl-3 text-[13.5px]" style={{ color: XH.dim }}>
-            <PenSquare className="size-[17px]" strokeWidth={1.8} />write
-          </div>
-        </header>
-
         <main className="w-[640px] shrink-0">
           <div className="w-[600px] border-x" style={{ borderColor: XH.line }}>
             <div className="relative flex h-[53px] border-b text-[13.5px]" style={{ borderColor: XH.line }}>
@@ -186,6 +171,7 @@ export function XCalm() {
           </div>
         </main>
       </div>
+      <FocusIsland site="x" />
     </Real>
   );
 }
@@ -356,7 +342,6 @@ export function YtLoud() {
 export function YtCalm() {
   // youtube.css, 0.7: a list sidebar (icon + word, soft pill for "here"), one pill search,
   // "Home" with the greeting under it, pill chips, three big videos to a row
-  const rail: [React.ElementType, string][] = [[Home, 'Home'], [Library, 'Subscriptions'], [User, 'You'], [History, 'History']];
   return (
     <Real>
       <div className="flex h-full flex-col bg-[#0a0a0a]" style={{ color: XH.fg, fontFamily: HUSH_FONT }}>
@@ -374,21 +359,7 @@ export function YtCalm() {
           </div>
         </div>
         <div className="flex min-h-0 flex-1">
-          <aside className="w-[240px] shrink-0 px-3 pt-2">
-            {rail.map(([I, l], i) => (
-              <div key={l} className={cx('mb-0.5 flex h-10 items-center gap-4 rounded-[10px] px-3 text-[14px] font-medium', i === 0 && 'bg-white/[0.09]')} style={{ color: XH.fg, opacity: i === 0 ? 1 : 0.82 }}>
-                <I className="size-5" strokeWidth={1.8} />{l}
-              </div>
-            ))}
-            <div className="mx-0 my-2 h-px bg-white/[0.07]" />
-            <div className="px-3 py-1.5 text-[12.5px] font-medium" style={{ color: XH.dim }}>Subscriptions</div>
-            {VIDEOS.slice(0, 4).map((v, i) => (
-              <div key={v.channel + i} className="flex h-10 items-center gap-4 px-3 text-[14px] font-medium" style={{ color: XH.fg, opacity: 0.82 }}>
-                <Img id={v.av} w={40} h={40} className="size-5 rounded-full" style={SOFT_DARK} />{v.channel}
-              </div>
-            ))}
-          </aside>
-          <main className="min-w-0 flex-1 overflow-hidden pr-10 pl-6">
+          <main className="min-w-0 flex-1 overflow-hidden px-14">
             <div className="pt-6 pb-5">
               <div className="text-[26px] leading-[1.2] font-semibold tracking-[-0.025em]">Home</div>
               <div className="mt-0.5 text-[15px]" style={{ color: XH.dim }}>good evening</div>
@@ -423,6 +394,7 @@ export function YtCalm() {
           </main>
         </div>
       </div>
+      <FocusIsland site="yt" />
     </Real>
   );
 }

@@ -28,6 +28,7 @@
   let media = null;          // from the background: what's playing in another tab
   let timer = null;          // { endsAt, total, label, done }
   let note = null;           // { text, active, until }
+  let notice = null;         // { host, title, body, tabId, until }: a notification from another tab
   let expanded = false, tucked = false, collapseTimer = 0, tick = 0;
   // where it sits: x is the centre as a share of the width, y the top as a share of the height
   const HOME = { x: 0.5, y: 0 };
@@ -101,8 +102,10 @@
     .island[data-view="compact"] .compact,
     .island[data-view="media"] .media,
     .island[data-view="timer"] .timerv,
-    .island[data-view="note"] .note { opacity: 1; filter: none; transform: none; pointer-events: auto; transition: opacity .3s ease .1s, filter .35s ease .1s, transform .55s var(--spring) .06s; }
-    .island[data-view="media"] .media > *, .island[data-view="timer"] .timerv > * { animation: rise .55s var(--spring) both; }
+    .island[data-view="note"] .note,
+    .island[data-view="notice"] .notice { opacity: 1; filter: none; transform: none; pointer-events: auto; transition: opacity .3s ease .1s, filter .35s ease .1s, transform .55s var(--spring) .06s; }
+    .island[data-view="media"] .media > *, .island[data-view="timer"] .timerv > *, .island[data-view="notice"] .notice > * { animation: rise .55s var(--spring) both; }
+    .island[data-view="notice"] .notice > :nth-child(2) { animation-delay: .06s; } .island[data-view="notice"] .notice > :nth-child(3) { animation-delay: .12s; }
     .island[data-view="media"] .media > :nth-child(2), .island[data-view="timer"] .timerv > :nth-child(2) { animation-delay: .07s; }
     .island[data-view="media"] .media > :nth-child(3) { animation-delay: .13s; }
     @keyframes rise { from { opacity: 0; transform: translateY(8px) scale(.96); filter: blur(4px); } }
@@ -156,12 +159,31 @@
     .note { display: flex; align-items: center; justify-content: center; gap: 9px; padding: 0 18px; white-space: nowrap; font-weight: 500; }
     .note .dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.35); flex: none; }
     .note .dot.on { background: #30d158; box-shadow: 0 0 8px rgba(48,209,88,.6); }
+
+    /* a notification from another tab: app icon, who or what, one line, and where it's from */
+    .notice { display: flex; align-items: center; gap: 12px; padding: 0 18px 0 14px; cursor: pointer; }
+    .notice .app { width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; flex: none; background: var(--app, #333); box-shadow: inset 0 0 0 .5px rgba(255,255,255,.14); }
+    .notice .app svg { width: 21px; height: 21px; fill: #fff; }
+    .notice .words { flex: 1; min-width: 0; }
+    .notice .who { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .notice .what { margin-top: 2px; font-size: 13px; color: rgba(255,255,255,.62); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .notice .from { align-self: flex-start; margin-top: 17px; font-size: 11.5px; color: rgba(255,255,255,.4); white-space: nowrap; }
   `;
 
   // views: [width, height, radius]
-  const SIZE = { hidden: [120, 34, 17], compact: [208, 34, 17], media: [372, 158, 40], timer: [300, 72, 36], note: [0, 36, 18] };
+  const SIZE = { hidden: [120, 34, 17], compact: [208, 34, 17], media: [372, 158, 40], timer: [300, 72, 36], note: [0, 36, 18], notice: [360, 68, 34] };
 
   const parts = {};
+  let hovering = false;
+  // a brand glyph (24×24 path) for a notice's app icon
+  function pathSvg(d) {
+    const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    s.setAttribute('viewBox', '0 0 24 24');
+    const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    p.setAttribute('d', d || 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z');
+    s.append(p);
+    return s;
+  }
   function build() {
     hostEl = document.createElement('hush-live');
     root = hostEl.attachShadow({ mode: 'closed' });
@@ -210,11 +232,23 @@
     parts.nDot = el('span', 'dot'); parts.nText = el('span', 'text');
     const noteV = el('div', 'layer note', [parts.nDot, parts.nText]);
 
-    island.append(compact, mediaV, timerV, noteV);
+    // notice
+    parts.xApp = el('span', 'app'); parts.xWho = el('div', 'who'); parts.xWhat = el('div', 'what'); parts.xFrom = el('span', 'from');
+    const noticeV = el('div', 'layer notice', [parts.xApp, el('div', 'words', [parts.xWho, parts.xWhat]), parts.xFrom]);
+    noticeV.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (justDragged || !notice) return;
+      try { chrome.runtime.sendMessage({ type: 'hush:notice-open', tabId: notice.tabId }); } catch { /* reloaded */ }
+      notice = null; render();
+    });
+
+    island.append(compact, mediaV, timerV, noteV, noticeV);
     root.append(style, island);
     (document.body || document.documentElement).append(hostEl);
 
     island.title = 'drag to move · double-click to put back';
+    island.addEventListener('pointerenter', () => { hovering = true; });
+    island.addEventListener('pointerleave', () => { hovering = false; if (notice && notice.until <= Date.now()) setTimeout(render, 600); });
     island.addEventListener('pointerenter', () => { clearTimeout(collapseTimer); if (activity() && !drag) { expanded = true; render(); } });
     island.addEventListener('pointerleave', () => { clearTimeout(collapseTimer); collapseTimer = setTimeout(() => { if (!drag) { expanded = false; render(); } }, 280); });
     island.addEventListener('click', (e) => {
@@ -237,14 +271,16 @@
   const measure = (text) => { const c = measure.c || (measure.c = document.createElement('canvas').getContext('2d')); c.font = '500 13px -apple-system, "Segoe UI", system-ui, sans-serif'; return Math.ceil(c.measureText(text).width); };
 
   function render() {
-    if (!wanted() || !(activity() || note)) {
+    if (notice && notice.until <= Date.now() && !hovering) notice = null;
+    if (!wanted() || !(activity() || note || notice)) {
       if (island) { island.removeAttribute('data-shown'); island.dataset.view = 'hidden'; size('hidden'); }
       stopTick();
       return;
     }
     if (!hostEl || !hostEl.isConnected) build();
     let view = 'compact';
-    if (note && note.until > Date.now()) view = 'note';
+    if (notice) view = 'notice';
+    else if (note && note.until > Date.now()) view = 'note';
     else if (expanded) view = media ? 'media' : timer ? 'timer' : 'compact';
     island.dataset.view = view;
     island.toggleAttribute('data-tucked', tucked);
@@ -270,6 +306,15 @@
     if (timer) {
       parts.tLabel.textContent = timer.done ? 'Timer done' : (timer.label || 'Timer');
       parts.tBig.textContent = fmt(timerLeft());
+    }
+    if (view === 'notice') {
+      const a = (H.noticeApps || {})[notice.host] || { name: notice.host, color: '#333', path: '' };
+      parts.xApp.style.setProperty('--app', a.color);
+      parts.xApp.replaceChildren(pathSvg(a.path));
+      parts.xWho.textContent = notice.title;
+      parts.xWhat.textContent = notice.body;
+      parts.xWhat.hidden = !notice.body;
+      parts.xFrom.textContent = a.name + ' · now';
     }
     if (view === 'note') {
       parts.nText.textContent = note.text;
@@ -451,6 +496,7 @@
     if (tick) return;
     tick = setInterval(() => {
       if (note && note.until <= Date.now()) { note = null; render(); return; }
+      if (notice && notice.until <= Date.now() && !hovering) { notice = null; render(); return; }
       if (timer && !timer.done && timerLeft() <= 0) finishTimer();
       if (timer) { parts.cTime.textContent = timer.done ? '' : fmt(timerLeft()); parts.tBig.textContent = fmt(timerLeft()); }
       updateProgress();
@@ -511,6 +557,12 @@
     if (!msg) return;
     if (msg.type === 'hush:live') { media = msg.media ? { ...msg.media, at: Date.now() } : null; if (!media) expanded = false; render(); }
     if (msg.type === 'hush:media-do') control(msg.action);
+    if (msg.type === 'hush:notice-show' && msg.notice) {
+      notice = { ...msg.notice, until: Date.now() + 5500 };
+      expanded = false;
+      render();
+      bump();
+    }
   });
 
   // hush's toasts become island notes while the island is on
@@ -558,7 +610,8 @@
   const site = SITES[host] || {};
 
   function mainElement() {
-    const els = [...document.querySelectorAll('video, audio')].filter((e) => e.currentTime > 0 || !e.paused);
+    // muted players are previews (YouTube's hover previews on the home page), not something you're watching
+    const els = [...document.querySelectorAll('video, audio')].filter((e) => !e.muted && (e.currentTime > 0 || !e.paused) && !e.closest('#inline-preview-player, ytd-video-preview, #video-preview'));
     return els.find((e) => !e.paused) || els.sort((a, b) => (b.duration || 0) - (a.duration || 0))[0] || null;
   }
 
@@ -566,6 +619,8 @@
     let s = site.read ? site.read() : null;
     const md = navigator.mediaSession && navigator.mediaSession.metadata;
     const e = mainElement();
+    // YouTube keeps the last video's details around after you leave it: only a real player counts
+    if (!s && host === 'www.youtube.com' && !e) return null;
     if (!s) {
       // only real players: something that told the browser what it plays, or audible media of a real length
       const audible = e && !e.muted && e.volume > 0 && isFinite(e.duration) && e.duration > 45;

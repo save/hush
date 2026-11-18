@@ -1,17 +1,18 @@
 # Changelog
 
-## Unreleased
+## 0.6.6
 
 - **Dynamic island at the top of the page (on by default):** an Apple-style black pill that only appears when something is happening.
-  - **Now playing from another tab:** Spotify, YouTube, YouTube Music, SoundCloud and any player that tells the browser what it plays. Compact, it shows the art and a waveform; point at it for the title, artist, progress and previous / play / next. Click the art or title to jump to that tab.
+  - **Now playing from another tab:** Spotify, YouTube, YouTube Music, SoundCloud and any player that tells the browser what it plays. Compact, it shows the art and a waveform; point at it for the title, artist, progress and previous / play / next. Click the art or title to jump to that tab. While the tab you're on is playing something, it only shows another tab if that's playing too, and muted previews (YouTube's hover previews) never count.
   - **Timers:** type `timer 10` or `timer 25 study` in `Ctrl K`. The countdown shows on every tab, with +1 minute and cancel, and a soft chime when it's done.
+  - **Notifications, like a phone's banners (on by default):** a new Roblox chat message (who and what they said), friend request or inbox message; X notifications and chats; YouTube's bell; GitHub notifications; Reddit's inbox and chats. When a count goes up in another tab, a banner drops into the island on the tab you're on, with the app's icon. Click it to jump there. It only reads what those pages already show; nothing is fetched or sent. Turn it off in settings or `Ctrl K` ("notifications in the island").
   - **hush's notes** (focus mode on, muted a word, time nudges) appear in the island instead of a toast.
   - **Stays out of the way:** at its usual spot it looks at what the site puts at the top (YouTube's and Roblox's search, X's tabs, Reddit's and GitHub's headers) and slides into the nearest gap instead of sitting on a search box or button. If the bar has no gap, it waits just under it. It also slides away when you click into a field under it, and in fullscreen.
   - **Smoother:** it drops in and springs open like the real thing, its contents fade up one after another, and it gives a little bounce on a new song or note.
   - **Put it anywhere:** drag it to any spot on the screen and it stays there on every tab (near the bottom it opens upward). Double-click it, or pick "put the island back at the top" in `Ctrl K`, to send it home.
   - **On or off:** `Alt Shift I`, the switch in settings, or `Ctrl K` ("dynamic island").
 - **Bottom islands:** no search button on YouTube and Roblox (both keep their own search bar in focus mode). They stay on YouTube video pages and step aside the moment a video goes fullscreen. Roblox's island now has communities.
-- **Homepage:** a new dynamic island section that plays out each state (now playing, getting out of the way, timers, notes) on a pretend page.
+- **Homepage:** a new dynamic island section that plays out each state (now playing, getting out of the way, timers, notifications) on a pretend page. The demo at the top shows focus mode on X, YouTube and Roblox (the menu as the bottom island), says "hush on" in a top island, and uses the current logo.
 - **X search:** the search box is one quiet pill with the icon inside it (it was an icon in its own box beside a boxed field) and a single soft ring while you type; the recent-searches dropdown is a plain card without X's glow.
 
 ## 0.6.5

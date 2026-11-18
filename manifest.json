@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "hush",
   "short_name": "hush",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "description": "Turn the volume down on the web. Calm, minimal versions of the sites you use every day.",
   "permissions": [
     "storage",
@@ -50,6 +50,7 @@
         "src/core/icons.js",
         "src/core/palette.js",
         "src/core/live.js",
+        "src/core/notices.js",
         "src/core/island.js",
         "src/sites/x.js",
         "src/sites/youtube.js",

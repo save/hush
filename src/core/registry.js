@@ -9,6 +9,7 @@
     color: false,         // mute color: desaturate images & video
     universal: true,      // calm every site: ads, chat bubbles and nags go on sites without an adapter
     island: true,         // the top island: now playing in other tabs, timers and hush's notes
+    notices: true,        // new messages and notifications from other tabs, shown in the island
     vibrance: 90,         // % of colour soft images keep (soft thumbnails / soft media)
     hidden: {},           // "hush this" rules: { [host]: [{ s: selector, l: label, t: time }] }
     muted: [],            // words and phrases: posts, videos and games that mention them are hidden

@@ -26,6 +26,7 @@ export type Settings = {
   muted?: string[];
   universal?: boolean;
   island?: boolean;
+  notices?: boolean;
   nudge?: number;
   hidden?: Record<string, { s: string; l: string; t: number }[]>;
   sites: Record<string, Record<string, boolean | string>>;

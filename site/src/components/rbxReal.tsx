@@ -3,6 +3,7 @@ import {
   ArrowLeftRight, Bell, Gift, Home, Lock, MessageSquare, Newspaper, Package, Search, Settings, Shirt, Store, ThumbsUp, User, Users,
 } from 'lucide-react';
 import { Robux } from './rbx';
+import { FocusIsland } from './focusIsland';
 
 /*
  * Roblox home, 1:1 with roblox.com (light theme) and with hush on it.
@@ -153,9 +154,6 @@ export function RbxLoud() {
 
 export function RbxCalm() {
   // roblox.css, 0.6 layout: normal-case words, pill for "you are here", Home + greeting, big titles
-  const nav: [React.ElementType, string, string?][] = [
-    [Home, 'Home'], [User, 'Profile'], [MessageSquare, 'Messages', '1'], [Users, 'Friends'], [Shirt, 'Avatar'], [Package, 'Inventory'], [ArrowLeftRight, 'Trade'], [Users, 'Communities'],
-  ];
   const soft = { filter: 'saturate(.9) contrast(.98) brightness(1.01)' };
   return (
     <Real>
@@ -173,20 +171,7 @@ export function RbxCalm() {
         </div>
 
         <div className="flex min-h-0 flex-1">
-          <aside className="w-[244px] shrink-0 border-r border-black/[0.06] bg-white px-4 pt-[18px]">
-            <div className="mb-3 flex items-center gap-3 px-3 py-1.5">
-              <img src={ME} alt="" className="size-8 rounded-full bg-[#ececec]" style={soft} />
-              <span className="text-[15px] font-medium">{USER}</span>
-            </div>
-            {nav.map(([I, l, b], i) => (
-              <div key={l} className={'mb-1 flex h-[44px] items-center gap-3.5 rounded-xl px-3.5 text-[15px] font-medium ' + (i === 0 ? 'bg-black/[0.06] text-[#1b1b1b]' : 'text-[#1b1b1b]/75')}>
-                <I className="size-5" strokeWidth={1.7} />{l}
-                {b && <span className="ml-auto text-[12.5px] font-medium">{b}</span>}
-              </div>
-            ))}
-          </aside>
-
-          <main className="min-w-0 flex-1 px-10 pt-9">
+          <main className="min-w-0 flex-1 px-16 pt-9">
             <div className="text-[32px] leading-[1.15] font-bold tracking-[-0.02em]">Home</div>
             <div className="mt-1 text-[19px] text-[#7c7c7c]">good evening</div>
             <div className="mt-7 rounded-xl border border-black/[0.07] bg-[#fafafa] px-4 py-3.5">
@@ -208,6 +193,7 @@ export function RbxCalm() {
           </main>
         </div>
       </div>
+      <FocusIsland site="rbx" light />
     </Real>
   );
 }

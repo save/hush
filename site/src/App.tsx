@@ -8,7 +8,7 @@ import { Install } from './components/Install';
 import { IslandShowcase } from './components/Island';
 import { BrowserIcon, useBrowser } from './components/browser';
 import { photo } from './components/mocks';
-import { icons, LINKS, Logo, Mark } from './components/brand';
+import { icons, LINKS, Logo } from './components/brand';
 
 const EASE = [0.32, 0.72, 0, 1] as const;
 const cx = (...c: (string | false | undefined)[]) => c.filter(Boolean).join(' ');
@@ -218,7 +218,7 @@ function Hero() {
         </motion.div>
         <Reveal className="mt-6 flex items-center justify-center gap-2 text-[13px] text-faint">
           Click a tab, or the
-          <Mark className="size-4 text-dim" />
+          <img src="./logo-96.png" alt="" className="size-4 rounded-[4px]" />
           button to flip it yourself.
         </Reveal>
       </div>

@@ -12,7 +12,7 @@ A free, open-source browser extension that strips the promos, badges and noise f
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-18181b?style=flat-square)](LICENSE)
 [![Manifest V3](https://img.shields.io/badge/chrome-manifest%20v3-18181b?style=flat-square&logo=googlechrome&logoColor=white)](manifest.json)
-[![Version](https://img.shields.io/badge/version-0.6.5-18181b?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.6.6-18181b?style=flat-square)](CHANGELOG.md)
 [![Privacy: nothing collected](https://img.shields.io/badge/privacy-nothing%20collected-18181b?style=flat-square)](PRIVACY.md)
 
 <br />

@@ -384,6 +384,7 @@
         { group: 'hush', label: 'still motion', icon: 'wind', keywords: 'animation autoplay video', active: !!settings.motion, run: () => H.save({ motion: !settings.motion }) },
         { group: 'hush', label: 'calm every site', icon: 'globe', keywords: 'universal ads chat widgets popups declutter all sites', active: settings.universal !== false, run: () => H.save({ universal: settings.universal === false }) },
         { group: 'hush', label: 'dynamic island', icon: 'sparkles', hint: 'alt shift i', keywords: 'island now playing music spotify timer top notch live', active: settings.island !== false, run: () => H.save({ island: settings.island === false }) },
+        { group: 'hush', label: 'notifications in the island', icon: 'bell', keywords: 'notices messages alerts banner pop up dm chat', active: settings.notices !== false, run: () => H.save({ notices: settings.notices === false }) },
         { group: 'hush', label: 'put the island back at the top', icon: 'undo-2', keywords: 'island move reset position centre', toast: false, run: () => chrome.storage.local.set({ hushIslandPos: { x: 0.5, y: 0 } }) },
         { group: 'hush', label: 'mute color', icon: 'droplet', keywords: 'grayscale saturation images', active: !!settings.color, run: () => H.save({ color: !settings.color }) },
         { group: 'hush', label: 'hush something on this page', icon: 'mouse-pointer-click', keywords: 'hide element remove picker block this', toast: false, run: () => setTimeout(() => pick(false), 180) },

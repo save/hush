@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { animate, AnimatePresence, motion, useInView, useMotionValue, useMotionTemplate, useTransform } from 'motion/react';
 import { ArrowLeft, ArrowRight, Lock, RotateCw } from 'lucide-react';
-import { icons, Logo, Mark } from './brand';
+import { icons, Logo } from './brand';
 import { GhCalm, GhLoud, RbxCalm, RbxLoud, XCalm, XLoud, YtCalm, YtLoud } from './mocks';
 
 const W = 1120; // design size of the page area; the whole browser scales from this
@@ -9,10 +9,10 @@ const H = 620;
 const CHROME = 84; // tab strip + toolbar
 
 const SITES = [
-  { id: 'x', name: 'X', host: 'x.com/home', icon: icons.x, Loud: XLoud, Calm: XCalm, hidden: 14 },
-  { id: 'yt', name: 'YouTube', host: 'youtube.com', icon: icons.youtube, Loud: YtLoud, Calm: YtCalm, hidden: 23 },
-  { id: 'rbx', name: 'Roblox', host: 'roblox.com/home', icon: icons.roblox, Loud: RbxLoud, Calm: RbxCalm, hidden: 11 },
-  { id: 'gh', name: 'GitHub', host: 'github.com/save/hush', icon: icons.github, Loud: GhLoud, Calm: GhCalm, hidden: 6 },
+  { id: 'x', name: 'X', host: 'x.com/home', icon: icons.x, Loud: XLoud, Calm: XCalm, hidden: 14, noteTop: 50 },
+  { id: 'yt', name: 'YouTube', host: 'youtube.com', icon: icons.youtube, Loud: YtLoud, Calm: YtCalm, hidden: 23, noteTop: 58 },
+  { id: 'rbx', name: 'Roblox', host: 'roblox.com/home', icon: icons.roblox, Loud: RbxLoud, Calm: RbxCalm, hidden: 11, noteTop: 46 },
+  { id: 'gh', name: 'GitHub', host: 'github.com/save/hush', icon: icons.github, Loud: GhLoud, Calm: GhCalm, hidden: 6, noteTop: 8 },
 ] as const;
 
 const EASE = [0.65, 0, 0.35, 1] as const;
@@ -128,7 +128,7 @@ export function BrowserDemo() {
             aria-label={on ? 'Turn hush off' : 'Turn hush on'}
             className="relative grid size-8 place-items-center rounded-md text-white transition-colors hover:bg-white/10"
           >
-            <Mark className="size-[18px]" />
+            <img src="./logo-96.png" alt="" className="size-[18px] rounded-[5px]" />
             <motion.span
               className="absolute top-1 right-1 size-1.5 rounded-full bg-hush"
               animate={{ scale: on ? 1 : 0, opacity: on ? 1 : 0 }}
@@ -176,17 +176,18 @@ export function BrowserDemo() {
             <div className="absolute inset-x-0 top-0 h-px bg-white/80 shadow-[0_0_24px_4px_rgb(255_255_255/0.35)]" />
           </motion.div>
 
-          {/* toast, like the real one */}
+          {/* the note, where hush puts it now: in the island at the top */}
           <AnimatePresence>
             {on && (
               <motion.div
-                key={`toast-${site}`}
-                initial={{ opacity: 0, y: 16, scale: 0.96 }}
-                animate={{ opacity: 1, y: 0, scale: 1, transition: { delay: 0.9, type: 'spring', stiffness: 380, damping: 30 } }}
-                exit={{ opacity: 0, y: 8, transition: { duration: 0.2 } }}
-                className="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2.5 rounded-lg border border-white/10 bg-[#18181b]/95 px-3.5 py-2.5 text-[13px] text-white shadow-2xl backdrop-blur"
+                key={`note-${site}`}
+                initial={{ opacity: 0, y: -10, scaleX: 0.5, scaleY: 0.6 }}
+                animate={{ opacity: 1, y: 0, scaleX: 1, scaleY: 1, transition: { delay: 0.9, type: 'spring', stiffness: 420, damping: 24 } }}
+                exit={{ opacity: 0, y: -8, scale: 0.8, transition: { duration: 0.2 } }}
+                style={{ top: S.noteTop }}
+                className="absolute left-1/2 z-20 flex h-9 origin-top -translate-x-1/2 items-center gap-2.5 rounded-full bg-black px-[18px] text-[13px] font-medium whitespace-nowrap text-white shadow-[0_10px_34px_-10px_rgba(0,0,0,.55)]"
               >
-                <span className="size-1.5 rounded-full bg-hush" />
+                <span className="size-[7px] rounded-full bg-[#30d158] shadow-[0_0_8px_rgba(48,209,88,.6)]" />
                 hush on for {S.host.split('/')[0]}
                 <span className="text-white/45">· {S.hidden} things hidden</span>
               </motion.div>
