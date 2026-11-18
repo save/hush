@@ -1,0 +1,165 @@
+/* ==========================================================================
+   hush — Discord adapter
+   Scoped to html[data-hush-site="dc"]. Discord's class names are hashed, so
+   rules match by prefix ([class^="sidebar_"]) and by Discord's own links,
+   list ids and aria-labels; a miss leaves Discord as it was.
+   Colours: Discord reads --background-* / --text-* tokens set on .theme-dark
+   and .theme-light; remapping them here (a step more specific than Discord's
+   own rules) calms the whole app at once. Theme comes from discord.js.
+   Page flags: data-hush-path = friends | dm | channel | discover | other
+   ========================================================================== */
+
+html[data-hush-site="dc"] {
+  --h-font: "Inter", "Geist", "SF Pro Text", -apple-system, "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --h-frame: #f4f4f5;
+  --h-bg: #ffffff;
+  --h-muted: #f7f7f8;
+  --h-raise: #ffffff;
+  --h-high: #f1f1f3;
+  --h-fg: #1b1b1d;
+  --h-dim: #6e6e73;
+  --h-faint: #a8a8ad;
+  --h-line: #e4e4e7;
+  --h-line-soft: #eeeef0;
+  --h-hover: rgba(0, 0, 0, 0.035);
+  --h-field: rgba(0, 0, 0, 0.045);
+  --h-sel: rgba(0, 0, 0, 0.06);
+  --h-red: #e5484d;
+}
+html[data-hush-site="dc"][data-hush-theme="dark"] {
+  --h-frame: #070708;
+  --h-bg: #0e0e10;
+  --h-muted: #0b0b0c;
+  --h-raise: #161618;
+  --h-high: #1c1c1f;
+  --h-fg: #ececec;
+  --h-dim: #8e8e93;
+  --h-faint: #55555a;
+  --h-line: #232326;
+  --h-line-soft: #19191c;
+  --h-hover: rgba(255, 255, 255, 0.04);
+  --h-field: rgba(255, 255, 255, 0.055);
+  --h-sel: rgba(255, 255, 255, 0.07);
+}
+
+/* ---------- tokens ------------------------------------------------------------ */
+html[data-hush-site="dc"] :is(.theme-dark, .theme-light),
+html[data-hush-site="dc"]:is(.theme-dark, .theme-light) {
+  /* surfaces, darkest to brightest */
+  --app-frame-background: var(--h-frame) !important;
+  --app-frame-border: var(--h-line-soft) !important;
+  --background-base-lowest: var(--h-frame) !important;
+  --background-base-lower: var(--h-muted) !important;
+  --background-base-low: var(--h-bg) !important;
+  --background-secondary-alt: var(--h-muted) !important;
+  --background-surface-high: var(--h-raise) !important;
+  --background-surface-higher: var(--h-high) !important;
+  --background-surface-highest: var(--h-high) !important;
+  --bg-surface-raised: var(--h-raise) !important;
+  --background-accent: var(--h-high) !important;
+  --chat-background: var(--h-bg) !important;
+  --chat-background-default: var(--h-bg) !important;
+  --chat-border: var(--h-line-soft) !important;
+  --channeltextarea-background: var(--h-raise) !important;
+  --input-background-default: var(--h-field) !important;
+  --input-border-default: var(--h-line) !important;
+  /* hover, selected, pressed */
+  --background-mod-subtle: var(--h-hover) !important;
+  --background-mod-muted: var(--h-hover) !important;
+  --background-mod-normal: var(--h-field) !important;
+  --background-mod-strong: var(--h-sel) !important;
+  --interactive-background-hover: var(--h-hover) !important;
+  --interactive-background-active: var(--h-sel) !important;
+  --interactive-background-selected: var(--h-sel) !important;
+  /* lines */
+  --border-subtle: var(--h-line-soft) !important;
+  --border-muted: var(--h-line-soft) !important;
+  --border-normal: var(--h-line) !important;
+  --border-strong: var(--h-line) !important;
+  /* type */
+  --font-primary: var(--h-font) !important;
+  --font-display: var(--h-font) !important;
+}
+
+html[data-hush-site="dc"] body {
+  font-family: var(--h-font) !important;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* the message box: one soft pill, no outline */
+html[data-hush-site="dc"] [class^="channelTextArea_"] [class^="scrollableContainer_"],
+html[data-hush-site="dc"] [class^="channelTextArea_"] [class^="inner_"] {
+  border-radius: 14px !important;
+}
+html[data-hush-site="dc"] [class^="channelTextArea_"] {
+  border-radius: 14px !important;
+  box-shadow: none !important;
+}
+
+/* ---------- quiet upsells (default) -------------------------------------------------- */
+/* DM list: Nitro, Shop, Quests */
+html[data-hush-site="dc"][data-hush-quietupsells] nav[class^="privateChannels_"] li:has(a[href="/store"], a[href="/shop"], a[href^="/quest-home"]),
+html[data-hush-site="dc"][data-hush-quietupsells] nav[class^="privateChannels_"] li[class*="withGradient_"],
+/* server rail: Discover and "download apps" */
+html[data-hush-site="dc"][data-hush-quietupsells] [class^="listItem_"]:has([data-list-item-id="guildsnav___guild-discover-button"], [data-list-item-id="guildsnav___app-download-button"]),
+/* message box: gift and app launcher */
+html[data-hush-site="dc"][data-hush-quietupsells] [class^="channelTextArea_"] :is([class^="buttonContainer_"], [class^="buttons_"] > div):has(> button[aria-label="Send a gift"]),
+html[data-hush-site="dc"][data-hush-quietupsells] [class^="channelTextArea_"] button:is([aria-label="Send a gift"], [aria-label="Apps"], [aria-label="Open App Launcher"]),
+/* boost bars, Nitro nags in the sidebar */
+html[data-hush-site="dc"][data-hush-quietupsells] [class^="sidebar_"] :is([class*="premiumProgressBar"], [class*="boostProgress"], [class*="nitroUpsell"], [class*="upsellBanner"]) {
+  display: none !important;
+}
+
+/* ---------- plain profiles (default) --------------------------------------------------- */
+html[data-hush-site="dc"][data-hush-noflair] :is(img, svg, div)[class^="avatarDecoration_"],
+html[data-hush-site="dc"][data-hush-noflair] [class*="avatarDecoration_"] > img,
+html[data-hush-site="dc"][data-hush-noflair] [class^="profileEffects_"],
+html[data-hush-site="dc"][data-hush-noflair] [class*="nameplate" i] :is(img, video, [class*="background" i]) {
+  display: none !important;
+}
+
+/* ---------- Active Now (default hidden) -------------------------------------------------- */
+html[data-hush-site="dc"][data-hush-noactivenow] [class^="nowPlayingColumn_"],
+html[data-hush-site="dc"][data-hush-noactivenow] aside[class*="refresh-active-now"] {
+  display: none !important;
+}
+
+/* ---------- member list (option) --------------------------------------------------------- */
+html[data-hush-site="dc"][data-hush-nomembers] [class^="membersWrap_"],
+html[data-hush-site="dc"][data-hush-nomembers] [class^="profilePanel_"] {
+  display: none !important;
+}
+
+/* ---------- calm badges (default) ----------------------------------------------------------- */
+/* counts as a quiet pill; the white "unread" bar on the rail a little softer */
+html[data-hush-site="dc"][data-hush-calmbadges] [class^="numberBadge_"] {
+  background: var(--h-high) !important;
+  color: var(--h-fg) !important;
+  box-shadow: 0 0 0 1px var(--h-line) !important;
+  font-weight: 600 !important;
+}
+html[data-hush-site="dc"][data-hush-calmbadges] [class^="lowerBadge_"] [class^="numberBadge_"] {
+  background: var(--h-red) !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+html[data-hush-site="dc"][data-hush-calmbadges] nav[class*="guilds_"] [class^="pill_"] span {
+  opacity: 0.6;
+}
+html[data-hush-site="dc"][data-hush-calmbadges] [class*="textBadge_"],
+html[data-hush-site="dc"][data-hush-calmbadges] [class*="newBadge_"] {
+  background: var(--h-high) !important;
+  color: var(--h-dim) !important;
+}
+
+/* ---------- focus mode (z on other sites; alt z here) -------------------------------------- */
+/* just the conversation: servers, channels and members go; the island takes their place */
+html[data-hush-site="dc"][data-hush-zen] [class^="content_"] > [class^="sidebar_"],
+html[data-hush-site="dc"][data-hush-zen] [class^="membersWrap_"],
+html[data-hush-site="dc"][data-hush-zen] [class^="profilePanel_"] {
+  display: none !important;
+}
+/* lift the message box clear of the island */
+html[data-hush-site="dc"][data-hush-zen] [class^="content_"] > [class^="page_"] {
+  padding-bottom: 80px !important;
+}

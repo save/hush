@@ -186,7 +186,7 @@ function Hero() {
           transition={{ duration: 0.9, delay: 1.5, ease: EASE }}
           className="mt-7 max-w-xl text-[clamp(1rem,1.6vw,1.15rem)] leading-relaxed text-pretty text-dim"
         >
-          A free extension that strips the promos, badges and noise from X, YouTube, Roblox, GitHub and Reddit.
+          A free extension that strips the promos, badges and noise from X, YouTube, Roblox, GitHub, Reddit and Discord.
         </motion.p>
 
         <motion.div

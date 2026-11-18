@@ -238,7 +238,7 @@
     noticeV.addEventListener('click', (e) => {
       e.stopPropagation();
       if (justDragged || !notice) return;
-      try { chrome.runtime.sendMessage({ type: 'hush:notice-open', tabId: notice.tabId }); } catch { /* reloaded */ }
+      try { chrome.runtime.sendMessage({ type: 'hush:notice-open', tabId: notice.tabId, key: notice.key, id: notice.id }); } catch { /* reloaded */ }
       notice = null; render();
     });
 
@@ -553,11 +553,15 @@
   document.addEventListener('focusout', () => { if (tucked) { tucked = false; setTimeout(render, 120); } }, true);
   document.addEventListener('fullscreenchange', render);
 
-  chrome.runtime.onMessage.addListener((msg) => {
+  chrome.runtime.onMessage.addListener((msg, sender, reply) => {
     if (!msg) return;
     if (msg.type === 'hush:live') { media = msg.media ? { ...msg.media, at: Date.now() } : null; if (!media) expanded = false; render(); }
     if (msg.type === 'hush:media-do') control(msg.action);
     if (msg.type === 'hush:notice-show' && msg.notice) {
+      // say whether it showed: if not, Discord can fall back to the system notification
+      const shown = wanted();
+      reply({ shown });
+      if (!shown) return;
       notice = { ...msg.notice, until: Date.now() + 5500 };
       expanded = false;
       render();

@@ -11,6 +11,7 @@ const ITEMS: { icon?: { path: string; title: string }; name: string; dim?: boole
   { icon: icons.roblox, name: 'Roblox' },
   { icon: icons.github, name: 'GitHub' },
   { icon: icons.reddit, name: 'Reddit' },
+  { icon: icons.discord, name: 'Discord' },
   { name: 'and every other site', dim: true },
 ];
 

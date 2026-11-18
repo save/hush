@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- **Discord:** hush now calms discord.com. Nitro, Shop, Quests, gift, app-launcher, Discover and "download apps" go; avatar decorations, nameplates and profile effects go; Discord's colours become hush's neutral palette (light and dark) with hush's type; unread counts become quiet grey pills; "Active Now" hides; and `Alt Z` focus mode leaves just the conversation, with a small island for messages, discover, inbox and settings.
+- **Discord messages in the island:** a new message pops up in the top island on whatever tab you're on, with who wrote and what they said and Discord's icon. Click it and Discord opens that conversation. If no tab could show it, Discord's own notification shows instead.
+- **Clicking a notification goes there:** X's notifications and chats, YouTube's bell, Roblox friend requests, inbox, notifications and chats (the right conversation), GitHub notifications and Reddit's inbox and chats now open the page or panel the banner is about, not just the tab.
+
 ## 0.6.6
 
 - **Dynamic island at the top of the page (on by default):** an Apple-style black pill that only appears when something is happening.

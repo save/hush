@@ -6,6 +6,7 @@ import '../../src/sites/youtube.js';
 import '../../src/sites/roblox.js';
 import '../../src/sites/github.js';
 import '../../src/sites/reddit.js';
+import '../../src/sites/discord.js';
 
 export type Option = {
   key: string;

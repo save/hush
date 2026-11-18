@@ -57,6 +57,7 @@
         "src/sites/roblox.js",
         "src/sites/github.js",
         "src/sites/reddit.js",
+        "src/sites/discord.js",
         "src/core/picker.js",
         "src/core/engine.js"
       ]
@@ -114,6 +115,29 @@
       "run_at": "document_start",
       "css": [
         "src/sites/reddit.css"
+      ]
+    },
+    {
+      "matches": [
+        "*://discord.com/*",
+        "*://ptb.discord.com/*",
+        "*://canary.discord.com/*"
+      ],
+      "run_at": "document_start",
+      "css": [
+        "src/sites/discord.css"
+      ]
+    },
+    {
+      "matches": [
+        "*://discord.com/*",
+        "*://ptb.discord.com/*",
+        "*://canary.discord.com/*"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "js": [
+        "src/sites/discord-main.js"
       ]
     }
   ],

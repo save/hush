@@ -55,6 +55,15 @@
 - **Motion:** posts and comments settle in as the feed loads them. With still motion on, videos in the feed don't autoplay.
 - **Mute words** hide posts that mention them. Old Reddit (old.reddit.com) is left alone.
 
+## What hush does on Discord
+
+> Discord's class names are hashed, so rules match by prefix (`[class^="sidebar_"]`) and by Discord's own links, list ids and labels. A miss leaves Discord as it was.
+
+- **Removes:** Nitro, Shop and Quests in the DM list; Discover and "download apps" on the server rail; the gift and app-launcher buttons in the message box; boost bars and Nitro nags in the sidebar (option: quiet upsells); avatar decorations, nameplates and profile effects (option: plain profiles); the "Active Now" column (option); the member list (option, off by default).
+- **Rewrites:** Discord's `--background-*`, `--border-*` and type tokens to hush's neutral palette, light and dark; hush's type; the message box as one soft pill; unread counts as quiet grey pills, with mentions on the server rail still red (option: calm badges).
+- **Focus mode** (`Alt Z`, or `Ctrl K`): servers, channels and members go and the message box lifts clear of a small island with messages, discover, inbox and settings. Plain letters go to Discord's message box, so focus mode isn't on a bare `z` here.
+- **Message pop-ups:** Discord's own message notifications are handed to hush's top island instead of the system, on whatever tab you're on, with who wrote and what they said. Click the banner and Discord opens that conversation. If no tab can show the banner (you're on a `chrome://` page), the real notification shows instead, if you'd allowed it. With island notifications off, Discord's notifications are left alone.
+
 ## Menu style
 
 Every adapter with a sidebar has a **menu** setting: **words**, **icons**, or **both** (default). In icon mode the word slides out beside the icon on hover. Change it in the popup (segmented control) or the palette (`ctrl k` → "menu", enter cycles).

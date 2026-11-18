@@ -131,23 +131,33 @@ chrome.tabs.onRemoved.addListener((tabId) => { if (media.delete(tabId)) pushLive
 
 // ---- notifications: a count went up in some tab (src/core/notices.js) ------------------
 // Shown in the island of the tab you're looking at; two tabs of one site say it once.
+// The sender hears back whether a banner actually showed (Discord falls back to the real
+// system notification when no island could take it, e.g. you're on a chrome:// page).
+// Clicking it focuses the source tab and tells it where to go (notice-go).
 const recentNotices = new Map(); // host|key|body → time
-chrome.runtime.onMessage.addListener((msg, sender) => {
+chrome.runtime.onMessage.addListener((msg, sender, reply) => {
   if (!msg || !sender.tab) return;
   if (msg.type === 'hush:notice' && msg.notice) {
     const n = msg.notice;
     const sig = `${n.host}|${n.key}|${n.body}`;
     const now = Date.now();
     for (const [k, t] of recentNotices) if (now - t > 20000) recentNotices.delete(k);
-    if (recentNotices.has(sig)) return;
+    if (recentNotices.has(sig)) { reply({ shown: true }); return; }
     recentNotices.set(sig, now);
     chrome.tabs.query({ active: true, lastFocusedWindow: true }).then(([t]) => {
-      if (!t || t.id == null) return;
-      chrome.tabs.sendMessage(t.id, { type: 'hush:notice-show', notice: { ...n, tabId: sender.tab.id, windowId: sender.tab.windowId } }, { frameId: 0 }).catch(() => {});
-    }).catch(() => {});
+      if (!t || t.id == null) { reply({ shown: false }); return; }
+      chrome.tabs.sendMessage(t.id, { type: 'hush:notice-show', notice: { ...n, tabId: sender.tab.id, windowId: sender.tab.windowId } }, { frameId: 0 })
+        .then((r) => reply({ shown: !!(r && r.shown) }))
+        .catch(() => reply({ shown: false }));
+    }).catch(() => reply({ shown: false }));
+    return true; // replies later
   }
   if (msg.type === 'hush:notice-open' && typeof msg.tabId === 'number') {
-    chrome.tabs.update(msg.tabId, { active: true }).then((t) => chrome.windows.update(t.windowId, { focused: true })).catch(() => {});
+    const go = { type: 'hush:notice-go', key: msg.key || '', id: msg.id };
+    chrome.tabs.update(msg.tabId, { active: true })
+      .then((t) => chrome.windows.update(t.windowId, { focused: true }))
+      .then(() => chrome.tabs.sendMessage(msg.tabId, go, { frameId: 0 }))
+      .catch(() => {});
   }
 });
 chrome.tabs.onActivated.addListener(({ tabId }) => chrome.tabs.get(tabId).then((t) => pushLive(t)).catch(() => {}));
