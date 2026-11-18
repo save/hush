@@ -92,7 +92,8 @@
     }
 
     function sync(want) {
-      if (!want) { remove(); return; }
+      // never over a fullscreen video
+      if (!want || document.fullscreenElement) { remove(); return; }
       if (!el || !el.isConnected) {
         el = build();
         document.body.append(el);

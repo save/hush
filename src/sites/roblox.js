@@ -355,6 +355,7 @@ Hush.register({
         { id: 'marketplace', label: 'marketplace', icon: 'shopping-bag', path: () => '/catalog' },
         { id: 'avatar', label: 'avatar', icon: 'shirt', path: () => '/my/avatar' },
         { id: 'friends', label: 'friends', icon: 'users', path: () => '/users/friends', count: navCount('friends') },
+        { id: 'communities', label: 'communities', icon: 'users-round', path: () => '/communities', active: () => pageKind() === 'communities' },
         { id: 'messages', label: 'messages', icon: 'message-circle', path: () => '/my/messages/#!/inbox', active: () => location.pathname.startsWith('/my/messages'), count: navCount('messages') },
         { id: 'profile', label: 'profile', icon: 'user', path: () => '/users/profile', active: () => pageKind() === 'profile' }
       ],

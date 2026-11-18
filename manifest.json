@@ -24,6 +24,12 @@
         "default": "Alt+Shift+H"
       },
       "description": "Toggle hush on the current site"
+    },
+    "toggle-island": {
+      "suggested_key": {
+        "default": "Alt+Shift+I"
+      },
+      "description": "Show or hide the dynamic island"
     }
   },
   "background": {

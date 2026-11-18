@@ -18,6 +18,7 @@
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === 'sync') { H.load().then((s) => { settings = s; render(); }); }
     if (area === 'local' && changes.hushTimer) { timer = changes.hushTimer.newValue || null; render(); }
+    if (area === 'local' && changes.hushIslandPos && !drag) { pos = changes.hushIslandPos.newValue || { x: 0.5, y: 0 }; place(); }
   });
   const wanted = () => settings.island !== false && H.isOn(settings, host) && !document.fullscreenElement;
 
@@ -28,6 +29,11 @@
   let timer = null;          // { endsAt, total, label, done }
   let note = null;           // { text, active, until }
   let expanded = false, tucked = false, collapseTimer = 0, tick = 0;
+  // where it sits: x is the centre as a share of the width, y the top as a share of the height
+  const HOME = { x: 0.5, y: 0 };
+  let pos = { ...HOME };
+  let drag = null, justDragged = false;
+  chrome.storage.local.get('hushIslandPos').then((r) => { if (r.hushIslandPos) { pos = r.hushIslandPos; place(); } }).catch(() => {});
 
   chrome.storage.local.get('hushTimer').then((r) => { timer = r.hushTimer || null; render(); }).catch(() => {});
 
@@ -60,30 +66,51 @@
     [hidden] { display: none !important; }
     .island {
       --ease: cubic-bezier(0.32, 0.72, 0, 1);
-      --spring: cubic-bezier(0.34, 1.32, 0.64, 1);
-      position: fixed; top: 8px; left: 50%; z-index: 2147483647;
+      /* a soft spring: overshoots a touch, settles without wobbling */
+      --spring: linear(0, 0.0071 1.1%, 0.0285 2.3%, 0.1092 4.7%, 0.4359 11.5%, 0.6145 16%, 0.7539 20.4%, 0.8605 25.1%, 0.9366 30.2%, 0.9653 32.9%, 0.9882 35.8%, 1.0084 39.2%, 1.0215 43.1%, 1.0272 47.6%, 1.0254 53.5%, 1.0102 66.8%, 1.0019 81.7%, 1);
+      position: fixed; z-index: 2147483647;
+      top: var(--top, 8px); bottom: var(--bottom, auto); left: var(--left, 50%);
       width: var(--w, 120px); height: var(--h, 34px); border-radius: var(--r, 17px);
-      transform: translateX(-50%) translateY(var(--y, -64px)) scale(var(--s, 0.9));
+      transform: translateX(-50%) translateY(var(--y, -10px)) scale(var(--sx, 0.5), var(--sy, 0.6));
+      transform-origin: 50% var(--origin, 0%);
       opacity: var(--o, 0);
       background: #000; color: #fff; overflow: hidden;
       box-shadow: 0 10px 34px -10px rgba(0,0,0,.55), 0 0 0 0.5px rgba(255,255,255,.08) inset;
       font: 500 13px/1.25 -apple-system, "SF Pro Text", "Inter", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
       letter-spacing: -0.01em; -webkit-font-smoothing: antialiased;
-      transition: width .55s var(--spring), height .55s var(--spring), border-radius .55s var(--spring),
-        transform .5s var(--spring), opacity .3s ease;
-      user-select: none; cursor: default;
+      /* going away: quick and quiet */
+      transition: transform .28s cubic-bezier(.4, 0, 1, 1), opacity .2s ease, width .3s var(--ease), height .3s var(--ease), border-radius .3s var(--ease);
+      user-select: none; cursor: grab; touch-action: none;
     }
-    .island[data-shown] { --y: 0px; --s: 1; --o: 1; }
-    .island[data-tucked] { --y: -64px; --o: 0; pointer-events: none; }
-    @media (prefers-reduced-motion: reduce) { .island { transition-duration: .01s; } }
+    /* arriving and changing size: the spring */
+    .island[data-shown] {
+      --y: 0px; --sx: 1; --sy: 1; --o: 1;
+      transition: width .62s var(--spring), height .62s var(--spring), border-radius .62s var(--spring),
+        transform .6s var(--spring), opacity .18s ease, left .5s var(--spring), top .5s var(--spring), bottom .5s var(--spring);
+    }
+    .island[data-tucked] { --y: -14px; --sx: .7; --sy: .7; --o: 0; pointer-events: none; }
+    .island[data-dragging] { transition: width .62s var(--spring), height .62s var(--spring), border-radius .62s var(--spring), transform .3s var(--ease), opacity .18s ease; cursor: grabbing; --sx: 1.04; --sy: 1.04; box-shadow: 0 24px 60px -16px rgba(0,0,0,.7), 0 0 0 0.5px rgba(255,255,255,.1) inset; }
+    /* a new song or note: a small bump, like the real one */
+    .island.bump { animation: bump .5s var(--spring); }
+    @keyframes bump { 0% { scale: 1; } 30% { scale: 1.045 1.08; } 100% { scale: 1; } }
+    @media (prefers-reduced-motion: reduce) { .island, .island[data-shown] { transition-duration: .01s !important; } .island.bump { animation: none; } }
 
-    /* layers fade between sizes; only one is visible at a time */
-    .layer { position: absolute; inset: 0; opacity: 0; filter: blur(4px); transform: scale(.96);
-      transition: opacity .22s ease, filter .3s ease, transform .4s var(--ease); pointer-events: none; }
+    /* layers: the old one blurs away fast, the new one's parts arrive one after another */
+    .layer { position: absolute; inset: 0; opacity: 0; filter: blur(6px); transform: scale(.94);
+      transition: opacity .14s ease, filter .18s ease, transform .3s var(--ease); pointer-events: none; }
     .island[data-view="compact"] .compact,
     .island[data-view="media"] .media,
     .island[data-view="timer"] .timerv,
-    .island[data-view="note"] .note { opacity: 1; filter: none; transform: none; pointer-events: auto; transition-delay: .08s; }
+    .island[data-view="note"] .note { opacity: 1; filter: none; transform: none; pointer-events: auto; transition: opacity .3s ease .1s, filter .35s ease .1s, transform .55s var(--spring) .06s; }
+    .island[data-view="media"] .media > *, .island[data-view="timer"] .timerv > * { animation: rise .55s var(--spring) both; }
+    .island[data-view="media"] .media > :nth-child(2), .island[data-view="timer"] .timerv > :nth-child(2) { animation-delay: .07s; }
+    .island[data-view="media"] .media > :nth-child(3) { animation-delay: .13s; }
+    @keyframes rise { from { opacity: 0; transform: translateY(8px) scale(.96); filter: blur(4px); } }
+    .island[data-view="media"] .media .art { animation: grow .6s var(--spring) both; }
+    @keyframes grow { from { transform: scale(.42); border-radius: 6px; } }
+    /* anchored to the bottom of the screen: grows upward, arrives from below */
+    .island[data-anchor="bottom"] { --y: 10px; }
+    .island[data-anchor="bottom"][data-shown] { --y: 0px; }
 
     /* compact: art on the left, a waveform or a time on the right, black between */
     .compact { display: flex; align-items: center; justify-content: space-between; padding: 0 12px 0 7px; }
@@ -187,9 +214,15 @@
     root.append(style, island);
     (document.body || document.documentElement).append(hostEl);
 
-    island.addEventListener('pointerenter', () => { clearTimeout(collapseTimer); if (activity()) { expanded = true; render(); } });
-    island.addEventListener('pointerleave', () => { clearTimeout(collapseTimer); collapseTimer = setTimeout(() => { expanded = false; render(); }, 280); });
-    island.addEventListener('click', (e) => { if (e.target === island && activity()) { expanded = !expanded; render(); } });
+    island.title = 'drag to move · double-click to put back';
+    island.addEventListener('pointerenter', () => { clearTimeout(collapseTimer); if (activity() && !drag) { expanded = true; render(); } });
+    island.addEventListener('pointerleave', () => { clearTimeout(collapseTimer); collapseTimer = setTimeout(() => { if (!drag) { expanded = false; render(); } }, 280); });
+    island.addEventListener('click', (e) => {
+      if (justDragged) { justDragged = false; e.stopPropagation(); return; }
+      if (e.target === island && activity()) { expanded = !expanded; render(); }
+    }, true);
+    island.addEventListener('dblclick', (e) => { if (e.target.closest && e.target.closest('button')) return; pos = { ...HOME }; chrome.storage.local.set({ hushIslandPos: pos }).catch(() => {}); place(); });
+    island.addEventListener('pointerdown', startDrag);
   }
 
   function send(action) {
@@ -243,8 +276,74 @@
       parts.nDot.className = 'dot' + (note.active ? ' on' : '');
     }
     size(view);
+    place();
+    const songKey = media ? media.title + '|' + media.artist : '';
+    if (songKey && songKey !== lastSong && lastSong !== null) bump();
+    lastSong = songKey;
     updateProgress();
     startTick();
+  }
+  let lastSong = null;
+  function bump() { if (!island) return; island.classList.remove('bump'); void island.offsetWidth; island.classList.add('bump'); }
+
+  // put it where it was left, kept on screen even as it grows
+  function place() {
+    if (!island) return;
+    const w = parseFloat(island.style.getPropertyValue('--w')) || 200;
+    const h = parseFloat(island.style.getPropertyValue('--h')) || 34;
+    const half = w / 2 + 8;
+    const cx = Math.min(Math.max(pos.x * innerWidth, half), innerWidth - half);
+    island.style.setProperty('--left', cx + 'px');
+    const bottomHalf = pos.y > 0.5;
+    island.dataset.anchor = bottomHalf ? 'bottom' : 'top';
+    if (bottomHalf) {
+      const fromBottom = Math.max(8, innerHeight - pos.y * innerHeight - 34);
+      island.style.setProperty('--top', 'auto');
+      island.style.setProperty('--bottom', Math.min(fromBottom, innerHeight - h - 8) + 'px');
+      island.style.setProperty('--origin', '100%');
+    } else {
+      const top = Math.max(8, pos.y * innerHeight);
+      island.style.setProperty('--top', Math.min(top, innerHeight - h - 8) + 'px');
+      island.style.setProperty('--bottom', 'auto');
+      island.style.setProperty('--origin', '0%');
+    }
+  }
+  addEventListener('resize', () => place());
+
+  function startDrag(e) {
+    if (e.button !== 0 || (e.target.closest && e.target.closest('button'))) return;
+    const r = island.getBoundingClientRect();
+    drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, dx: e.clientX - (r.left + r.width / 2), dy: e.clientY - r.top, moved: false };
+    island.setPointerCapture(e.pointerId);
+    island.addEventListener('pointermove', onDrag);
+    island.addEventListener('pointerup', endDrag);
+    island.addEventListener('pointercancel', endDrag);
+  }
+  function onDrag(e) {
+    if (!drag) return;
+    if (!drag.moved && Math.hypot(e.clientX - drag.x0, e.clientY - drag.y0) < 5) return;
+    if (!drag.moved) { drag.moved = true; expanded = false; island.setAttribute('data-dragging', ''); render(); }
+    pos = { x: Math.min(1, Math.max(0, (e.clientX - drag.dx) / innerWidth)), y: Math.min(1, Math.max(0, (e.clientY - drag.dy) / innerHeight)) };
+    // follow the pointer exactly while dragging (top-anchored), settle on release
+    island.dataset.anchor = 'top';
+    island.style.setProperty('--left', pos.x * innerWidth + 'px');
+    island.style.setProperty('--top', pos.y * innerHeight + 'px');
+    island.style.setProperty('--bottom', 'auto');
+  }
+  function endDrag() {
+    island.removeEventListener('pointermove', onDrag);
+    island.removeEventListener('pointerup', endDrag);
+    island.removeEventListener('pointercancel', endDrag);
+    if (drag && drag.moved) {
+      justDragged = true;
+      setTimeout(() => { justDragged = false; }, 300);
+      // near the top centre, snap home
+      if (Math.abs(pos.x - 0.5) < 0.06 && pos.y < 0.06) pos = { ...HOME };
+      chrome.storage.local.set({ hushIslandPos: pos }).catch(() => {});
+    }
+    drag = null;
+    island.removeAttribute('data-dragging');
+    place();
   }
 
   function size(view) {
@@ -306,6 +405,7 @@
     note = { text: String(text), active: !!active, until: Date.now() + ms };
     expanded = false;
     render();
+    bump();
     setTimeout(render, ms + 20);
   }
 
@@ -313,8 +413,9 @@
   document.addEventListener('focusin', (e) => {
     const t = e.target;
     if (!(t instanceof Element) || !t.matches('input, textarea, [contenteditable="true"], [contenteditable=""]')) return;
-    const r = t.getBoundingClientRect(), cx = innerWidth / 2;
-    const under = r.top < 70 && r.right > cx - 200 && r.left < cx + 200;
+    if (!island) return;
+    const r = t.getBoundingClientRect(), i = island.getBoundingClientRect();
+    const under = r.top < i.bottom + 24 && r.bottom > i.top - 24 && r.right > i.left - 40 && r.left < i.right + 40;
     if (under !== tucked) { tucked = under; render(); }
   }, true);
   document.addEventListener('focusout', () => { if (tucked) { tucked = false; setTimeout(render, 120); } }, true);

@@ -349,7 +349,8 @@ Hush.register({
       go,
       onLeave: () => { ctx.setOption('zen', false); ctx.toast('focus mode off', false); }
     });
-    function syncIsland() { island.sync(!!ctx.options.zen); }
+    // a video page is for the video: the island steps aside there
+    function syncIsland() { island.sync(!!ctx.options.zen && root.getAttribute('data-hush-path') !== 'watch'); }
 
     // YouTube's own keys stay (k / space play, j / l seek, f, m, t, c, / search, shift+n).
     // hush adds: z focus mode, ctrl/⌘ k tune (engine).

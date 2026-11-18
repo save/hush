@@ -2,6 +2,11 @@
 importScripts('core/registry.js');
 
 chrome.commands.onCommand.addListener(async (command, tab) => {
+  if (command === 'toggle-island') {
+    const s = await Hush.load();
+    await Hush.save({ island: s.island === false });
+    return;
+  }
   if (command !== 'toggle-site' || !tab || !tab.url) return;
   let host;
   try {

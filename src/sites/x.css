@@ -304,14 +304,6 @@ html[data-hush-site="x"][data-hush-nocompose][data-hush-path="home"] [data-hush-
   display: none !important;
 }
 
-/* search fields: flat */
-html[data-hush-site="x"] form[role="search"] div:has(> div > input[data-testid="SearchBox_Search_Input"]),
-html[data-hush-site="x"] form[role="search"] label {
-  background: var(--h-field) !important;
-  border-color: transparent !important;
-  border-radius: 8px !important;
-  box-shadow: none !important;
-}
 html[data-hush-site="x"] input[data-testid="SearchBox_Search_Input"] {
   font-size: 13.5px !important;
 }
@@ -681,24 +673,41 @@ html[data-hush-site="x"] [data-testid="cellInnerDiv"] h2 span {
   letter-spacing: 0.01em;
 }
 
-/* search field: flat, soft ring on focus (the X pill is two wrappers up) */
-html[data-hush-site="x"] [data-hush-searchwrap] {
+/* search field: one quiet pill — X paints the icon, input and clear button as three
+   boxes and adds a border a wrapper up; flatten all of it onto the label */
+html[data-hush-site="x"] [data-hush-searchwrap][data-hush-searchwrap] {
   background-color: transparent !important;
   border-color: transparent !important;
   box-shadow: none !important;
+  border-radius: 12px !important;
 }
-html[data-hush-site="x"] [data-testid="SearchBox_Search_Input_label"] > div {
+html[data-hush-site="x"] [data-testid="SearchBox_Search_Input_label"][data-hush-search] {
   background-color: var(--h-field) !important;
-  border-radius: 10px !important;
-  box-shadow: inset 0 0 0 1px transparent;
+  border-radius: 12px !important;
+  padding-left: 6px !important;
+  box-shadow: inset 0 0 0 1px transparent !important;
   transition: box-shadow 0.2s ease, background-color 0.2s ease !important;
 }
-html[data-hush-site="x"] [data-testid="SearchBox_Search_Input_label"]:focus-within > div {
-  box-shadow: inset 0 0 0 1px var(--h-ring) !important;
+html[data-hush-site="x"] [data-testid="SearchBox_Search_Input_label"][data-hush-search] div {
   background-color: transparent !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+html[data-hush-site="x"] [data-testid="SearchBox_Search_Input_label"][data-hush-search]:focus-within {
+  background-color: transparent !important;
+  box-shadow: inset 0 0 0 1px var(--h-ring) !important;
 }
 html[data-hush-site="x"] [data-testid="SearchBox_Search_Input_label"] svg {
   color: var(--h-faint) !important;
+}
+/* the "recent" dropdown: a plain card, not X's glow */
+html[data-hush-site="x"] div:has(> [id^="typeaheadDropdown"]),
+html[data-hush-site="x"] div:has(> [data-testid="typeaheadEmptySearch"]) {
+  border-radius: 14px !important;
+  box-shadow: 0 0 0 1px var(--h-line), 0 16px 40px -12px rgba(0, 0, 0, 0.6) !important;
+  overflow: hidden !important;
+  margin-top: 6px !important;
 }
 
 /* trends: their "…" only on hover */
