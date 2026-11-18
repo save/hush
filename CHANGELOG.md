@@ -6,11 +6,12 @@
   - **Now playing from another tab:** Spotify, YouTube, YouTube Music, SoundCloud and any player that tells the browser what it plays. Compact, it shows the art and a waveform; point at it for the title, artist, progress and previous / play / next. Click the art or title to jump to that tab.
   - **Timers:** type `timer 10` or `timer 25 study` in `Ctrl K`. The countdown shows on every tab, with +1 minute and cancel, and a soft chime when it's done.
   - **hush's notes** (focus mode on, muted a word, time nudges) appear in the island instead of a toast.
-  - It slides away when you click into a search box under it, and in fullscreen.
+  - **Stays out of the way:** at its usual spot it looks at what the site puts at the top (YouTube's and Roblox's search, X's tabs, Reddit's and GitHub's headers) and slides into the nearest gap instead of sitting on a search box or button. If the bar has no gap, it waits just under it. It also slides away when you click into a field under it, and in fullscreen.
   - **Smoother:** it drops in and springs open like the real thing, its contents fade up one after another, and it gives a little bounce on a new song or note.
   - **Put it anywhere:** drag it to any spot on the screen and it stays there on every tab (near the bottom it opens upward). Double-click it, or pick "put the island back at the top" in `Ctrl K`, to send it home.
   - **On or off:** `Alt Shift I`, the switch in settings, or `Ctrl K` ("dynamic island").
-- **Bottom islands:** no search button on YouTube and Roblox (both keep their own search bar in focus mode). They step aside while you watch a video on YouTube and in fullscreen anywhere. Roblox's island now has communities.
+- **Bottom islands:** no search button on YouTube and Roblox (both keep their own search bar in focus mode). They stay on YouTube video pages and step aside the moment a video goes fullscreen. Roblox's island now has communities.
+- **Homepage:** a new dynamic island section that plays out each state (now playing, getting out of the way, timers, notes) on a pretend page.
 - **X search:** the search box is one quiet pill with the icon inside it (it was an icon in its own box beside a boxed field) and a single soft ring while you type; the recent-searches dropdown is a plain card without X's glow.
 
 ## 0.6.5

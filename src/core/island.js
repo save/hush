@@ -54,6 +54,10 @@
     let el = null;
     let lastY = 0;
     let frame = 0;
+    let wanted = false;
+    // fullscreen on and off (a YouTube video): react at once, not on the adapter's next pass
+    const onFull = () => sync(wanted);
+    document.addEventListener('fullscreenchange', onFull);
 
     // scrolling down tucks it away to just where you are; scrolling up brings it back
     const onScroll = () => {
@@ -92,6 +96,7 @@
     }
 
     function sync(want) {
+      wanted = !!want;
       // never over a fullscreen video
       if (!want || document.fullscreenElement) { remove(); return; }
       if (!el || !el.isConnected) {
@@ -110,6 +115,6 @@
       }
     }
 
-    return { sync, destroy: remove };
+    return { sync, destroy() { remove(); document.removeEventListener('fullscreenchange', onFull); } };
   };
 })();

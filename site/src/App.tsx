@@ -5,6 +5,7 @@ import { Shader } from './components/Shader';
 import { BrowserDemo } from './components/BrowserDemo';
 import { SitesStrip } from './components/SitesStrip';
 import { Install } from './components/Install';
+import { IslandShowcase } from './components/Island';
 import { BrowserIcon, useBrowser } from './components/browser';
 import { photo } from './components/mocks';
 import { icons, LINKS, Logo, Mark } from './components/brand';
@@ -90,6 +91,7 @@ function Nav() {
         </a>
         <div className="hidden items-center gap-5 text-[13px] text-dim sm:flex">
           <a href="#sites" className="transition-colors hover:text-fg">Sites</a>
+          <a href="#island" className="transition-colors hover:text-fg">Island</a>
           <a href="#features" className="transition-colors hover:text-fg">Features</a>
           <a href="#source" className="transition-colors hover:text-fg">Open source</a>
         </div>
@@ -552,6 +554,7 @@ export function App() {
       <main>
         <Hero />
         <SitesStrip />
+        <IslandShowcase />
         <Features />
         <OpenSource />
         <Closing />

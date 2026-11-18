@@ -18,7 +18,7 @@
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === 'sync') { H.load().then((s) => { settings = s; render(); }); }
     if (area === 'local' && changes.hushTimer) { timer = changes.hushTimer.newValue || null; render(); }
-    if (area === 'local' && changes.hushIslandPos && !drag) { pos = changes.hushIslandPos.newValue || { x: 0.5, y: 0 }; place(); }
+    if (area === 'local' && changes.hushIslandPos && !drag) { pos = changes.hushIslandPos.newValue || { x: 0.5, y: 0 }; place(); lookSoon(300); }
   });
   const wanted = () => settings.island !== false && H.isOn(settings, host) && !document.fullscreenElement;
 
@@ -221,7 +221,7 @@
       if (justDragged) { justDragged = false; e.stopPropagation(); return; }
       if (e.target === island && activity()) { expanded = !expanded; render(); }
     }, true);
-    island.addEventListener('dblclick', (e) => { if (e.target.closest && e.target.closest('button')) return; pos = { ...HOME }; chrome.storage.local.set({ hushIslandPos: pos }).catch(() => {}); place(); });
+    island.addEventListener('dblclick', (e) => { if (e.target.closest && e.target.closest('button')) return; pos = { ...HOME }; spot = null; chrome.storage.local.set({ hushIslandPos: pos }).catch(() => {}); place(); lookSoon(350); });
     island.addEventListener('pointerdown', startDrag);
   }
 
@@ -277,6 +277,7 @@
     }
     size(view);
     place();
+    if (!spot && !lookTimer) lookSoon(60);
     const songKey = media ? media.title + '|' + media.artist : '';
     if (songKey && songKey !== lastSong && lastSong !== null) bump();
     lastSong = songKey;
@@ -292,7 +293,8 @@
     const w = parseFloat(island.style.getPropertyValue('--w')) || 200;
     const h = parseFloat(island.style.getPropertyValue('--h')) || 34;
     const half = w / 2 + 8;
-    const cx = Math.min(Math.max(pos.x * innerWidth, half), innerWidth - half);
+    const want = atHome() && spot != null ? spot : pos.x * innerWidth;
+    const cx = Math.min(Math.max(want, half), innerWidth - half);
     island.style.setProperty('--left', cx + 'px');
     const bottomHalf = pos.y > 0.5;
     island.dataset.anchor = bottomHalf ? 'bottom' : 'top';
@@ -302,13 +304,93 @@
       island.style.setProperty('--bottom', Math.min(fromBottom, innerHeight - h - 8) + 'px');
       island.style.setProperty('--origin', '100%');
     } else {
-      const top = Math.max(8, pos.y * innerHeight);
+      const top = atHome() && spotY != null ? spotY : Math.max(8, pos.y * innerHeight);
       island.style.setProperty('--top', Math.min(top, innerHeight - h - 8) + 'px');
       island.style.setProperty('--bottom', 'auto');
       island.style.setProperty('--origin', '0%');
     }
   }
-  addEventListener('resize', () => place());
+  addEventListener('resize', () => { lookSoon(150); place(); });
+
+  /* ---- staying out of the way ----------------------------------------------
+     At its home spot the island would sit on top of whatever the site puts at the top
+     centre: YouTube's search box, X's tabs, Reddit's and Roblox's search, GitHub's header.
+     So it looks along the strip it would cover, marks every link, button, field, tab,
+     icon and line of text there, and slides into the nearest gap wide enough. A spot you
+     dragged it to is yours: it stays put. */
+  let spot = null, spotY = null, lookTimer = 0, lastHref = location.href;
+  const atHome = () => Math.abs(pos.x - HOME.x) < 0.001 && pos.y === HOME.y;
+  const BUSY = 'a, button, input, textarea, select, label, summary, [role="button"], [role="link"], [role="tab"], [role="search"], [role="searchbox"], [role="combobox"], [role="menuitem"], [contenteditable=""], [contenteditable="true"], img, svg, video, canvas, picture';
+  function deepAt(x, y) {
+    let hit = null;
+    for (const e of document.elementsFromPoint(x, y)) if (e !== hostEl) { hit = e; break; }
+    // reach into open shadow roots (Reddit is built out of them)
+    for (let i = 0; hit && hit.shadowRoot && i < 6; i++) {
+      const inner = hit.shadowRoot.elementFromPoint(x, y);
+      if (!inner || inner === hit) break;
+      hit = inner;
+    }
+    return hit;
+  }
+  const range = document.createRange();
+  function busyAt(x, y) {
+    const e = deepAt(x, y);
+    if (!e || e === document.body || e === document.documentElement) return false;
+    if (e.closest(BUSY)) {
+      // a link or button the width of the page is a backdrop, not a control
+      const r = e.closest(BUSY).getBoundingClientRect();
+      return r.width < innerWidth * 0.6;
+    }
+    for (const n of e.childNodes) {
+      if (n.nodeType !== 3 || !n.textContent.trim()) continue;
+      range.selectNodeContents(n);
+      for (const r of range.getClientRects()) if (x >= r.left - 6 && x <= r.right + 6 && y >= r.top - 4 && y <= r.bottom + 4) return true;
+    }
+    return false;
+  }
+  function look() {
+    lookTimer = 0;
+    if (!island || !atHome() || expanded || drag || !island.hasAttribute('data-shown')) return;
+    const W = innerWidth, step = 12, cols = Math.ceil(W / step);
+    const top = 8, h = 34;
+    const ys = [top + 7, top + h - 7];
+    const free = new Uint8Array(cols);
+    for (let c = 0; c < cols; c++) {
+      const x = c * step + step / 2;
+      free[c] = ys.some((y) => busyAt(x, y)) ? 0 : 1;
+    }
+    const w = SIZE.compact[0], pad = w / 2 + 14;
+    let best = null;
+    for (let c = 0; c < cols;) {
+      if (!free[c]) { c++; continue; }
+      let e = c;
+      while (e < cols && free[e]) e++;
+      const lo = c * step + pad, hi = e * step - pad;
+      if (hi >= lo) {
+        const cx = Math.min(Math.max(W / 2, lo), hi);
+        if (!best || Math.abs(cx - W / 2) < Math.abs(best - W / 2)) best = cx;
+      }
+      c = e;
+    }
+    // no gap wide enough (Roblox's bar is links, a long search box, then buttons):
+    // sit just under the site's own fixed header instead of on it
+    let y = null;
+    if (best == null) {
+      best = W / 2;
+      for (let e = deepAt(W / 2, top + h / 2); e && e !== document.body; e = e.parentElement || (e.getRootNode && e.getRootNode().host)) {
+        const p = getComputedStyle(e).position;
+        if (p !== 'fixed' && p !== 'sticky') continue;
+        const r = e.getBoundingClientRect();
+        if (r.top <= 4 && r.bottom > top && r.bottom < 180) y = Math.round(r.bottom + 8);
+        break;
+      }
+    }
+    if (best !== spot || y !== spotY) { spot = best; spotY = y; place(); }
+  }
+  // the scan is a few hundred hit tests: run it when the page is idle
+  const idle = (f) => (window.requestIdleCallback ? requestIdleCallback(f, { timeout: 600 }) : f());
+  function lookSoon(ms = 250) { clearTimeout(lookTimer); lookTimer = setTimeout(() => idle(look), ms); }
+  addEventListener('scroll', () => lookSoon(300), { passive: true });
 
   function startDrag(e) {
     if (e.button !== 0 || (e.target.closest && e.target.closest('button'))) return;
@@ -338,7 +420,7 @@
       justDragged = true;
       setTimeout(() => { justDragged = false; }, 300);
       // near the top centre, snap home
-      if (Math.abs(pos.x - 0.5) < 0.06 && pos.y < 0.06) pos = { ...HOME };
+      if (Math.abs(pos.x - 0.5) < 0.06 && pos.y < 0.06) { pos = { ...HOME }; spot = null; lookSoon(350); }
       chrome.storage.local.set({ hushIslandPos: pos }).catch(() => {});
     }
     drag = null;
@@ -364,6 +446,7 @@
     parts.mFill.style.width = media.duration ? (pos / media.duration) * 100 + '%' : '100%';
   }
 
+  let looks = 0;
   function startTick() {
     if (tick) return;
     tick = setInterval(() => {
@@ -371,6 +454,9 @@
       if (timer && !timer.done && timerLeft() <= 0) finishTimer();
       if (timer) { parts.cTime.textContent = timer.done ? '' : fmt(timerLeft()); parts.tBig.textContent = fmt(timerLeft()); }
       updateProgress();
+      // single-page sites: a new page, a new header; otherwise a quiet recheck now and then
+      if (location.href !== lastHref) { lastHref = location.href; lookSoon(400); }
+      else if (++looks % 12 === 0) lookSoon(0);
     }, 1000);
   }
   function stopTick() { clearInterval(tick); tick = 0; }
