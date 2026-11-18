@@ -345,7 +345,7 @@ Hush.register({
         { id: 'history', label: 'history', icon: 'history', path: () => '/feed/history' },
         { id: 'you', label: 'you', icon: 'circle-user', path: () => '/feed/you' }
       ],
-      extra: [{ id: 'search', label: 'search', icon: 'search', run: () => focusSearch() }],
+      // no search button: both sites keep their own search bar in focus mode
       go,
       onLeave: () => { ctx.setOption('zen', false); ctx.toast('focus mode off', false); }
     });

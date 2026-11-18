@@ -358,7 +358,7 @@ Hush.register({
         { id: 'messages', label: 'messages', icon: 'message-circle', path: () => '/my/messages/#!/inbox', active: () => location.pathname.startsWith('/my/messages'), count: navCount('messages') },
         { id: 'profile', label: 'profile', icon: 'user', path: () => '/users/profile', active: () => pageKind() === 'profile' }
       ],
-      extra: [{ id: 'search', label: 'search', icon: 'search', run: () => focusSearch() }],
+      // no search button: both sites keep their own search bar in focus mode
       go,
       onLeave: () => { ctx.setOption('zen', false); ctx.toast('focus mode off', false); }
     });

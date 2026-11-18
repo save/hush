@@ -383,6 +383,7 @@
         },
         { group: 'hush', label: 'still motion', icon: 'wind', keywords: 'animation autoplay video', active: !!settings.motion, run: () => H.save({ motion: !settings.motion }) },
         { group: 'hush', label: 'calm every site', icon: 'globe', keywords: 'universal ads chat widgets popups declutter all sites', active: settings.universal !== false, run: () => H.save({ universal: settings.universal === false }) },
+        { group: 'hush', label: 'dynamic island', icon: 'sparkles', keywords: 'island now playing music spotify timer top notch live', active: settings.island !== false, run: () => H.save({ island: settings.island === false }) },
         { group: 'hush', label: 'mute color', icon: 'droplet', keywords: 'grayscale saturation images', active: !!settings.color, run: () => H.save({ color: !settings.color }) },
         { group: 'hush', label: 'hush something on this page', icon: 'mouse-pointer-click', keywords: 'hide element remove picker block this', toast: false, run: () => setTimeout(() => pick(false), 180) },
         {
@@ -427,6 +428,26 @@
             });
           }
         }
+      }
+      return cmds;
+    });
+    // timers in the island: "timer 10", "timer 25 study", "timer 90s"
+    H.palette.addProvider((query) => {
+      if (!H.live) return [];
+      const q = (query || '').trim();
+      const cmds = [];
+      const t = H.live.timer();
+      if (t && !t.done) cmds.push({ group: 'timer', label: 'cancel the timer', icon: 'clock', keywords: 'timer stop cancel', run: () => H.live.cancelTimer() });
+      const m = q.match(/^(?:timer|t)\s*(\d+(?:\.\d+)?)\s*(s|sec|secs|seconds?|m|min|mins|minutes?|h|hr|hours?)?\s*(.*)$/i);
+      if (m) {
+        const n = parseFloat(m[1]);
+        const unit = (m[2] || 'm').toLowerCase();
+        const minutes = unit.startsWith('s') ? n / 60 : unit.startsWith('h') ? n * 60 : n;
+        const words = unit.startsWith('s') ? `${n} second` : unit.startsWith('h') ? `${n} hour` : `${n} minute`;
+        const label = m[3] ? m[3].trim() : '';
+        if (minutes > 0 && minutes <= 24 * 60) cmds.push({ group: 'timer', label: `start a ${words} timer${label ? ` for ${label}` : ''}`, icon: 'clock', always: true, toast: false, run: () => { H.live.startTimer(minutes, label || `${words} timer`); H.toast(`${words} timer started`, true); } });
+      } else if (/^tim/i.test(q)) {
+        for (const n of [5, 10, 25]) cmds.push({ group: 'timer', label: `start a ${n} minute timer`, icon: 'clock', always: true, toast: false, run: () => { H.live.startTimer(n, `${n} minute timer`); H.toast(`${n} minute timer started`, true); } });
       }
       return cmds;
     });

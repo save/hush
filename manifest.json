@@ -43,6 +43,7 @@
         "src/core/registry.js",
         "src/core/icons.js",
         "src/core/palette.js",
+        "src/core/live.js",
         "src/core/island.js",
         "src/sites/x.js",
         "src/sites/youtube.js",

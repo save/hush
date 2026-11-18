@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- **Dynamic island at the top of the page (on by default):** an Apple-style black pill that only appears when something is happening.
+  - **Now playing from another tab:** Spotify, YouTube, YouTube Music, SoundCloud and any player that tells the browser what it plays. Compact, it shows the art and a waveform; point at it for the title, artist, progress and previous / play / next. Click the art or title to jump to that tab.
+  - **Timers:** type `timer 10` or `timer 25 study` in `Ctrl K`. The countdown shows on every tab, with +1 minute and cancel, and a soft chime when it's done.
+  - **hush's notes** (focus mode on, muted a word, time nudges) appear in the island instead of a toast.
+  - It slides away when you click into a search box under it, and in fullscreen. Turn it off in settings or `Ctrl K` ("dynamic island").
+- **Bottom islands:** no search button on YouTube and Roblox (both keep their own search bar in focus mode).
+
 ## 0.6.5
 
 - **Focus mode's island on YouTube and Roblox:** press `z` and the menu becomes the same small floating pill as on X (home, subscriptions, history, you and search on YouTube; home, charts, marketplace, avatar, friends, messages, profile and search on Roblox). It names where you are, shows a dot for unread friends and messages on Roblox, and shrinks while you scroll down. One shared island now runs on all three sites.

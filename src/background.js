@@ -68,3 +68,56 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId !== 'hush-this' || !tab || tab.id == null) return;
   chrome.tabs.sendMessage(tab.id, { type: 'hush:pick' }, { frameId: 0 }).catch(() => {});
 });
+
+// ---- the top island: what's playing in other tabs ------------------------------------
+// Each tab's content script reports its media (src/core/live.js); the active tab is told
+// about the best one playing elsewhere, and can send play / pause / skip back to it.
+// Kept in memory only: nothing about what you play is stored or sent anywhere.
+const media = new Map(); // tabId → { state, at, windowId }
+
+function bestMedia(exceptTabId) {
+  let best = null;
+  for (const [tabId, m] of media) {
+    if (tabId === exceptTabId) continue;
+    const s = m.state;
+    // playing beats paused; among equals, the most recently changed
+    const score = (s.playing ? 2e13 : 0) + (s.changedAt || m.at);
+    if (!best || score > best.score) best = { score, tabId, ...s };
+  }
+  if (!best) return null;
+  // a paused player fades from the island after 15 minutes
+  if (!best.playing && Date.now() - (best.changedAt || 0) > 15 * 60 * 1000) return null;
+  delete best.score;
+  return best;
+}
+
+async function pushLive(target) {
+  const tabs = target ? [target] : await chrome.tabs.query({ active: true });
+  for (const t of tabs) {
+    if (!t || t.id == null) continue;
+    chrome.tabs.sendMessage(t.id, { type: 'hush:live', media: bestMedia(t.id) }, { frameId: 0 }).catch(() => {});
+  }
+}
+
+chrome.runtime.onMessage.addListener((msg, sender) => {
+  if (!msg || !sender.tab) return;
+  const tabId = sender.tab.id;
+  if (msg.type === 'hush:media') {
+    if (msg.state && msg.state.title) media.set(tabId, { state: { ...msg.state, site: sender.tab.url ? new URL(sender.tab.url).hostname : '', favicon: sender.tab.favIconUrl || '' }, at: Date.now(), windowId: sender.tab.windowId });
+    else media.delete(tabId);
+    pushLive();
+  }
+  if (msg.type === 'hush:live?') pushLive(sender.tab);
+  if (msg.type === 'hush:media-cmd' && typeof msg.tabId === 'number') {
+    if (msg.action === 'focus') {
+      const m = media.get(msg.tabId);
+      chrome.tabs.update(msg.tabId, { active: true }).catch(() => {});
+      if (m) chrome.windows.update(m.windowId, { focused: true }).catch(() => {});
+    } else {
+      chrome.tabs.sendMessage(msg.tabId, { type: 'hush:media-do', action: msg.action }, { frameId: 0 }).catch(() => {});
+    }
+  }
+});
+chrome.tabs.onRemoved.addListener((tabId) => { if (media.delete(tabId)) pushLive(); });
+chrome.tabs.onActivated.addListener(({ tabId }) => chrome.tabs.get(tabId).then((t) => pushLive(t)).catch(() => {}));
+chrome.windows.onFocusChanged.addListener(() => pushLive());

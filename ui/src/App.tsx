@@ -335,6 +335,9 @@ export function App() {
             <Row label="Calm every site" desc="Ads, chat bubbles and nags go on other sites" index={1} htmlFor="g-universal">
               <Switch id="g-universal" checked={s.universal !== false} onCheckedChange={(v) => update({ universal: v })} />
             </Row>
+            <Row label="Dynamic island" desc="What's playing in other tabs, timers and hush's notes, at the top" index={1} htmlFor="g-island">
+              <Switch id="g-island" checked={s.island !== false} onCheckedChange={(v) => update({ island: v })} />
+            </Row>
             <Row label="Mute color" desc="Images fade back until hovered" index={1} htmlFor="g-color">
               <Switch id="g-color" checked={s.color} onCheckedChange={(v) => update({ color: v })} />
             </Row>

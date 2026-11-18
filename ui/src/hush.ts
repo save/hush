@@ -25,6 +25,7 @@ export type Settings = {
   vibrance: number;
   muted?: string[];
   universal?: boolean;
+  island?: boolean;
   nudge?: number;
   hidden?: Record<string, { s: string; l: string; t: number }[]>;
   sites: Record<string, Record<string, boolean | string>>;
