@@ -544,8 +544,9 @@
     H.palette.addProvider((query) => (on && adapter && adapter.commands ? adapter.commands(ctx, query) : []));
   }
 
+  // Ctrl K works even where hush is off: it's how you switch it back on
   window.addEventListener('keydown', (e) => {
-    if (!on || !H.palette) return;
+    if (!H.palette || !settings) return;
     if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key.toLowerCase() === 'k') {
       e.preventDefault();
       e.stopImmediatePropagation();
@@ -632,5 +633,5 @@
   // <head> isn't parsed yet at document_start; check page opt-outs again once it is
   document.addEventListener('DOMContentLoaded', () => apply(settings, false), { once: true });
   H.load().then((s) => apply(s, true));
-  chrome.storage.onChanged.addListener(() => H.load().then((s) => apply(s, true)));
+  chrome.storage.onChanged.addListener((changes, area) => { if (H.isSettingsChange(changes, area)) H.load().then((s) => apply(s, true)); });
 })();

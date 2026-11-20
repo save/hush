@@ -16,7 +16,7 @@
   let settings = H.DEFAULTS;
   const ready = H.load().then((s) => { settings = s; render(); });
   chrome.storage.onChanged.addListener((changes, area) => {
-    if (area === 'sync') { H.load().then((s) => { settings = s; render(); }); }
+    if (H.isSettingsChange(changes, area)) { H.load().then((s) => { settings = s; render(); }); }
     if (area === 'local' && changes.hushTimer) { timer = changes.hushTimer.newValue || null; render(); }
     if (area === 'local' && changes.hushIslandPos && !drag) { pos = changes.hushIslandPos.newValue || { x: 0.5, y: 0 }; place(); lookSoon(300); }
   });

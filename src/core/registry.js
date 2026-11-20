@@ -47,17 +47,45 @@
       return adapters.find((a) => a.match(hostname)) || null;
     },
 
+    // Settings live in chrome.storage.sync (follows you between computers) with a copy in
+    // chrome.storage.local. Sync has hard limits (size, writes per minute and per hour); once
+    // one is hit every sync save fails silently and hush could never be switched back on.
+    // The local copy has no such limits and wins, so a change always sticks.
     async load() {
-      try {
-        const stored = await chrome.storage.sync.get(null);
-        return { ...DEFAULTS, ...stored, sites: { ...DEFAULTS.sites, ...(stored.sites || {}) } };
-      } catch {
-        return { ...DEFAULTS };
-      }
+      const pick = (o) => { const out = {}; for (const k of Object.keys(DEFAULTS)) if (o && k in o) out[k] = o[k]; return out; };
+      let synced = {}, local = {};
+      try { synced = pick(await chrome.storage.sync.get(null)); } catch { /* sync unavailable */ }
+      try { local = pick((await chrome.storage.local.get('hushSettings')).hushSettings); } catch { /* fine */ }
+      return Hush.clean({ ...DEFAULTS, ...synced, ...local });
     },
 
-    save(patch) {
-      return chrome.storage.sync.set(patch);
+    // repair anything malformed so one bad value can't leave hush stuck
+    clean(s) {
+      const arr = (v) => (Array.isArray(v) ? v.filter((x) => typeof x === 'string') : []);
+      const obj = (v) => (v && typeof v === 'object' && !Array.isArray(v) ? v : {});
+      const out = { ...s };
+      for (const k of ['enabled', 'motion', 'color', 'universal', 'island', 'notices']) if (typeof out[k] !== 'boolean') out[k] = DEFAULTS[k];
+      out.disabledSites = arr(out.disabledSites);
+      out.muted = arr(out.muted);
+      out.hidden = obj(out.hidden);
+      out.sites = { ...DEFAULTS.sites, ...obj(out.sites) };
+      if (typeof out.vibrance !== 'number' || !isFinite(out.vibrance)) out.vibrance = DEFAULTS.vibrance;
+      if (typeof out.nudge !== 'number' || !isFinite(out.nudge)) out.nudge = DEFAULTS.nudge;
+      return out;
+    },
+
+    async save(patch) {
+      // local first: it always works, and it's what load() trusts
+      try {
+        const cur = (await chrome.storage.local.get('hushSettings')).hushSettings || {};
+        await chrome.storage.local.set({ hushSettings: { ...cur, ...patch } });
+      } catch (e) { console.warn('[hush] local save', e); }
+      try { await chrome.storage.sync.set(patch); } catch (e) { console.warn('[hush] sync save (kept locally)', e && e.message); }
+    },
+
+    // is this storage change about settings (not timers, time counts or the island's spot)?
+    isSettingsChange(changes, area) {
+      return area === 'sync' || (area === 'local' && 'hushSettings' in changes);
     },
 
     siteOptions(settings, adapter) {

@@ -74,7 +74,7 @@
   let on = false;
   const load = () => H.load().then((st) => { on = H.isOn(st, location.hostname) && st.island !== false && st.notices !== false; tellPage(); }).catch(() => {});
   load();
-  chrome.storage.onChanged.addListener((c, area) => { if (area === 'sync') load(); });
+  chrome.storage.onChanged.addListener((c, area) => { if (H.isSettingsChange(c, area)) load(); });
 
   const last = {};
   let rows = null; // Roblox chat: name → last line
