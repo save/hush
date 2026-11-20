@@ -291,13 +291,37 @@
       }
     }
 
-    if (on && !teardown && adapter.setup) {
-      teardown = adapter.setup(ctx) || (() => {});
+    // the site's script only starts once the real settings are in: starting it on the
+    // optimistic defaults left its hints and menus behind on sites that are switched off
+    if (on && !teardown && adapter.setup && applied) {
+      try { teardown = adapter.setup(ctx) || (() => {}); } catch (e) { console.warn('[hush] setup', e); teardown = () => {}; }
     } else if (!on && teardown) {
-      teardown();
+      try { teardown(); } catch (e) { console.warn('[hush] teardown', e); }
       teardown = null;
+      sweep();
     }
   }
+
+  // everything hush draws into a page, so switching off (or an update) leaves nothing behind
+  const MADE = '.hush-keys, .hush-island, .hush-x-rows, .hush-x-navlink, .hush-tab-ind, .hush-icon, .hush-greet, .hush-chip-pill, .hush-subs-toggle, .hush-more';
+  function sweep() {
+    try { document.querySelectorAll(MADE).forEach((el) => el.remove()); } catch { /* page gone */ }
+  }
+
+  // After hush is reloaded or updated, Chrome takes its styles out of open tabs but the old
+  // scripts keep running, cut off: they'd keep drawing unstyled hints and menus and can't
+  // hear the on/off switch. When that happens, take everything down and stop.
+  const alive = () => { try { return !!(chrome.runtime && chrome.runtime.id); } catch { return false; } };
+  const watchdog = setInterval(() => {
+    if (alive()) return;
+    clearInterval(watchdog);
+    on = false;
+    try { if (teardown) teardown(); } catch { /* best effort */ }
+    teardown = null;
+    sweep();
+    for (const a of [...root.attributes]) if (a.name.startsWith('data-hush')) root.removeAttribute(a.name);
+    document.querySelectorAll('hush-live, hush-ui, hush-picker').forEach((el) => el.remove());
+  }, 1500);
 
   // ---- helpers handed to adapters -------------------------------------
   const ctx = {
