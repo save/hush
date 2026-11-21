@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+@font-face { font-family: Geist; src: url(../fonts/geist-latin-wght-normal.woff2) format('woff2'); font-weight: 100 900; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #08080a; color: #fafafa; font-family: Geist, system-ui, sans-serif; -webkit-font-smoothing: antialiased; overflow: hidden; }
+.stage { position: relative; overflow: hidden;
+  background: radial-gradient(900px 420px at 50% 118%, rgba(229, 72, 77, .22), transparent 70%), radial-gradient(900px 360px at 50% -20%, rgba(255, 255, 255, .06), transparent 70%), #08080a; }
+.shot { width: 1280px; height: 800px; }
+.head { position: absolute; left: 0; right: 0; top: 46px; text-align: center; }
+.head .k { display: inline-flex; align-items: center; gap: 10px; font-size: 15px; color: #a1a1aa; }
+.head .k img { width: 22px; height: 22px; border-radius: 6px; }
+.head h1 { margin-top: 12px; font-size: 40px; font-weight: 600; letter-spacing: -0.035em; }
+.head h1 span { color: rgba(255, 255, 255, .4); }
+.frame { position: absolute; left: 50%; top: 168px; transform: translateX(-50%); border-radius: 14px; overflow: hidden;
+  box-shadow: 0 40px 100px -30px rgba(0, 0, 0, .9), 0 0 0 1px rgba(255, 255, 255, .08); background-repeat: no-repeat; }
+/* promo tiles */
+.tile { display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; }
+.tile .brand { display: flex; align-items: center; gap: 16px; }
+.tile .brand img { border-radius: 22%; box-shadow: 0 14px 40px -8px rgba(229, 72, 77, .55); }
+.tile .brand b { font-weight: 600; letter-spacing: -0.045em; }
+.tile p { color: #a1a1aa; letter-spacing: -0.01em; }
+.dots { display: flex; gap: 10px; justify-content: center; margin-top: 18px; color: #71717a; font-size: 15px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const q = new URLSearchParams(location.search);
+const kind = q.get('k');
+const root = document.getElementById('root');
+// [headline, dim part, source image, crop: x, y, w, h (in the 1600×1000 capture)]
+const SHOTS = {
+  x: ['X, calm.', ' Just the column, and your menu as an island.', 'raw-0.png', [240, 148, 1120, 704]],
+  yt: ['YouTube without the noise.', ' Quieter thumbnails, calm titles.', 'raw-1.png', [1840, 148, 1120, 704]],
+  rbx: ['Roblox, quieter.', ' Its own layout, minus the upsells.', 'raw-2.png', [240, 1148, 1120, 704]],
+  gh: ['GitHub, Reddit and Discord too.', ' Ctrl K for everything.', 'raw-3.png', [1840, 1148, 1120, 704]],
+  island: ['A dynamic island for your browser.', ' Music, timers and messages.', 'raw-island.png', [300, 440, 1000, 330]],
+};
+if (SHOTS[kind]) {
+  const [h, dim, src, [x, y, w, hgt]] = SHOTS[kind];
+  // the four site demos come from one 3200×2000 sheet? no: each capture is its own 1600×1000 file
+  const img = new Image();
+  img.onload = () => {
+    const sx = x % 1600, sy = y % 1000;
+    const scale = kind === 'island' ? 1.12 : 1.0;
+    const fw = w * scale, fh = hgt * scale;
+    root.innerHTML = `<div class="stage shot"><div class="head"><div class="k"><img src="../icons/icon-128.png">hush</div><h1>${h}<span>${dim}</span></h1></div>
+      <div class="frame" style="width:${fw}px;height:${fh}px;background-image:url(${src});background-size:${1600 * scale}px ${1000 * scale}px;background-position:-${sx * scale}px -${sy * scale}px"></div></div>`;
+    document.title = 'ready';
+  };
+  img.src = src;
+} else if (kind === 'small') {
+  root.innerHTML = `<div class="stage tile" style="width:440px;height:280px"><div class="brand"><img src="../icons/icon-128.png" style="width:64px;height:64px"><b style="font-size:64px">hush</b></div><p style="margin-top:14px;font-size:18px">The web is loud. hush turns it down.</p></div>`;
+  document.title = 'ready';
+} else if (kind === 'marquee') {
+  root.innerHTML = `<div class="stage tile" style="width:1400px;height:560px"><div class="brand"><img src="../icons/icon-128.png" style="width:110px;height:110px"><b style="font-size:120px">hush</b></div><p style="margin-top:22px;font-size:30px">The web is loud. hush turns it down.</p><div class="dots">X · YouTube · Roblox · GitHub · Reddit · Discord</div></div>`;
+  document.title = 'ready';
+}
+</script>
+</body>
+</html>

@@ -1,5 +1,6 @@
-// Packs the extension into release/hush.zip: one folder, "hush", holding only
-// what Chrome needs. Unzip it and choose that folder in chrome://extensions.
+// Packs the extension twice, holding only what Chrome needs:
+//   release/hush.zip        one folder, "hush": unzip it and choose that folder in chrome://extensions
+//   release/hush-store.zip  manifest.json at the root, as the Chrome Web Store requires
 // No dependencies: a small zip writer on top of node:zlib.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -9,7 +10,6 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const INCLUDE = ['manifest.json', 'src', 'build/popup', 'icons', 'fonts', 'LICENSE', 'PRIVACY.md', 'README.md'];
 const outDir = path.join(root, 'release');
-const out = path.join(outDir, 'hush.zip');
 
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.json'), 'utf8'));
 if (!fs.existsSync(path.join(root, 'build/popup/index.html'))) {
@@ -40,56 +40,62 @@ const d = new Date();
 const dosTime = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1);
 const dosDate = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate();
 
-const chunks = [];
-const central = [];
-let offset = 0;
 const files = INCLUDE.flatMap(walk);
-for (const rel of files) {
-  const data = fs.readFileSync(path.join(root, rel));
-  const name = Buffer.from(`hush/${rel}`, 'utf8');
-  const packed = zlib.deflateRawSync(data, { level: 9 });
-  const store = packed.length >= data.length;
-  const body = store ? data : packed;
-  const crc = crc32(data);
+function zip(prefix) {
+  const chunks = [];
+  const central = [];
+  let offset = 0;
+  for (const rel of files) {
+    const data = fs.readFileSync(path.join(root, rel));
+    const name = Buffer.from(`${prefix}${rel}`, 'utf8');
+    const packed = zlib.deflateRawSync(data, { level: 9 });
+    const store = packed.length >= data.length;
+    const body = store ? data : packed;
+    const crc = crc32(data);
 
-  const local = Buffer.alloc(30);
-  local.writeUInt32LE(0x04034b50, 0);
-  local.writeUInt16LE(20, 4);
-  local.writeUInt16LE(0x0800, 6); // utf-8 names
-  local.writeUInt16LE(store ? 0 : 8, 8);
-  local.writeUInt16LE(dosTime, 10);
-  local.writeUInt16LE(dosDate, 12);
-  local.writeUInt32LE(crc, 14);
-  local.writeUInt32LE(body.length, 18);
-  local.writeUInt32LE(data.length, 22);
-  local.writeUInt16LE(name.length, 26);
-  local.writeUInt16LE(0, 28);
-  chunks.push(local, name, body);
+    const local = Buffer.alloc(30);
+    local.writeUInt32LE(0x04034b50, 0);
+    local.writeUInt16LE(20, 4);
+    local.writeUInt16LE(0x0800, 6); // utf-8 names
+    local.writeUInt16LE(store ? 0 : 8, 8);
+    local.writeUInt16LE(dosTime, 10);
+    local.writeUInt16LE(dosDate, 12);
+    local.writeUInt32LE(crc, 14);
+    local.writeUInt32LE(body.length, 18);
+    local.writeUInt32LE(data.length, 22);
+    local.writeUInt16LE(name.length, 26);
+    local.writeUInt16LE(0, 28);
+    chunks.push(local, name, body);
 
-  const cen = Buffer.alloc(46);
-  cen.writeUInt32LE(0x02014b50, 0);
-  cen.writeUInt16LE(20, 4);
-  cen.writeUInt16LE(20, 6);
-  cen.writeUInt16LE(0x0800, 8);
-  cen.writeUInt16LE(store ? 0 : 8, 10);
-  cen.writeUInt16LE(dosTime, 12);
-  cen.writeUInt16LE(dosDate, 14);
-  cen.writeUInt32LE(crc, 16);
-  cen.writeUInt32LE(body.length, 20);
-  cen.writeUInt32LE(data.length, 24);
-  cen.writeUInt16LE(name.length, 28);
-  cen.writeUInt32LE(offset, 42);
-  central.push(cen, name);
-  offset += local.length + name.length + body.length;
+    const cen = Buffer.alloc(46);
+    cen.writeUInt32LE(0x02014b50, 0);
+    cen.writeUInt16LE(20, 4);
+    cen.writeUInt16LE(20, 6);
+    cen.writeUInt16LE(0x0800, 8);
+    cen.writeUInt16LE(store ? 0 : 8, 10);
+    cen.writeUInt16LE(dosTime, 12);
+    cen.writeUInt16LE(dosDate, 14);
+    cen.writeUInt32LE(crc, 16);
+    cen.writeUInt32LE(body.length, 20);
+    cen.writeUInt32LE(data.length, 24);
+    cen.writeUInt16LE(name.length, 28);
+    cen.writeUInt32LE(offset, 42);
+    central.push(cen, name);
+    offset += local.length + name.length + body.length;
+  }
+  const cenSize = central.reduce((n, b) => n + b.length, 0);
+  const end = Buffer.alloc(22);
+  end.writeUInt32LE(0x06054b50, 0);
+  end.writeUInt16LE(files.length, 8);
+  end.writeUInt16LE(files.length, 10);
+  end.writeUInt32LE(cenSize, 12);
+  end.writeUInt32LE(offset, 16);
+  return Buffer.concat([...chunks, ...central, end]);
 }
-const cenSize = central.reduce((n, b) => n + b.length, 0);
-const end = Buffer.alloc(22);
-end.writeUInt32LE(0x06054b50, 0);
-end.writeUInt16LE(files.length, 8);
-end.writeUInt16LE(files.length, 10);
-end.writeUInt32LE(cenSize, 12);
-end.writeUInt32LE(offset, 16);
 
 fs.mkdirSync(outDir, { recursive: true });
-fs.writeFileSync(out, Buffer.concat([...chunks, ...central, end]));
-console.log(`hush ${manifest.version}: ${files.length} files → ${path.relative(root, out)} (${(fs.statSync(out).size / 1024).toFixed(0)} KB)`);
+for (const [name, prefix] of [['hush.zip', 'hush/'], ['hush-store.zip', '']]) {
+  const out = path.join(outDir, name);
+  fs.writeFileSync(out, zip(prefix));
+  console.log(`hush ${manifest.version}: ${files.length} files → ${path.relative(root, out)} (${(fs.statSync(out).size / 1024).toFixed(0)} KB)`);
+}
