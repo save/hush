@@ -46,6 +46,55 @@ html[data-hush-site="rbx"] .icon-filled-verified-check {
   background-color: #ffffff !important;
 }
 
+/* loading thumbnails: Roblox's sliding dark band (placeholderShimmer) becomes a flat, soft
+   surface with a faint glint passing over it. The glint moves with transform (cheap for the
+   GPU), every tile in step; with reduced motion it breathes instead of moving. */
+html[data-hush-site="rbx"] {
+  --h-skel: #f0f0f1;
+  --h-sheen: rgba(255, 255, 255, 0.75);
+}
+html[data-hush-site="rbx"][data-hush-theme="dark"] {
+  --h-skel: #141416;
+  --h-sheen: rgba(255, 255, 255, 0.05);
+}
+html[data-hush-site="rbx"] .shimmer {
+  position: relative;
+  overflow: hidden;
+  background: var(--h-skel) !important;
+  animation: none !important;
+}
+html[data-hush-site="rbx"] .shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(100deg, transparent 30%, var(--h-sheen) 50%, transparent 70%);
+  transform: translateX(-100%);
+  animation: hushRbxGlint 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+}
+@keyframes hushRbxGlint {
+  60%, 100% { transform: translateX(100%); }
+}
+/* reduced motion (often on system-wide in Windows): nothing moves, the surface just breathes */
+@media (prefers-reduced-motion: reduce) {
+  html[data-hush-site="rbx"] .shimmer::after {
+    transform: none;
+    background: var(--h-sheen);
+    animation: hushRbxBreathe 2.4s ease-in-out infinite !important;
+  }
+}
+@keyframes hushRbxBreathe {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 0.6; }
+}
+/* and the picture eases in when it arrives */
+html[data-hush-site="rbx"] .thumbnail-2d-container:not(.shimmer) > img {
+  animation: hushRbxThumbIn 0.4s ease both !important;
+}
+@keyframes hushRbxThumbIn {
+  from { opacity: 0; }
+}
+
 /* ---------- tokens ------------------------------------------------------------ */
 
 /* Roblox marks the theme on <body> late (a second or two into a page). Until it does,

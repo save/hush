@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- **Roblox loading placeholders, redesigned:** Roblox's sliding grey band becomes a flat, soft surface in hush's tone with a faint glint passing over it (or, with reduced motion on, a gentle breathe), and thumbnails ease in when they arrive.
 - **Faster, especially on Roblox:** the Roblox pass runs less often and only measures the page's layout on a new page, a resize or once a second (it used to force Chrome to re-lay out the page several times a second while Roblox loaded). Muted words and calm titles look only at new or changed items, with a full sweep every few seconds, instead of re-reading every tile on every change. The calm home feed keeps Roblox's "load more" tile hidden, so it doesn't fetch games behind the three rows you see.
 - **Roblox dark mode doesn't flash white** between pages: hush remembers your theme and paints it on the first frame, before Roblox marks it a second or two later.
 - **Roblox verified checkmarks** are blue again (they'd turned grey with hush's calm buttons).
