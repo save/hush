@@ -2,6 +2,15 @@
 // The look is CSS (roblox.css) driven by Roblox's foundation design tokens.
 // This JS layer adds page awareness, a tagged left nav (for words / icons /
 // both), keyboard chords, a cap on the endless home feed, and palette commands.
+// first frame: the theme Roblox had last time, so a dark Roblox doesn't flash white while
+// the next page loads (Roblox only marks its theme on <body> a second or two in)
+try {
+  if (/(^|\.)roblox\.com$/.test(location.hostname)) {
+    const t = localStorage.getItem('hush-rbx-theme');
+    if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-hush-theme', t);
+  }
+} catch { /* storage off: Roblox's own theme decides as before */ }
+
 Hush.register({
   id: 'rbx',
   name: 'Roblox',
@@ -85,8 +94,12 @@ Hush.register({
     }
 
     function detectTheme() {
-      const theme = document.body && document.body.classList.contains('dark-theme') ? 'dark' : 'light';
+      const cl = document.body && document.body.classList;
+      if (!cl) return;
+      const theme = cl.contains('dark-theme') ? 'dark' : cl.contains('light-theme') ? 'light' : '';
+      if (!theme) return; // Roblox hasn't decided yet: keep the remembered one
       if (root.getAttribute('data-hush-theme') !== theme) root.setAttribute('data-hush-theme', theme);
+      try { if (localStorage.getItem('hush-rbx-theme') !== theme) localStorage.setItem('hush-rbx-theme', theme); } catch { /* storage off */ }
     }
 
     // ---- left nav: tag items, key caps, active dot -------------------------------------
@@ -162,38 +175,50 @@ Hush.register({
     }
 
     // three full rows at whatever column count the grid has right now
-    function feedStep(grid) {
-      const inner = grid.querySelector('[data-testid="game-grid"]') || grid;
-      const cols = (getComputedStyle(inner).gridTemplateColumns || '').split(' ').filter(Boolean).length;
+    function feedStep(grid, measure = false) {
+      if (measure || !grid.dataset.hushCols) {
+        const inner = grid.querySelector('[data-testid="game-grid"]') || grid;
+        grid.dataset.hushCols = String((getComputedStyle(inner).gridTemplateColumns || '').split(' ').filter(Boolean).length);
+      }
+      const cols = +grid.dataset.hushCols;
       return cols > 1 ? cols * 3 : FEED_STEP;
     }
 
+    // Three rows, then "show more". Roblox's endless feed loads the next batch whenever its
+    // sentinel tile scrolls into view; with the rest of the feed hidden the page is short, so
+    // it used to load batch after batch (hundreds of games behind three rows) and drag the
+    // page down. The sentinel stays hidden (roblox.css) unless you've asked for more than
+    // has loaded, so Roblox only fetches what you're about to see.
     function capFeed() {
       const capped = ctx.options.capfeed;
       for (const grid of document.querySelectorAll('[data-testid="home-page-game-grid"]')) {
         const tiles = [...grid.querySelectorAll('[data-testid="wide-game-tile"], [data-testid="game-tile"]')];
         let btn = grid.nextElementSibling && grid.nextElementSibling.classList.contains('hush-more') ? grid.nextElementSibling : null;
-        const step = feedStep(grid);
-        if (!capped || tiles.length <= step) {
+        if (!capped) {
           tiles.forEach((t) => t.removeAttribute('data-hush-cap'));
           grid.removeAttribute('data-hush-capped');
+          grid.removeAttribute('data-hush-loadmore');
           if (btn) btn.remove();
           continue;
         }
+        const step = feedStep(grid);
         const limit = Math.max(+(grid.dataset.hushLimit || 0), step);
+        const canLoad = !!grid.querySelector('[data-testid="sentinel-tile"]');
         tiles.forEach((t, i) => {
           const over = i >= limit;
           if (over !== t.hasAttribute('data-hush-cap')) t.toggleAttribute('data-hush-cap', over);
         });
-        const more = tiles.length > limit;
-        grid.toggleAttribute('data-hush-capped', more); // hides the infinite-scroll sentinel too
+        if ((tiles.length > limit) !== grid.hasAttribute('data-hush-capped')) grid.toggleAttribute('data-hush-capped', tiles.length > limit);
+        const fetch = tiles.length < limit && canLoad;
+        if (fetch !== grid.hasAttribute('data-hush-loadmore')) grid.toggleAttribute('data-hush-loadmore', fetch);
+        const more = tiles.length > limit || canLoad;
         if (more && !btn) {
           btn = document.createElement('button');
           btn.type = 'button';
           btn.className = 'hush-more hush-btn hush-btn--outline hush-btn--center';
           btn.append('show more');
           btn.addEventListener('click', () => {
-            const s = feedStep(grid);
+            const s = feedStep(grid, true);
             grid.dataset.hushLimit = String(Math.max(+(grid.dataset.hushLimit || 0), s) + s);
             schedule();
           });
@@ -240,6 +265,9 @@ Hush.register({
     // tiles settle in with a short stagger (index within their row/grid, set once)
     function staggerTiles() {
       for (const list of document.querySelectorAll('[data-testid="game-grid"], [data-testid="game-carousel"], ul.item-cards-stackable')) {
+        const n = String(list.childElementCount);
+        if (list.dataset.hushN === n) continue;
+        list.dataset.hushN = n;
         let i = 0;
         for (const t of list.querySelectorAll(':scope > li, :scope > div, :scope [data-testid="game-tile"], :scope [data-testid="wide-game-tile"]')) {
           if (!t.hasAttribute('data-hush-i')) t.setAttribute('data-hush-i', String(Math.min(i, 10)));
@@ -383,15 +411,21 @@ Hush.register({
       }
     }
 
-    const STEPS = [syncRoute, detectTheme, syncNav, syncHeader, cleanSorts, capFeed, greet, dedupeHeaders, foldDescription, foldBadges, syncTabUnderline, staggerTiles, syncChat, titleBadges, syncIsland];
-    let queued = false;
+    // Signed-in Roblox changes all the time (presence, chat, live player counts), so the
+    // loop stays cheap: plain DOM work every pass; anything that reads layout (and makes
+    // Chrome lay the page out again) only on a new page, a resize, or once a second.
+    const STEPS = [syncRoute, detectTheme, syncNav, syncHeader, cleanSorts, capFeed, greet, dedupeHeaders, foldBadges, staggerTiles, syncChat, titleBadges, syncIsland];
+    const MEASURE = [syncTabUnderline, foldDescription, () => { for (const g of document.querySelectorAll('[data-testid="home-page-game-grid"]')) feedStep(g, true); }];
+    let measuredAt = 0, measuredKey = '';
     function tick() {
-      queued = false;
-      for (const step of STEPS) {
+      const key = location.href + '|' + innerWidth;
+      const now = performance.now();
+      const steps = key !== measuredKey || now - measuredAt > 1000 ? (measuredKey = key, measuredAt = now, [...MEASURE, ...STEPS]) : STEPS;
+      for (const step of steps) {
         try { step(); } catch (e) { console.warn('[hush] rbx:', step.name, e); }
       }
     }
-    const throttled = Hush.throttle(tick, 150);
+    const throttled = Hush.throttle(tick, 250);
     function schedule() { throttled(); }
     const observer = new MutationObserver(schedule);
     const start = () => {
@@ -402,7 +436,7 @@ Hush.register({
     else document.addEventListener('DOMContentLoaded', start, { once: true });
     window.addEventListener('popstate', schedule);
     window.addEventListener('hashchange', schedule);
-    window.addEventListener('resize', schedule, { passive: true });
+    window.addEventListener('resize', () => { measuredKey = ''; schedule(); }, { passive: true });
     // option changes (capfeed) re-run the loop
     const optObs = new MutationObserver(schedule);
     optObs.observe(root, { attributes: true, attributeFilter: ['data-hush-capfeed', 'data-hush-zen'] });
@@ -416,7 +450,7 @@ Hush.register({
       window.removeEventListener('hashchange', schedule);
       document.querySelectorAll('.hush-more, .hush-toggle, .hush-tab-ind, #left-navigation-container .hush-keys').forEach((el) => el.remove());
       document.querySelectorAll('[data-hush-chatbar]').forEach((el) => el.removeAttribute('data-hush-chatbar'));
-      for (const a of ['data-hush-hide', 'data-hush-cap', 'data-hush-capped', 'data-hush-nav', 'data-hush-navhide', 'data-hush-active', 'data-hush-checked', 'data-hush-seen', 'data-hush-greet', 'data-hush-dupe', 'data-hush-fold', 'data-hush-tabs', 'data-hush-i']) {
+      for (const a of ['data-hush-hide', 'data-hush-cap', 'data-hush-capped', 'data-hush-loadmore', 'data-hush-nav', 'data-hush-navhide', 'data-hush-active', 'data-hush-checked', 'data-hush-seen', 'data-hush-greet', 'data-hush-dupe', 'data-hush-fold', 'data-hush-tabs', 'data-hush-i']) {
         document.querySelectorAll(`[${a}]`).forEach((el) => el.removeAttribute(a));
       }
       for (const a of ['data-hush-path', 'data-hush-theme']) root.removeAttribute(a);

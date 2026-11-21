@@ -87,7 +87,9 @@
       document.querySelectorAll('[data-hush-muted]').forEach((el) => el.removeAttribute('data-hush-muted'));
     }
     if (!muteRe) return;
-    for (const item of document.querySelectorAll(adapter.mute.items)) {
+    // new items only, except on the regular full sweep (which catches recycled cards)
+    const sel = fullPass ? adapter.mute.items : `:is(${adapter.mute.items}):not([data-hush-mchk])`;
+    for (const item of document.querySelectorAll(sel)) {
       // text node by text node, so "Steal An Egg" + "91% Rating" doesn't read as "Egg91"
       const parts = [];
       const walk = document.createTreeWalker(item, NodeFilter.SHOW_TEXT);
@@ -130,12 +132,15 @@
           delete el.dataset.hushOrig; delete el.dataset.hushCalm;
         }
         for (const el of document.querySelectorAll('[data-hush-title]')) { el.removeAttribute('title'); el.removeAttribute('data-hush-title'); }
+        document.querySelectorAll('[data-hush-ct]').forEach((el) => el.removeAttribute('data-hush-ct'));
         calmWasOn = false;
       }
       return;
     }
     calmWasOn = true;
-    for (const t of document.querySelectorAll(adapter.titles)) {
+    // new titles only, except on the full sweep; titles whose text changed lose their mark (below)
+    for (const t of document.querySelectorAll(fullPass ? adapter.titles : `:is(${adapter.titles}):not([data-hush-ct])`)) {
+      t.setAttribute('data-hush-ct', '');
       const leaf = leafOf(t);
       const cur = leaf.textContent || '';
       if (leaf.dataset.hushCalm === cur) continue;
@@ -191,13 +196,33 @@
     }
   }
 
+  // Busy pages (signed-in Roblox, X) change constantly, so each pass only looks at what's new;
+  // a full sweep every few seconds catches cards a site reuses for something else.
+  let fullPass = true, fullAt = 0;
   const pageScan = H.throttle(() => {
     if (!on) return;
+    const now = performance.now();
+    fullPass = now - fullAt > 3000;
+    if (fullPass) fullAt = now;
     try { muteScan(false); } catch (e) { console.warn('[hush] mute', e); }
     try { calmScan(); } catch (e) { console.warn('[hush] titles', e); }
     try { universalScan(); } catch (e) { console.warn('[hush] universal', e); }
-  }, 250);
-  new MutationObserver(pageScan).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+  }, 300);
+  new MutationObserver((records) => {
+    // a title or card whose words changed in place gets looked at again on the next pass
+    if (on && adapter && (adapter.titles || adapter.mute)) {
+      for (const r of records) {
+        if (r.type !== 'characterData' && !(r.type === 'childList' && r.target.nodeType === 1 && !r.target.childElementCount)) continue;
+        const el = r.type === 'characterData' ? r.target.parentElement : r.target;
+        if (!el || !el.closest) continue;
+        const t = adapter.titles && el.closest('[data-hush-ct]');
+        if (t) t.removeAttribute('data-hush-ct');
+        const m = adapter.mute && el.closest('[data-hush-mchk]');
+        if (m) m.removeAttribute('data-hush-mchk');
+      }
+    }
+    pageScan();
+  }).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
 
   // ---- time on site: counted while the tab is visible and focused --------
   let activeSecs = 0;

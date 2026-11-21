@@ -28,10 +28,31 @@ html[data-hush-site="rbx"][data-hush-theme="dark"] {
   --h-bg: #0a0a0a;
 }
 
+/* dark from the very first frame, before <body> or Roblox's own styles exist */
+html[data-hush-site="rbx"][data-hush-theme="dark"],
+html[data-hush-site="rbx"][data-hush-theme="dark"] body {
+  background-color: #0a0a0a !important;
+  color-scheme: dark;
+}
+
+/* verified checkmarks keep Roblox's blue (their backplate uses the system-emphasis token,
+   which hush turns grey for calm buttons) */
+html[data-hush-site="rbx"] .icon-filled-verified-backplate {
+  color: #335fff !important;
+  background-color: #335fff !important;
+}
+html[data-hush-site="rbx"] .icon-filled-verified-check {
+  color: #ffffff !important;
+  background-color: #ffffff !important;
+}
+
 /* ---------- tokens ------------------------------------------------------------ */
 
+/* Roblox marks the theme on <body> late (a second or two into a page). Until it does,
+   the theme hush remembered from last time (data-hush-theme, set on the first frame by
+   roblox.js) decides, so a dark Roblox doesn't flash white on every page. */
 html[data-hush-site="rbx"] body.light-theme,
-html[data-hush-site="rbx"] body:not(.dark-theme) {
+html[data-hush-site="rbx"]:not([data-hush-theme="dark"]) body:not(.dark-theme) {
   --color-surface-0: #ffffff !important;
   --color-surface-100: #fafafa !important;
   --color-surface-200: #ffffff !important;
@@ -62,7 +83,8 @@ html[data-hush-site="rbx"] body:not(.dark-theme) {
   --color-common-backdrop: rgba(250, 250, 250, 0.55) !important;
   --color-common-scrim: rgba(250, 250, 250, 0.55) !important;
 }
-html[data-hush-site="rbx"] body.dark-theme {
+html[data-hush-site="rbx"] body.dark-theme,
+html[data-hush-site="rbx"][data-hush-theme="dark"] body:not(.light-theme) {
   --color-surface-0: #0a0a0a !important;
   --color-surface-100: #101010 !important;
   --color-surface-200: #131313 !important;
@@ -123,7 +145,10 @@ html[data-hush-site="rbx"] :is(
 }
 /* feed tiles beyond the calm limit (and the sentinel that would load more) */
 html[data-hush-site="rbx"] [data-hush-cap],
-html[data-hush-site="rbx"] [data-hush-capped] [data-testid="sentinel-tile"] {
+html[data-hush-site="rbx"] [data-hush-capped] [data-testid="sentinel-tile"],
+/* calm feed: the endless feed's "load more" tile stays out of view from the first frame,
+   so Roblox doesn't fetch batch after batch behind three rows (see capFeed in roblox.js) */
+html[data-hush-site="rbx"][data-hush-capfeed] [data-testid="home-page-game-grid"]:not([data-hush-loadmore]) [data-testid="sentinel-tile"] {
   display: none !important;
 }
 /* hide chat list (option): the list in the corner goes, but a conversation you open yourself

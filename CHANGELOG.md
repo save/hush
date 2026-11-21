@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- **Faster, especially on Roblox:** the Roblox pass runs less often and only measures the page's layout on a new page, a resize or once a second (it used to force Chrome to re-lay out the page several times a second while Roblox loaded). Muted words and calm titles look only at new or changed items, with a full sweep every few seconds, instead of re-reading every tile on every change. The calm home feed keeps Roblox's "load more" tile hidden, so it doesn't fetch games behind the three rows you see.
+- **Roblox dark mode doesn't flash white** between pages: hush remembers your theme and paints it on the first frame, before Roblox marks it a second or two later.
+- **Roblox verified checkmarks** are blue again (they'd turned grey with hush's calm buttons).
+- **Never stuck off:** settings also save locally, so Chrome refusing synced saves (it rate-limits them) can't leave hush switched off; `Ctrl K` opens even where hush is off; switching off or updating hush leaves nothing behind on open pages.
+
 - **Discord:** hush now calms discord.com. Nitro, Shop, Quests, gift, app-launcher, Discover and "download apps" go; avatar decorations, nameplates and profile effects go; Discord's colours become hush's neutral palette (light and dark) with hush's type; unread counts become quiet grey pills; "Active Now" hides; and `Alt Z` focus mode leaves just the conversation, with a small island for messages, discover, inbox and settings.
 - **Discord messages in the island:** a new message pops up in the top island on whatever tab you're on, with who wrote and what they said and Discord's icon. Click it and Discord opens that conversation. If no tab could show it, Discord's own notification shows instead.
 - **Clicking a notification goes there:** X's notifications and chats, YouTube's bell, Roblox friend requests, inbox, notifications and chats (the right conversation), GitHub notifications and Reddit's inbox and chats now open the page or panel the banner is about, not just the tab.
