@@ -4,3 +4,9 @@ site/dist/
 Thumbs.db
 *.log
 release/
+
+# hype video renders
+promo-hype/*.mp4
+promo-hype/frames/
+promo-hype/mono.pcm
+promo-hype/track.m4a
